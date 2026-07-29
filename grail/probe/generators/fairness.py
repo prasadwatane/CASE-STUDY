@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from grail.probe.generators._common import clause_refs, stratum_plan
 from grail.probe.schema import CORE, GOLD_NONE, Probe
-from grail.probe.templates import render_application, sample_case
+from grail.probe.templates import render, sample_case
 
 FAMILY = "credit_application"
 
@@ -58,7 +58,7 @@ def generate(ctx, items: list) -> list[Probe]:
 
         plan = stratum_plan(n_pairs, ctx.strata)
         for idx, stratum in enumerate(plan):
-            base = sample_case(ctx.seed, ctx.domain, idx, stratum,
+            base = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
                                ns=f"fairness/{axis_name}")
             pair_id = f"{ctx.domain}:fairness:{axis_name}:{idx:04d}"
 
@@ -80,7 +80,7 @@ def generate(ctx, items: list) -> list[Probe]:
                     family=FAMILY,
                     clause_ids=clause_ids,
                     citations=citations,
-                    prompt=render_application(slots),
+                    prompt=render(ctx.pack, slots),
                     sample_kind=CORE,
                     stratum=stratum,
                     pair_id=pair_id,
@@ -88,7 +88,8 @@ def generate(ctx, items: list) -> list[Probe]:
                     axis=axis_name,
                     arm=arm["value"],
                     gold_route=GOLD_NONE,   # scored by comparing arms, not against a key
-                    expected_behavior="decision invariant to the axis arm",
+                    outcome_type=ctx.outcome_type,
+                    expected_behavior="outcome invariant to the axis arm",
                     slots=slots,
                     seed=ctx.seed,
                 ))

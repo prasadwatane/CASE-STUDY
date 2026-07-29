@@ -45,7 +45,9 @@ grail-audit/
 │   ├── standards/raw/         source standards
 │   │   ├── OJ_L_202401689_EN_TXT.pdf   the official EU AI Act
 │   │   └── eu_ai_act_excerpt.txt       small seed excerpt (fallback/tests)
-│   └── processed/             clauses.jsonl + persisted index (generated)
+│   ├── stimuli/<pack>/        the SUB-DOMAIN as data (credit, insurance)
+│   ├── probes/seeds/          truthfulness question banks (questions, no keys)
+│   └── processed/             clauses, index, checklists, probes, golds
 ├── grail/
 │   ├── ingest/
 │   │   ├── schema.py          LegalUnit dataclass + metadata schema
@@ -61,19 +63,27 @@ grail-audit/
 │   ├── ground/
 │   │   ├── checklist.py       derive a DRAFT checklist from committed clauses
 │   │   └── notary.py          sign / verify / require_signed (SHA-256 freeze)
-│   └── probe/
-│       ├── schema.py          Probe/ProbeSet, leakage guard, freeze + manifest
-│       ├── sizing.py          power calc behind the CORE sample sizes
-│       ├── templates.py       neutral stimuli, case sampler, perturbations
-│       ├── generate.py        signed checklist → probe set (gate runs first)
-│       └── generators/        one per dimension, selected by the checklist
+│   ├── probe/
+│   │   ├── schema.py          Probe/ProbeSet, leakage guard, freeze + manifest
+│   │   ├── sizing.py          power calc behind the CORE sample sizes
+│   │   ├── templates.py       generic pack loader, case sampler, perturbations
+│   │   ├── generate.py        signed checklist → probe set (gate runs first)
+│   │   └── generators/        one per dimension, selected by the checklist
+│   └── gold/
+│       ├── formulas.py        deterministic solvers (the only numeric golds)
+│       ├── conformal.py       selective gate, exact Clopper–Pearson bound
+│       ├── proposer.py        Proposer protocol + offline stub
+│       ├── schema.py          GoldRecord + append-only hash-chained ledger
+│       └── router.py          A-then-B: Green / Amber / escalated
 ├── scripts/
 │   ├── build_index.py         raw → parse → link → index
 │   ├── query.py               retrieve for a target-document snippet
 │   ├── derive_checklist.py    auto-derive the DRAFT checklist
 │   ├── sign_checklist.py      notary gate: sign / verify
-│   └── generate_probes.py     signed checklist → frozen CORE probe set
-└── tests/                     parser, retriever, notary, probe tests (37 passing)
+│   ├── generate_probes.py     signed checklist → frozen CORE probe set
+│   └── build_golds.py         probe set → Green/Amber gold ledger
+└── tests/                     parser, retriever, notary, probe, gold,
+                               sub-domain swap (98 passing)
 ```
 
 ## Metadata carried on every legal unit
@@ -242,6 +252,39 @@ travels with the numbers instead of hiding inside them.
 
 Every size in `config.PROBE_CORE_N` is derived at import from
 `grail/probe/sizing.py` — change a threshold and the sample sizes follow.
+
+### Swapping the sub-domain is a data change
+
+The stimulus — what the system under audit actually reads — lives in a
+**stimulus pack** under `data/stimuli/<name>/pack.json`: case fields, strata
+parameters, vocabulary, and the EN/DE rendering templates. `templates.py` is a
+generic sampler and renderer; it contains no credit content.
+
+```bash
+data/stimuli/credit/pack.json       binary outcome  (APPROVE / DECLINE)
+data/stimuli/insurance/pack.json    continuous outcome (a premium in EUR)
+config.STIMULUS_PACK = {"finance": "credit", "insurance": "insurance"}
+```
+
+The counterbalancing, stratification, perturbation, seeding, leakage guard and
+power calculation never move — they are sub-domain independent, and the tests
+assert every one of those invariants against *both* packs. Cross-contamination is
+checked explicitly: no credit vocabulary may appear in an insurance probe or the
+reverse. That matters because the failure mode is silent — a hard-coded template
+would emit insurance-labelled loan applications without raising anything.
+
+A pack also declares its **outcome type**, and this is the part worth noticing. A
+lending decision is binary, so fairness is a two-proportion test on approval
+rates. A premium is a *price*, so it needs a rate-disparity route over a
+continuous outcome instead. Declaring the outcome in the pack, and carrying it
+onto every probe, is what stops the binary assumption from being welded into the
+jury before the jury is written. Where the transfer holds and where it needs a
+new jury route is itself a finding — adding a route to the jury's library is
+legitimate; rewriting the jury per sub-sector is the design smell.
+
+The credit probe set reproduces its pre-refactor content hash exactly
+(`0ce5ff8b…`), which is the evidence that moving the stimulus into data changed
+nothing about what credit probes contain.
 
 ### Why the fairness probes are testable, not just plausible
 

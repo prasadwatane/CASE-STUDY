@@ -17,11 +17,13 @@ Two filters run before any generator:
 """
 from __future__ import annotations
 
-from config import (CREDIT_STRATA, INSTRUMENT, PROBEABLE_PARTITIONS,
-                    PROBE_CORE_N, PROBE_SEED, PROBE_SEED_DIR, PROTECTED_AXES)
+from config import (INSTRUMENT, PROBEABLE_PARTITIONS, PROBE_CORE_N, PROBE_SEED,
+                    PROBE_SEED_DIR, PROTECTED_AXES, STIMULUS_DIR, STIMULUS_PACK,
+                    STRATUM_PLAN)
 from grail.ground.notary import require_signed
 from grail.probe.generators import REGISTRY, GenContext
 from grail.probe.schema import ProbeSet
+from grail.probe.templates import load_pack
 
 
 def _group_by_dimension(items: list[dict]) -> dict[str, list[dict]]:
@@ -36,6 +38,8 @@ def generate_probeset(checklist_path: str, seed: int = PROBE_SEED,
                       axes: list | None = None,
                       strata: dict | None = None,
                       seed_dir: str = PROBE_SEED_DIR,
+                      pack: dict | str | None = None,
+                      stimulus_dir: str = STIMULUS_DIR,
                       only: list[str] | None = None) -> tuple[ProbeSet, list[str]]:
     """Generate a probe set from a signed checklist. Returns (probeset, notes)."""
     signed = require_signed(checklist_path)          # notary gate — first, always
@@ -53,12 +57,39 @@ def generate_probeset(checklist_path: str, seed: int = PROBE_SEED,
             f"scope: {it['citation']} is {it.get('scope_partition')} — out of probe "
             "scope by design, no requirement derived from it")
 
+    # The sub-domain arrives as data: a pack name from config, or a pack passed
+    # in directly (tests, or a one-off swap without touching config).
+    if isinstance(pack, dict):
+        stimulus = pack
+    else:
+        pack_name = pack or STIMULUS_PACK.get(domain)
+        if not pack_name:
+            raise SystemExit(
+                f"No stimulus pack configured for domain '{domain}'. Add one to "
+                "config.STIMULUS_PACK and put it in data/stimuli/<name>/pack.json.")
+        stimulus = load_pack(pack_name, stimulus_dir)
+
+    plan = dict(strata if strata is not None else STRATUM_PLAN.get(domain, {}))
+    if not plan:
+        raise SystemExit(f"No stratum plan for domain '{domain}' (config.STRATUM_PLAN).")
+    unknown = set(plan) - set(stimulus["strata"])
+    if unknown:
+        raise SystemExit(
+            f"Stratum plan for '{domain}' names {sorted(unknown)}, which pack "
+            f"'{stimulus['name']}' does not define. The analysis plan and the "
+            "stimulus pack must agree on the strata.")
+
+    notes.append(f"stimulus pack '{stimulus['name']}' "
+                 f"({stimulus.get('label', '')}), outcome "
+                 f"{stimulus['outcome']['type']}")
+
     ctx = GenContext(
         domain=domain,
         seed=seed,
+        pack=stimulus,
         core_n=dict(core_n if core_n is not None else PROBE_CORE_N),
         axes=list(axes if axes is not None else PROTECTED_AXES.get(domain, [])),
-        strata=dict(strata if strata is not None else CREDIT_STRATA),
+        strata=plan,
         seed_dir=seed_dir,
         notes=notes,
     )

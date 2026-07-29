@@ -16,17 +16,26 @@ from grail.probe.generators import (consistency, fairness, robustness,
 
 @dataclass
 class GenContext:
-    """Everything a generator is allowed to depend on."""
+    """Everything a generator is allowed to depend on.
+
+    `pack` is the sub-domain's stimulus pack. No generator reads sub-domain
+    content any other way, which is what makes credit -> insurance a data swap.
+    """
     domain: str
     seed: int
+    pack: dict = field(default_factory=dict)     # stimulus pack (the sub-domain)
     core_n: dict = field(default_factory=dict)
     axes: list = field(default_factory=list)     # protected axes (fairness only)
-    strata: dict = field(default_factory=dict)   # credit-strength split
+    strata: dict = field(default_factory=dict)   # stratum shares (analysis plan)
     seed_dir: str = ""                           # seed banks (truthfulness)
     notes: list = field(default_factory=list)    # generators append honest caveats
 
     def n(self, dimension: str, default: int) -> int:
         return int(self.core_n.get(dimension, default))
+
+    @property
+    def outcome_type(self) -> str:
+        return self.pack.get("outcome", {}).get("type", "binary")
 
 
 REGISTRY = {

@@ -25,11 +25,17 @@ from grail.probe import sizing
 from grail.probe.generate import generate_probeset
 from grail.probe.schema import (Probe, ProbeSet, assert_no_leakage, digits,
                                 leakage_terms, save_probeset)
-from grail.probe.templates import PERTURBATIONS, render_application, sample_case
+from grail.probe.templates import (PERTURBATIONS, load_pack, render,
+                                   sample_case)
 from grail.probe.schema import derive_rng
 
 SMALL = {"fairness": 60, "robustness": 8, "consistency": 6, "transparency": 6,
          "truthfulness": 300}
+
+
+def _pack(name="credit"):
+    from config import STIMULUS_DIR
+    return load_pack(name, STIMULUS_DIR)
 
 
 # --- fixtures ---------------------------------------------------------------
@@ -275,8 +281,8 @@ def test_robustness_perturbations_preserve_the_numbers(tmp_path):
 
 
 def test_each_perturbation_function_is_digit_preserving():
-    slots = sample_case(1, "finance", 0, "marginal")
-    prompt = render_application(slots)
+    slots = sample_case(_pack(), 1, "finance", 0, "marginal")
+    prompt = render(_pack(), slots)
     for name, fn in PERTURBATIONS:
         out = fn(prompt, derive_rng(1, name))
         assert digits(out) == digits(prompt), f"{name} altered the numbers"
@@ -352,18 +358,25 @@ def test_mcnemar_sizing_scales_with_the_flip_rate():
 
 
 def test_config_core_n_is_derived_from_the_power_calculation():
-    from config import (CREDIT_STRATA, FAIRNESS_MDE, FAIRNESS_POWER,
-                        FAIRNESS_PRIMARY_STRATUM, PROBE_CORE_N)
+    from config import (FAIRNESS_MDE, FAIRNESS_POWER, FAIRNESS_PRIMARY_STRATUM,
+                        PROBE_CORE_N, STRATUM_PLAN)
     required = sizing.n_for_two_proportions(FAIRNESS_MDE, power=FAIRNESS_POWER)
-    in_primary = PROBE_CORE_N["fairness"] * CREDIT_STRATA[FAIRNESS_PRIMARY_STRATUM]
-    assert in_primary >= required, (
+    share = STRATUM_PLAN["finance"][FAIRNESS_PRIMARY_STRATUM["finance"]]
+    assert PROBE_CORE_N["fairness"] * share >= required, (
         "the primary stratum does not reach the size its own power calc demands")
 
 
-def test_primary_stratum_gets_the_largest_share(tmp_path):
-    from config import CREDIT_STRATA, FAIRNESS_PRIMARY_STRATUM
-    assert sum(CREDIT_STRATA.values()) == pytest.approx(1.0)
-    assert max(CREDIT_STRATA, key=CREDIT_STRATA.get) == FAIRNESS_PRIMARY_STRATUM
+def test_every_domain_has_a_coherent_analysis_plan():
+    """Shares sum to 1, the primary stratum is the largest, and the pack agrees."""
+    from config import (FAIRNESS_PRIMARY_STRATUM, STIMULUS_DIR, STIMULUS_PACK,
+                        STRATUM_PLAN)
+    for domain, plan in STRATUM_PLAN.items():
+        assert sum(plan.values()) == pytest.approx(1.0), domain
+        primary = FAIRNESS_PRIMARY_STRATUM[domain]
+        assert max(plan, key=plan.get) == primary, domain
+        pack = load_pack(STIMULUS_PACK[domain], STIMULUS_DIR)
+        assert set(plan) <= set(pack["strata"]), (
+            f"{domain}: analysis plan names strata the pack does not define")
 
 
 def test_manifest_counts_cases_not_prompts(tmp_path):

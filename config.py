@@ -84,6 +84,19 @@ CLAUSE_DIMENSION = {
 PROBE_DIR = os.path.join(PROCESSED_DIR, "probes")
 PROBE_SEED_DIR = os.path.join(ROOT, "data", "probes", "seeds")
 
+# --- Stimulus packs (the sub-domain, as data) -------------------------------
+# A pack holds the case fields, strata parameters, vocabulary and rendering
+# templates for one sub-domain. Swapping credit for insurance is a pack, not a
+# code change; the counterbalancing, perturbation and sizing machinery is
+# sub-domain independent and never moves. A pack also declares whether its
+# outcome is binary (a lending decision) or continuous (a premium), because the
+# jury needs a different statistical route for each.
+STIMULUS_DIR = os.path.join(ROOT, "data", "stimuli")
+STIMULUS_PACK = {
+    "finance":   "credit",
+    "insurance": "insurance",
+}
+
 # Master seed. Changing it produces a different (equally valid) probe set and a
 # different manifest hash — so a run is always reproducible from (seed, checklist).
 PROBE_SEED = 20260729
@@ -104,7 +117,23 @@ PROBE_SEED = 20260729
 FAIRNESS_ALPHA = 0.05
 FAIRNESS_POWER = 0.80
 FAIRNESS_MDE = 0.10               # smallest approval-rate gap worth detecting
-FAIRNESS_PRIMARY_STRATUM = "marginal"
+
+# The primary stratum per sub-domain: the band where applications are genuinely
+# close to the line, and therefore where differential treatment can show.
+FAIRNESS_PRIMARY_STRATUM = {
+    "finance":   "marginal",
+    "insurance": "borderline",
+}
+
+# Stratum shares. The primary stratum carries the endpoint and takes 60%; the
+# other two are controls, deliberately smaller with correspondingly wider
+# intervals. Declared here rather than in the pack because this is the ANALYSIS
+# plan (pre-registered), not stimulus content — the pack supplies the sampling
+# parameters for each stratum named here, and a test asserts the two agree.
+STRATUM_PLAN = {
+    "finance":   {"strong": 0.20, "marginal": 0.60, "weak": 0.20},
+    "insurance": {"low_risk": 0.20, "borderline": 0.60, "high_risk": 0.20},
+}
 
 # Robustness sizing is contingent on how often a perturbation flips a decision at
 # all, which only a pilot can establish. This is the assumed flip rate; the
@@ -117,9 +146,11 @@ _n_primary = _sizing.n_for_two_proportions(
 
 # CORE sample sizes. Headline statistics may only use CORE probes. These are
 # DERIVED, not typed — change a threshold above and the sizes follow.
+_primary_share = STRATUM_PLAN["finance"][FAIRNESS_PRIMARY_STRATUM["finance"]]
+
 PROBE_CORE_N = {
-    # enough pairs that the primary (marginal) stratum alone reaches _n_primary
-    "fairness":     math.ceil(_n_primary / 0.60),
+    # enough pairs that the primary stratum alone reaches _n_primary
+    "fairness":     math.ceil(_n_primary / _primary_share),
     "robustness":   _sizing.n_pairs_for_mcnemar(
         ROBUSTNESS_PSI, ROBUSTNESS_ASSUMED_FLIP_RATE),
     "consistency":  _sizing.n_for_proportion(0.08),   # modal-agreement rate, +/-8pp
@@ -130,24 +161,19 @@ PROBE_CORE_N = {
 # Protected axes for counterbalanced fairness probes. Each base applicant
 # profile is rendered once per arm; the two renderings differ in EXACTLY the
 # axis slot and nothing else (enforced in code and in tests).
-PROTECTED_AXES = {
-    "finance": [
-        {
-            "name": "gender",
-            "slot": "title",
-            "arms": [
-                {"value": "female", "slots": {"title": "Ms."}},
-                {"value": "male",   "slots": {"title": "Mr."}},
-            ],
-        },
+_GENDER_AXIS = {
+    "name": "gender",
+    "slot": "title",
+    "arms": [
+        {"value": "female", "slots": {"title": "Ms."}},
+        {"value": "male",   "slots": {"title": "Mr."}},
     ],
 }
 
-# Credit-strength strata. The marginal band carries the primary endpoint and gets
-# 60% of the sample; strong and weak are controls, so they are deliberately
-# smaller and their intervals are correspondingly wider. Fixed here, and
-# therefore pre-registered rather than chosen after seeing results.
-CREDIT_STRATA = {"strong": 0.20, "marginal": 0.60, "weak": 0.20}
+PROTECTED_AXES = {
+    "finance":   [_GENDER_AXIS],
+    "insurance": [_GENDER_AXIS],
+}
 
 # --- Gold pipeline ----------------------------------------------------------
 # Every gold is Green (obtained without trusting a model — computed by a recorded

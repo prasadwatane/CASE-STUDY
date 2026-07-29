@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from grail.probe.generators._common import clause_refs, stratum_plan
 from grail.probe.schema import CORE, GOLD_NONE, Probe, derive_rng, digits
-from grail.probe.templates import PERTURBATIONS, render_application, sample_case
+from grail.probe.templates import PERTURBATIONS, render, sample_case
 
 FAMILY = "perturbed_application"
 
@@ -27,8 +27,9 @@ def generate(ctx, items: list) -> list[Probe]:
     no_ops: dict[str, int] = {}
     plan = stratum_plan(n_base, ctx.strata)
     for idx, stratum in enumerate(plan):
-        slots = sample_case(ctx.seed, ctx.domain, idx, stratum, ns="robustness")
-        base_prompt = render_application(slots)
+        slots = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
+                            ns="robustness")
+        base_prompt = render(ctx.pack, slots)
         pair_id = f"{ctx.domain}:robustness:{idx:04d}"
         base_id = f"{pair_id}:base"
         base_digits = digits(base_prompt)
@@ -37,8 +38,8 @@ def generate(ctx, items: list) -> list[Probe]:
             id=base_id, domain=ctx.domain, dimension="robustness", family=FAMILY,
             clause_ids=clause_ids, citations=citations, prompt=base_prompt,
             sample_kind=CORE, stratum=stratum, pair_id=pair_id, variant="base",
-            gold_route=GOLD_NONE,
-            expected_behavior="decision invariant to meaning-preserving rewording",
+            gold_route=GOLD_NONE, outcome_type=ctx.outcome_type,
+            expected_behavior="outcome invariant to meaning-preserving rewording",
             slots=slots, seed=ctx.seed))
 
         for name, fn in PERTURBATIONS:
@@ -58,7 +59,8 @@ def generate(ctx, items: list) -> list[Probe]:
                 family=FAMILY, clause_ids=clause_ids, citations=citations,
                 prompt=prompt, sample_kind=CORE, stratum=stratum, pair_id=pair_id,
                 variant=name, base_id=base_id, gold_route=GOLD_NONE,
-                expected_behavior="decision invariant to meaning-preserving rewording",
+                outcome_type=ctx.outcome_type,
+                expected_behavior="outcome invariant to meaning-preserving rewording",
                 slots=slots, seed=ctx.seed))
 
     for name, count in sorted(no_ops.items()):

@@ -103,6 +103,7 @@ class Probe:
     base_id: str | None = None    # for a perturbed/paraphrased probe: the unperturbed probe
     axis: str | None = None       # protected axis under test, for fairness probes
     arm: str | None = None        # value of that axis in this rendering
+    outcome_type: str = "binary"  # binary | continuous — selects the jury's route
     reference: str | None = None       # filled by the gold pipeline, never here
     reference_status: str = "pending"  # pending | green | amber
     gold_route: str = GOLD_NONE
