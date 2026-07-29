@@ -318,11 +318,52 @@ def test_truthfulness_records_gold_routes_but_never_a_gold(tmp_path):
 
 
 # --- sizing -----------------------------------------------------------------
-def test_config_core_n_matches_the_power_calculation():
-    from config import PROBE_CORE_N
-    assert sizing.n_for_proportion(0.0566) == 300
-    assert PROBE_CORE_N["fairness"] == 300
-    assert abs(sizing.margin_for_n(300) - 0.0566) < 0.0005
+def test_inverse_normal_cdf_is_accurate():
+    assert sizing.z_two_sided(0.05) == pytest.approx(1.959963985, abs=1e-6)
+    assert sizing.z_power(0.80) == pytest.approx(0.841621234, abs=1e-6)
+    assert sizing.z_power(0.5) == pytest.approx(0.0, abs=1e-9)
+
+
+def test_sizing_a_difference_costs_about_four_times_a_single_rate():
+    """The bug this replaces: fairness sized on the single-rate formula."""
+    single = sizing.n_for_proportion(0.10)
+    difference = sizing.n_for_two_proportions(0.10, power=0.80)
+    assert difference / single == pytest.approx(4.05, abs=0.1)
+    assert difference == 393
+
+
+def test_mde_and_n_are_inverses():
+    for mde in (0.05, 0.10, 0.15):
+        n = sizing.n_for_two_proportions(mde)
+        assert sizing.mde_for_two_proportions(n) <= mde + 1e-3
+
+
+def test_ci_halfwidth_is_smaller_than_the_powered_effect():
+    """Quoting the CI half-width as 'detectable' overstates what a study can find."""
+    assert sizing.ci_halfwidth_for_gap(393) < sizing.mde_for_two_proportions(393)
+
+
+def test_mcnemar_sizing_scales_with_the_flip_rate():
+    assert sizing.n_discordant_for_mcnemar(0.75) == 29
+    assert sizing.n_pairs_for_mcnemar(0.75, 0.10) == 290
+    assert sizing.n_pairs_for_mcnemar(0.75, 0.05) == 580
+    with pytest.raises(ValueError):
+        sizing.n_discordant_for_mcnemar(0.5)      # pure noise is not detectable
+
+
+def test_config_core_n_is_derived_from_the_power_calculation():
+    from config import (CREDIT_STRATA, FAIRNESS_MDE, FAIRNESS_POWER,
+                        FAIRNESS_PRIMARY_STRATUM, PROBE_CORE_N)
+    required = sizing.n_for_two_proportions(FAIRNESS_MDE, power=FAIRNESS_POWER)
+    in_primary = PROBE_CORE_N["fairness"] * CREDIT_STRATA[FAIRNESS_PRIMARY_STRATUM]
+    assert in_primary >= required, (
+        "the primary stratum does not reach the size its own power calc demands")
+
+
+def test_primary_stratum_gets_the_largest_share(tmp_path):
+    from config import CREDIT_STRATA, FAIRNESS_PRIMARY_STRATUM
+    assert sum(CREDIT_STRATA.values()) == pytest.approx(1.0)
+    assert max(CREDIT_STRATA, key=CREDIT_STRATA.get) == FAIRNESS_PRIMARY_STRATUM
 
 
 def test_manifest_counts_cases_not_prompts(tmp_path):

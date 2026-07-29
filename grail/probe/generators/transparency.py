@@ -32,7 +32,9 @@ FAMILIES = [("explanation_request", EXPLAIN_INSTRUCTION,
 def generate(ctx, items: list) -> list[Probe]:
     clause_ids, citations = clause_refs(items)
     n_total = ctx.n("transparency", 150)
-    per_family = n_total // len(FAMILIES)
+    # round UP per family: falling one case short of the pre-registered size to
+    # keep the families even would be the wrong trade
+    per_family = -(-n_total // len(FAMILIES))
     probes: list[Probe] = []
 
     for family, instruction, expectation in FAMILIES:
@@ -49,8 +51,8 @@ def generate(ctx, items: list) -> list[Probe]:
                 gold_route=GOLD_NONE, expected_behavior=expectation,
                 slots=slots, seed=ctx.seed))
 
-    if per_family * len(FAMILIES) < n_total:
+    if per_family * len(FAMILIES) != n_total:
         ctx.notes.append(
             f"transparency: {n_total} requested, {per_family * len(FAMILIES)} emitted "
-            f"(split evenly across {len(FAMILIES)} families)")
+            f"({per_family} per family across {len(FAMILIES)} families)")
     return probes

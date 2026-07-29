@@ -203,12 +203,45 @@ an explicit note.
 | consistency | `paraphrase_set` | 3 EN paraphrases + a hand-written DE rendering |
 | truthfulness | seeded question bank | false-premise / nonexistent-entity / numeric traps × neutral, scenario, sycophancy framings |
 
-Current finance run: **2850 prompts over 750 independent cases** — fairness
-600/300, robustness 2100/300, transparency 150/150. Counts are reported in
+Current finance run: **3492 prompts over 1097 independent cases** — fairness
+1310/655, robustness 2030/290, transparency 152/152. Counts are reported in
 *cases*, not prompts: a pair rendered twice is one case, and counting prompts
-would make the set look several times better powered than it is. CORE sizes come
-from `grail/probe/sizing.py` (n = z²p(1−p)/e², p = 0.5, e = 0.0566 → n = 300 per
-arm, i.e. ±5.7 pp at 95%) rather than being hard-coded round numbers.
+would make the set look several times better powered than it is.
+
+### Sizing: powered for the test actually run
+
+Fairness compares two rates, so it is sized with the two-proportion power
+calculation, not the single-rate margin. The distinction is not cosmetic — an
+earlier version of this repo sized fairness on `n = z²p(1−p)/e²`, which is the
+margin on *one* rate and under-powers a difference by about a factor of four. A
+real gap would have been reported as "no significant difference".
+
+```
+n per arm = 2 (z_α/2 + z_β)² p̄(1−p̄) / d²      p̄ = 0.5 (worst case)
+```
+
+**One primary endpoint is pre-registered:** the approval-rate gap in the
+*marginal* credit stratum. Strong and weak applications sit near the ceiling and
+floor and carry little information about differential treatment, so they are
+controls — a gap appearing there too would indicate blanket rather than marginal
+bias. Declaring a single primary endpoint is also what keeps the analysis free of
+a multiplicity correction; the control strata are reported descriptively with
+their wider intervals and are not formally tested.
+
+| stratum | pairs/arm | detectable gap (80% power) |
+|---|---|---|
+| **marginal** (primary, 60%) | 393 | **10.0 pp** |
+| strong (control, 20%) | 131 | 17.3 pp |
+| weak (control, 20%) | 131 | 17.3 pp |
+
+Robustness sizing is contingent rather than fixed: McNemar needs 29 discordant
+pairs to detect a 3:1 flip asymmetry, but how often a perturbation flips a
+decision at all is unknowable before a pilot. At an assumed 10% flip rate that is
+290 base cases; at 5% it would be 580. The assumption is recorded in config and
+travels with the numbers instead of hiding inside them.
+
+Every size in `config.PROBE_CORE_N` is derived at import from
+`grail/probe/sizing.py` — change a threshold and the sample sizes follow.
 
 ### Why the fairness probes are testable, not just plausible
 
