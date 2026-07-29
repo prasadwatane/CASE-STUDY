@@ -116,3 +116,22 @@ PROTECTED_AXES = {
 # Credit-strength strata. Bias is most visible in the marginal band, so it is
 # sampled most heavily; the split is fixed here so it is pre-registered.
 CREDIT_STRATA = {"strong": 0.30, "marginal": 0.40, "weak": 0.30}
+
+# --- Gold pipeline ----------------------------------------------------------
+# Every gold is Green (obtained without trusting a model — computed by a recorded
+# formula, or sourced with provenance) or Amber (model-proposed and accepted by a
+# conformal gate). Anything the gate cannot certify goes to a human.
+GOLD_DIR = os.path.join(PROCESSED_DIR, "golds")
+
+# Target selective error among AUTO-ACCEPTED Amber golds, and the confidence at
+# which that bound must hold. These two numbers set the floor on how much
+# calibration data is needed: with zero observed errors the exact bound from n
+# points is 1 - delta^(1/n), which first reaches alpha at
+# n = log(delta)/log(1-alpha) = 59 points for 0.05/0.05. Below that the gate
+# certifies nothing and every candidate escalates — see grail/gold/conformal.py.
+GOLD_ALPHA = 0.05
+GOLD_DELTA = 0.05
+
+# Proposals per item. Matches the judge's k=5 so agreement means the same thing
+# in both stages.
+GOLD_PROPOSER_K = 5

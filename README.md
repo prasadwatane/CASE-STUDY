@@ -233,11 +233,68 @@ Golds are never invented here. Truthfulness probes carry `reference: null`,
 `structural`) for the gold pipeline to honour — a reference written at generation
 time would be exactly the uncertified "trust me" gold the design rules out.
 
+## Gold pipeline (Green / Amber) — built
+
+Every reference answer is obtained one of two ways, and the record says which.
+
+**Green** — obtained without trusting a model. Either computed by a solver in
+`grail/gold/formulas.py`, with the formula name and its arguments recorded so
+anyone can redo the arithmetic by hand, or extracted from a primary source with a
+locator a human signed off. A Green gold is reproduced, not believed.
+
+**Amber** — proposed by a model and accepted by a conformal gate, carrying the
+raw proposals, the disagreement score, the threshold and a certified error bound.
+
+Anything the gate cannot accept is **escalated**: no gold yet, queued for a human.
+That is a normal outcome, and the share of items in it is the *bounded leakage*
+the design promises — measured, not asserted.
+
+```bash
+python scripts/build_golds.py finance --probes <probes.jsonl> --stub
+python scripts/build_golds.py finance --verify        # check the ledger hash chain
+```
+
+### A-then-B, and why the gate usually refuses
+
+Items with a compute spec are solved first and cost nothing. Their labels are
+then free calibration data for everything else: run the proposer on them, record
+`(disagreement, was it right)`, and choose the largest threshold whose selective
+error is provably at or below α.
+
+The bound is exact Clopper–Pearson, and because the threshold is chosen by
+searching every candidate, each test uses δ/m (Bonferroni over the m candidates)
+so the guarantee holds simultaneously rather than being the luckiest cut.
+
+The consequence is arithmetic, and it is the useful finding of this stage:
+
+> With zero observed errors, the exact bound from n calibration points is
+> 1 − δ^(1/n), which first reaches α at n = log δ / log(1−α). For α = δ = 0.05
+> that is **59 points**. The seed bank supplies 6.
+
+So on the current bank the gate certifies nothing, every non-computed item
+escalates, and the split is **6 Green / 0 Amber / 14 escalated — 70% leakage**.
+That is the correct output, not a broken one: the alternative is quoting a 5%
+error bound that 6 points cannot support. It also puts a number on how much the
+seed bank has to grow before Amber golds are available at all.
+
+### What the pipeline refuses to do
+
+- **No model near a number.** Computed golds never call a proposer; the tests
+  assert that no Green record has a proposer anywhere in its provenance.
+- **No gold without provenance.** `GoldRecord` raises on construction if a
+  green/amber record has an empty provenance dict.
+- **No stub silently passing as evidence.** `StubProposer` keeps CI runnable
+  offline, but the router refuses to build a ledger from it unless `allow_stub`
+  is passed, and its name stays in every record it touched.
+- **No editing the ledger.** Rows are hash-chained, and a `.head` anchor records
+  the tail so truncation is caught too — a shortened chain still verifies on its
+  own, which is exactly why the anchor exists.
+
 ## What plugs in next (not in this repo yet)
 
-1. **Gold pipeline** — Green (sourced) / Amber (conformally measured) answer keys.
-2. **Courtroom Inspect** — deterministic jury + gated LLM judge.
-3. **Ledger + report** — clause-traced, evidence-typed findings.
+1. **Courtroom Inspect** — deterministic jury + gated LLM judge.
+2. **Ledger + report** — clause-traced, evidence-typed findings.
+3. **Generalisation** — re-sign on the insurance corpus, no code change.
 
 ## Notes / limitations
 
