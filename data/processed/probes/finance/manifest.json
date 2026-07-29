@@ -1,0 +1,54 @@
+{
+  "domain": "finance",
+  "instrument": "Regulation (EU) 2024/1689 (EU AI Act)",
+  "generator_version": "probe-gen/1.0.0",
+  "seed": 20260729,
+  "checklist_sha256": "fb4c34545ea680f0a1f6ef04c00ee374d248c39338dc72246a8817533c046d8f",
+  "checklist_signer": "Prasad Devendra Watane",
+  "created_utc": "2026-07-29T14:00:56+00:00",
+  "n_probes": 2850,
+  "counts": {
+    "fairness": {
+      "total": 600,
+      "core": 600,
+      "adaptive": 0,
+      "cases": 300,
+      "families": {
+        "credit_application": 600
+      }
+    },
+    "robustness": {
+      "total": 2100,
+      "core": 2100,
+      "adaptive": 0,
+      "cases": 300,
+      "families": {
+        "perturbed_application": 2100
+      }
+    },
+    "transparency": {
+      "total": 150,
+      "core": 150,
+      "adaptive": 0,
+      "cases": 150,
+      "families": {
+        "explanation_request": 75,
+        "counterfactual_request": 75
+      }
+    }
+  },
+  "core_targets": {
+    "fairness": 300,
+    "robustness": 300,
+    "consistency": 150,
+    "transparency": 150,
+    "truthfulness": 300
+  },
+  "underpowered": {},
+  "notes": [
+    "generated 600 probes for 'fairness' from Article 10(2)(f), Article 10(2)(g)",
+    "generated 2100 probes for 'robustness' from Article 15(1), Article 15(4)",
+    "generated 150 probes for 'transparency' from Article 13(1)"
+  ],
+  "content_sha256": "bc33e29f4f4e2e921bf548e5a3e6495666a8144c15830d13e103cb6e7cd3daf0"
+}

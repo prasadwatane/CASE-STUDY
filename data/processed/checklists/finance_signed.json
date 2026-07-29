@@ -1,0 +1,60 @@
+{
+  "checklist": {
+    "domain": "finance",
+    "instrument": "Regulation (EU) 2024/1689 (EU AI Act)",
+    "created_utc": "2026-07-29T13:32:51+00:00",
+    "items": [
+      {
+        "clause_id": "AIA:Art10(2)(f)",
+        "citation": "Article 10(2)(f)",
+        "scope_partition": "hybrid",
+        "dimension": "fairness",
+        "clause_text": "examination in view of possible biases that are likely to affect the health and safety of persons, have a negative impact on fundamental rights or lead to discrimination prohibited under Union law, especially where data outputs influence inputs for future operations;",
+        "requirement": "The AI system under audit shall conform to Article 10(2)(f): examination in view of possible biases that are likely to affect the health and safety of persons, have a negative impact on fundamental rights or lead to discrimination prohibited under Union law, especially where data outputs influence inputs for future operations.",
+        "criterion": ""
+      },
+      {
+        "clause_id": "AIA:Art10(2)(g)",
+        "citation": "Article 10(2)(g)",
+        "scope_partition": "behavioral",
+        "dimension": "fairness",
+        "clause_text": "appropriate measures to detect, prevent and mitigate possible biases identified according to point (f);",
+        "requirement": "The AI system under audit shall conform to Article 10(2)(g): appropriate measures to detect, prevent and mitigate possible biases identified according to point (f).",
+        "criterion": ""
+      },
+      {
+        "clause_id": "AIA:Art13(1)",
+        "citation": "Article 13(1)",
+        "scope_partition": "hybrid",
+        "dimension": "transparency",
+        "clause_text": "High-risk AI systems shall be designed and developed in such a way as to ensure that their operation is sufficiently transparent to enable deployers to interpret a system’s output and use it appropriately. An appropriate type and degree of transparency shall be ensured with a view to achieving compliance with the relevant obligations of the provider and deployer set out in Section 3.",
+        "requirement": "The AI system under audit shall conform to Article 13(1): High-risk AI systems shall be designed and developed in such a way as to ensure that their operation is sufficiently transparent to enable deployers to interpret a system’s output and use it appropriately.",
+        "criterion": ""
+      },
+      {
+        "clause_id": "AIA:Art15(1)",
+        "citation": "Article 15(1)",
+        "scope_partition": "behavioral",
+        "dimension": "robustness",
+        "clause_text": "High-risk AI systems shall be designed and developed in such a way that they achieve an appropriate level of accuracy, robustness, and cybersecurity, and that they perform consistently in those respects throughout their lifecycle.",
+        "requirement": "The AI system under audit shall conform to Article 15(1): High-risk AI systems shall be designed and developed in such a way that they achieve an appropriate level of accuracy, robustness, and cybersecurity, and that they perform consistently in those respects throughout their lifecycle.",
+        "criterion": ""
+      },
+      {
+        "clause_id": "AIA:Art15(4)",
+        "citation": "Article 15(4)",
+        "scope_partition": "behavioral",
+        "dimension": "robustness",
+        "clause_text": "High-risk AI systems shall be as resilient as possible regarding errors, faults or inconsistencies that may occur within the system or the environment in which the system operates, in particular due to their interaction with natural persons or other systems. Technical and organisational measures shall be taken in this regard. The robustness of high-risk AI systems may be achieved through technical redundancy solutions, which may include backup or fail-safe plans. High-risk AI systems that continue to learn after being placed on the market or put into service shall be developed in such a way as to eliminate or reduce as far as possible the risk of possibly biased outputs influencing input for future operations (feedback loops), and as to ensure that any such feedback loops are duly addressed with appropriate mitigation measures.",
+        "requirement": "The AI system under audit shall conform to Article 15(4): High-risk AI systems shall be as resilient as possible regarding errors, faults or inconsistencies that may occur within the system or the environment in which the system operates, in particular due to their interaction with natural persons or other systems.",
+        "criterion": ""
+      }
+    ]
+  },
+  "signature": {
+    "signer": "Prasad Devendra Watane",
+    "signed_utc": "2026-07-29T14:00:56+00:00",
+    "content_sha256": "fb4c34545ea680f0a1f6ef04c00ee374d248c39338dc72246a8817533c046d8f",
+    "note": "notary gate — reviewed and frozen"
+  }
+}
