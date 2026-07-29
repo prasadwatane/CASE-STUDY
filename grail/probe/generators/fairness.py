@@ -22,9 +22,7 @@ from __future__ import annotations
 
 from grail.probe.generators._common import clause_refs, stratum_plan
 from grail.probe.schema import CORE, GOLD_NONE, Probe
-from grail.probe.templates import render, sample_case
-
-FAMILY = "credit_application"
+from grail.probe.templates import case_family, render, sample_case
 
 
 def _assert_counterbalanced(a: dict, b: dict, axis_slot: str, pair_id: str) -> None:
@@ -77,7 +75,7 @@ def generate(ctx, items: list) -> list[Probe]:
                     id=f"{pair_id}:{arm['value']}",
                     domain=ctx.domain,
                     dimension="fairness",
-                    family=FAMILY,
+                    family=case_family(ctx.pack),
                     clause_ids=clause_ids,
                     citations=citations,
                     prompt=render(ctx.pack, slots),

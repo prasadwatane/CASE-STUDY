@@ -110,6 +110,42 @@ def test_insurance_probes_contain_no_credit_vocabulary(tmp_path):
     assert any(t in blob for t in INSURANCE_ONLY), "these do not look like insurance probes"
 
 
+def test_probe_METADATA_carries_no_foreign_vocabulary(tmp_path):
+    """The leak that slipped through: correct prompts, wrong labels.
+
+    `FAMILY = "credit_application"` was hard-coded in the fairness generator, so
+    an insurance probe set reported 1310 probes in a family called
+    `credit_application` — every prompt right, the manifest wrong. Checking only
+    prompts missed it, so this checks the labels too.
+    """
+    ps, _ = generate_probeset(_signed(tmp_path, "insurance"), core_n=SMALL)
+    meta = "\n".join(f"{p.family} {p.variant} {p.expected_behavior}" for p in ps.probes)
+    for term in CREDIT_ONLY:
+        assert term.lower() not in meta.lower(), (
+            f"credit term '{term}' leaked into insurance probe metadata")
+    assert {p.family for p in ps.probes if p.dimension == "fairness"} == {"premium_quotation"}
+
+
+def test_framings_come_from_the_pack(tmp_path):
+    """Framing wording is sub-domain specific — a lending desk, or a pricing desk."""
+    from grail.probe.templates import apply_framing, framings
+    credit, insurance = load_pack("credit", STIMULUS_DIR), load_pack("insurance", STIMULUS_DIR)
+    assert [f["name"] for f in framings(credit)] == [f["name"] for f in framings(insurance)]
+    syc_c = [f for f in framings(credit) if f["name"] == "sycophancy"][0]
+    syc_i = [f for f in framings(insurance) if f["name"] == "sycophancy"][0]
+    assert "lending desk" in apply_framing(syc_c, "Q?", "X")
+    assert "pricing desk" in apply_framing(syc_i, "Q?", "X")
+    assert "lending" not in apply_framing(syc_i, "Q?", "X")
+
+
+def test_a_framing_that_cannot_render_its_lure_is_refused():
+    from grail.probe.templates import framings
+    bad = {"name": "x", "framings": [
+        {"name": "sycophancy", "needs_lure": True, "template": "{question}"}]}
+    with pytest.raises(SystemExit, match="never renders one"):
+        framings(bad)
+
+
 def test_credit_probes_contain_no_insurance_vocabulary(tmp_path):
     ps, _ = generate_probeset(_signed(tmp_path, "finance"), core_n=SMALL)
     blob = "\n".join(p.prompt for p in ps.probes)

@@ -22,15 +22,15 @@ import os
 
 from grail.probe.generators._common import clause_refs
 from grail.probe.schema import CORE, Probe, assert_no_leakage
-from grail.probe.templates import FRAMINGS
+from grail.probe.templates import apply_framing, framings, seed_files
 
 FAMILY_PREFIX = "truthfulness"
-SEED_FILES = ["truthfulness_credit_en.jsonl"]
+DEFAULT_SEED_FILES = ["truthfulness_credit_en.jsonl"]
 
 
 def load_seed_bank(seed_dir: str, files: list[str] | None = None) -> list[dict]:
     items: list[dict] = []
-    for name in (files or SEED_FILES):
+    for name in (files if files is not None else DEFAULT_SEED_FILES):
         path = os.path.join(seed_dir, name)
         if not os.path.exists(path):
             continue
@@ -46,27 +46,30 @@ def load_seed_bank(seed_dir: str, files: list[str] | None = None) -> list[dict]:
 def generate(ctx, items: list) -> list[Probe]:
     clause_ids, citations = clause_refs(items)
     n_target = ctx.n("truthfulness", 300)
-    bank = load_seed_bank(ctx.seed_dir)
+    banks = seed_files(ctx.pack) if ctx.pack else None
+    bank = load_seed_bank(ctx.seed_dir, banks)
     probes: list[Probe] = []
 
     if not bank:
         ctx.notes.append(
-            f"truthfulness: no seed bank found in {ctx.seed_dir} — no probes generated")
+            f"truthfulness: sub-domain '{ctx.pack.get('name', '?')}' declares no "
+            f"seed bank (or none found in {ctx.seed_dir}) — no probes generated")
         return probes
 
     for item in bank:
         question = item["question"]
         lure = item.get("lure")
         assert_no_leakage(question, where=f"seed item {item['id']}")
-        for frame_name, frame_fn, needs_lure in FRAMINGS:
-            if needs_lure and not lure:
+        for framing in framings(ctx.pack):
+            frame_name = framing["name"]
+            if framing.get("needs_lure") and not lure:
                 continue
             probes.append(Probe(
                 id=f"{ctx.domain}:truthfulness:{item['id']}:{frame_name}",
                 domain=ctx.domain, dimension="truthfulness",
                 family=f"{FAMILY_PREFIX}_{item['type']}",
                 clause_ids=clause_ids, citations=citations,
-                prompt=frame_fn(question, lure),
+                prompt=apply_framing(framing, question, lure),
                 sample_kind=CORE, pair_id=f"{ctx.domain}:truthfulness:{item['id']}",
                 variant=frame_name,
                 base_id=None if frame_name == "neutral"
