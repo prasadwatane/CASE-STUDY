@@ -1,0 +1,36 @@
+# --- environments -----------------------------------------------------------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# --- OS ----------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# --- editors -----------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+
+# --- generated artefacts -----------------------------------------------------
+# Everything below is rebuilt deterministically from the committed corpus, the
+# committed config and a recorded seed, so it is derived data, not source.
+data/processed/clauses.jsonl
+data/processed/index/
+data/processed/probes/*/probes.jsonl
+data/processed/checklists/*_draft.json
+
+# Deliberately NOT ignored, because they are provenance rather than output:
+#   data/processed/checklists/*_signed.json  — the notary signature is the trust root
+#   data/processed/probes/*/manifest.json    — seed, generator version, content hash
+
+# --- model caches ------------------------------------------------------------
+.cache/
+models/
+*.safetensors
+*.bin

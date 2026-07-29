@@ -1,0 +1,10 @@
+{"query": "The lender's AI examined the training data for possible biases that could lead to discrimination against protected groups.", "gold_ids": ["AIA:Art10(2)(f)"], "note": "bias examination"}
+{"query": "The provider took appropriate measures to detect, prevent and mitigate the biases identified in the model.", "gold_ids": ["AIA:Art10(2)(g)"], "note": "bias mitigation"}
+{"query": "The training, validation and testing data sets are relevant, sufficiently representative and as free of errors as possible for the intended purpose.", "gold_ids": ["AIA:Art10(3)"], "note": "data quality"}
+{"query": "The credit-scoring system is transparent enough for the bank's staff to interpret its output and use it appropriately.", "gold_ids": ["AIA:Art13(1)"], "note": "transparency to deployers"}
+{"query": "The model achieves an appropriate level of accuracy, robustness and cybersecurity and performs consistently throughout its lifecycle.", "gold_ids": ["AIA:Art15(1)"], "note": "accuracy/robustness/security"}
+{"query": "The system is resilient to errors and prevents biased outputs from feeding back into future inputs through feedback loops.", "gold_ids": ["AIA:Art15(4)"], "note": "resilience / feedback loops"}
+{"query": "Before deploying the credit-scoring AI the deployer carried out an assessment of the impact on fundamental rights.", "gold_ids": ["AIA:Art27(1)"], "note": "fundamental rights impact assessment"}
+{"query": "An AI system that evaluates the creditworthiness of natural persons or establishes their credit score is classified as high-risk.", "gold_ids": ["AIA:AnnexIII(5)(b)"], "note": "creditworthiness = high-risk (Annex III 5b)"}
+{"query": "Instructions for use must state the level of accuracy and its metrics against which the high-risk system was tested.", "gold_ids": ["AIA:Art13(3)(b)(ii)"], "note": "accuracy metrics in instructions"}
+{"query": "Training and testing data must be subject to data governance and management practices appropriate to the intended purpose.", "gold_ids": ["AIA:Art10(2)"], "note": "data governance chapeau"}

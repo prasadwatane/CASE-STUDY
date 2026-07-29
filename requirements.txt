@@ -1,0 +1,18 @@
+# Core (pipeline runs with just these)
+numpy>=1.24
+
+# PDF ingestion (needed to read the official Act PDF; pure-python, no poppler)
+pdfplumber>=0.11.0
+
+# Retrieval
+rank-bm25>=0.2.2          # sparse; a pure-python fallback exists if absent
+
+# Dense embeddings (real backend; falls back to hashing if unavailable)
+sentence-transformers>=2.2.0
+# torch is pulled in by sentence-transformers
+
+# Optional reranker (roadmap: rerank to small top-k) — hook not yet wired
+# FlagEmbedding>=1.2.0
+
+# Test
+pytest>=7.0

@@ -1,0 +1,36 @@
+Article 3
+Definitions
+1. ‘AI system’ means a machine-based system that is designed to operate with varying levels of autonomy and that may exhibit adaptiveness after deployment, and that, for explicit or implicit objectives, infers, from the input it receives, how to generate outputs such as predictions, content, recommendations, or decisions that can influence physical or virtual environments.
+15. ‘biometric data’ means personal data resulting from specific technical processing relating to the physical, physiological or behavioural characteristics of a natural person.
+67. ‘bias’ means a systematic difference in treatment of certain objects or groups in comparison to others, which may arise from the data, the design of the AI system, or the way in which the system is used.
+
+Article 10
+Data and data governance
+1. High-risk AI systems which make use of techniques involving the training of AI models with data shall be developed on the basis of training, validation and testing data sets that meet the quality criteria referred to in paragraphs 2 to 5 whenever such data sets are used.
+2. Training, validation and testing data sets shall be subject to data governance and management practices appropriate for the intended purpose of the high-risk AI system. Those practices shall concern in particular:
+(a) the relevant design choices;
+(b) data collection processes and the origin of data, and in the case of personal data, the original purpose of the data collection;
+(f) examination in view of possible biases that are likely to affect the health and safety of persons, have a negative impact on fundamental rights or lead to discrimination prohibited under Union law, especially where data outputs influence inputs for future operations;
+(g) appropriate measures to detect, prevent and mitigate possible biases identified according to point (f).
+3. Data sets shall be relevant, sufficiently representative, and to the best extent possible, free of errors and complete in view of the intended purpose.
+
+Article 11
+Technical documentation
+1. The technical documentation of a high-risk AI system shall be drawn up before that system is placed on the market or put into service and shall be kept up to date.
+
+Article 12
+Record-keeping
+1. High-risk AI systems shall technically allow for the automatic recording of events (logs) over the lifetime of the system.
+
+Article 13
+Transparency and provision of information to deployers
+1. High-risk AI systems shall be designed and developed in such a way as to ensure that their operation is sufficiently transparent to enable deployers to interpret a system’s output and use it appropriately.
+
+Article 15
+Accuracy, robustness and cybersecurity
+1. High-risk AI systems shall be designed and developed in such a way that they achieve an appropriate level of accuracy, robustness, and cybersecurity, and that they perform consistently in those respects throughout their lifecycle.
+
+ANNEX III
+5. Access to and enjoyment of essential private services and essential public services and benefits:
+(b) AI systems intended to be used to evaluate the creditworthiness of natural persons or establish their credit score, with the exception of AI systems used for the purpose of detecting financial fraud;
+(c) AI systems intended to be used for risk assessment and pricing in relation to natural persons in the case of life and health insurance.
