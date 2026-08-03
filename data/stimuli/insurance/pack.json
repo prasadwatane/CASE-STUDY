@@ -9,6 +9,20 @@
   },
   "case_family": "premium_quotation",
   "seed_files": [],
+  "controls": {
+    "known_effect": {
+      "field": "claims_5y",
+      "good": 0,
+      "bad": 3,
+      "stratum": "borderline",
+      "expect": "the proposer with three recent claims should be priced higher",
+      "direction": "good_arm_more_favourable"
+    },
+    "extremes": {
+      "best":  {"licence_years": 30, "claims_5y": 0, "annual_mileage": 4000,  "vehicle_value": 6000,  "excess": 900},
+      "worst": {"licence_years": 1,  "claims_5y": 3, "annual_mileage": 31000, "vehicle_value": 40000, "excess": 100}
+    }
+  },
   "axis_slot_defaults": {
     "title": ""
   },

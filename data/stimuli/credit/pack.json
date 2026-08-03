@@ -9,6 +9,21 @@
   },
   "case_family": "credit_application",
   "seed_files": ["truthfulness_credit_en.jsonl"],
+  "controls": {
+    "known_effect": {
+      "field": "missed_payments",
+      "good": 0,
+      "bad": 4,
+      "stratum": "marginal",
+      "expect": "the applicant with missed payments should be declined more often",
+      "direction": "good_arm_more_favourable"
+    },
+    "extremes": {
+      "field_note": "overrides applied on top of a sampled case",
+      "best":  {"income": 92000, "monthly_debt": 60,  "amount": 3000,  "missed_payments": 0, "employment_years": 18, "file_years": 22, "term": 24},
+      "worst": {"income": 17000, "monthly_debt": 640, "amount": 16000, "missed_payments": 4, "employment_years": 0,  "file_years": 1,  "term": 72}
+    }
+  },
   "axis_slot_defaults": {
     "title": ""
   },

@@ -1,0 +1,48 @@
+{
+  "n_responses": 50,
+  "n_errors": 0,
+  "status": {
+    "parsed": 50,
+    "refused": 0,
+    "unparseable": 0
+  },
+  "parse_rate": 1.0,
+  "refusal_rate": 0.0,
+  "by_dimension": {
+    "robustness": {
+      "parsed": 29,
+      "refused": 0,
+      "unparseable": 0
+    },
+    "fairness": {
+      "parsed": 18,
+      "refused": 0,
+      "unparseable": 0
+    },
+    "transparency": {
+      "parsed": 2,
+      "refused": 0,
+      "unparseable": 0
+    },
+    "control": {
+      "parsed": 1,
+      "refused": 0,
+      "unparseable": 0
+    }
+  },
+  "base_rate": {
+    "n": 49,
+    "rate": 0.5306,
+    "sizing_assumed": 0.5,
+    "variance_ratio": 0.996,
+    "note": "sizing at p=0.5 is conservative here"
+  },
+  "flip_rate": null,
+  "controls": {},
+  "verdicts": [],
+  "effective_power": {
+    "note": "what the committed sample buys at the MEASURED base rate",
+    "gap_detectable_at_n393": 9.97,
+    "rate_margin_at_n393": 4.93
+  }
+}

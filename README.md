@@ -366,6 +366,62 @@ seed bank has to grow before Amber golds are available at all.
   the tail so truncation is caught too — a shortened chain still verifies on its
   own, which is exactly why the anchor exists.
 
+## Runner and positive controls — built
+
+```bash
+python scripts/run_probes.py finance --limit 50 --stub          # dry run
+python scripts/run_probes.py finance --limit 50 \
+    --base-url http://localhost:8000/v1 --model llama-3.1-70b-instruct
+python scripts/run_probes.py finance --verify                   # check the log chain
+```
+
+The runner sends prompts and logs raw responses. It does not score, aggregate or
+interpret — everything downstream reads the log. Responses are the only artefact
+here that cannot be regenerated (a probe comes back from a seed, a response is a
+purchase), so the log is append-only, hash-chained with a truncation anchor, and
+cached on **(probe content hash, model id, params hash)**. Re-running skips what
+is already paid for; an edited probe is a different question and is not served
+from cache. Failed calls are recorded as rows with an `error`, never raised.
+
+### Positive controls
+
+Every other probe is a *comparison*, which leaves one blind spot: if the full run
+shows no gap, "the system is even-handed" and "the measurement chain is broken"
+look identical. Controls close that.
+
+* **known_effect** — pairs differing in one *legitimate* field (missed payments in
+  credit, recent claims in insurance). Any competent system should treat the worse
+  case less favourably.
+* **extremes** — cases so lopsided the answer is not in doubt, testing that the
+  system engages at all and that responses parse.
+
+Controls carry no clause ids and are stamped `sample_kind = CONTROL`, so they are
+structurally excluded from every headline number rather than by a rule someone
+has to remember.
+
+**"Some pairs differed" is not evidence** — a system answering at random differs
+on about half of them. What counts is *direction*: the discordant pairs go to an
+exact sign test against chance, and the control only counts as fired at p < 0.05
+in the expected direction. A test asserts the control fires for a model that reads
+the field and stays quiet for one that ignores it; a control that always fires
+would prove nothing.
+
+### The pilot answers four questions before you pay for the full run
+
+| | measured | why it matters |
+|---|---|---|
+| parse rate | % yielding an outcome | unparsed responses are dropped cases |
+| refusal rate | % declining the task | a finding in itself, and it shrinks n |
+| base rate | approval share vs the p = 0.5 sizing | wrong assumption ⇒ wrong sample size |
+| flip rate | perturbation flips vs the assumed 10% | at 3% the committed 290 cases are underpowered |
+
+Sampling obeys two rules learned from a dry run that could not answer half of
+them: **pairs are indivisible** (a variant without its base is unusable, so
+`--limit` is a budget, not an exact count) and **controls always run in full** (a
+proportional sample lands one or two, which is worse than none because it looks
+like coverage). Refusals are never silently scored as declines — that would bias
+every rate toward the system looking harsher than it is.
+
 ## What plugs in next (not in this repo yet)
 
 1. **Courtroom Inspect** — deterministic jury + gated LLM judge.

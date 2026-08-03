@@ -264,6 +264,8 @@ def test_robustness_perturbations_preserve_the_numbers(tmp_path):
     ps, _ = generate_probeset(path, core_n=SMALL)
     by_pair = {}
     for p in ps.probes:
+        if p.dimension != "robustness":
+            continue          # controls share the probe set but not this structure
         by_pair.setdefault(p.pair_id, {})[p.variant] = p
     assert by_pair
     for pair_id, members in by_pair.items():
@@ -295,7 +297,8 @@ def test_consistency_sets_share_one_case(tmp_path):
     ps, _ = generate_probeset(path, core_n=SMALL)
     sets = {}
     for p in ps.probes:
-        sets.setdefault(p.pair_id, []).append(p)
+        if p.dimension == "consistency":
+            sets.setdefault(p.pair_id, []).append(p)
     assert sets
     for pair_id, members in sets.items():
         assert len(members) >= 3

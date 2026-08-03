@@ -175,6 +175,18 @@ PROTECTED_AXES = {
     "insurance": [_GENDER_AXIS],
 }
 
+# --- Runner -----------------------------------------------------------------
+# Model responses are the only thing in this pipeline that cannot be regenerated,
+# so the log is append-only, hash-chained and cached on (probe content, model,
+# params). Temperature 0 by default: the audit measures the system's ordinary
+# behaviour, and sampling noise would be indistinguishable from inconsistency.
+RUN_DIR = os.path.join(PROCESSED_DIR, "runs")
+RUN_PARAMS = {"temperature": 0.0}
+
+# Pilot size. Small on purpose — it exists to replace the assumptions above with
+# measurements before the full set is paid for.
+PILOT_N = 50
+
 # --- Gold pipeline ----------------------------------------------------------
 # Every gold is Green (obtained without trusting a model — computed by a recorded
 # formula, or sourced with provenance) or Amber (model-proposed and accepted by a

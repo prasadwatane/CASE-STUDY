@@ -25,6 +25,12 @@ data/processed/index/
 data/processed/probes/*/probes.jsonl
 data/processed/checklists/*_draft.json
 
+# Response logs are the ONE artefact that cannot be regenerated — a response is a
+# purchase, not a derivation. They are ignored here only because they are large;
+# archive them somewhere durable, and keep the .head anchor and pilot report,
+# which are small and are the provenance.
+data/processed/runs/*/responses.jsonl
+
 # Deliberately NOT ignored, because they are provenance rather than output:
 #   data/processed/checklists/*_signed.json  — the notary signature is the trust root
 #   data/processed/probes/*/manifest.json    — seed, generator version, content hash

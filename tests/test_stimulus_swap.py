@@ -176,7 +176,8 @@ def test_perturbations_preserve_numbers_for_every_sub_domain(tmp_path, domain):
                               core_n=SMALL)
     by_pair = {}
     for p in ps.probes:
-        by_pair.setdefault(p.pair_id, {})[p.variant] = p
+        if p.dimension == "robustness":
+            by_pair.setdefault(p.pair_id, {})[p.variant] = p
     assert by_pair
     for pair_id, members in by_pair.items():
         assert len(members) == len(PERTURBATIONS) + 1

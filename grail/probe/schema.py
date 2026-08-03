@@ -30,7 +30,8 @@ GENERATOR_VERSION = "probe-gen/1.0.0"
 
 # Sample kind (non-negotiable: headline stats use CORE only).
 CORE = "core"
-ADAPTIVE = "adaptive"
+ADAPTIVE = "adaptive"       # diagnosis stream, labelled, never in headline numbers
+CONTROL = "control"         # instrument checks: known-effect and parse controls
 
 # How a reference answer will be obtained by the gold pipeline (stage 2). The
 # generator never invents a gold; it only records the route.

@@ -22,6 +22,7 @@ from config import (INSTRUMENT, PROBEABLE_PARTITIONS, PROBE_CORE_N, PROBE_SEED,
                     STRATUM_PLAN)
 from grail.ground.notary import require_signed
 from grail.probe.generators import REGISTRY, GenContext
+from grail.probe.generators import controls as controls_gen
 from grail.probe.schema import ProbeSet
 from grail.probe.templates import load_pack
 
@@ -40,6 +41,7 @@ def generate_probeset(checklist_path: str, seed: int = PROBE_SEED,
                       seed_dir: str = PROBE_SEED_DIR,
                       pack: dict | str | None = None,
                       stimulus_dir: str = STIMULUS_DIR,
+                      include_controls: bool = True,
                       only: list[str] | None = None) -> tuple[ProbeSet, list[str]]:
     """Generate a probe set from a signed checklist. Returns (probeset, notes)."""
     signed = require_signed(checklist_path)          # notary gate — first, always
@@ -109,6 +111,16 @@ def generate_probeset(checklist_path: str, seed: int = PROBE_SEED,
         produced = generator(ctx, dim_items)
         probes.extend(produced)
         notes.append(f"generated {len(produced)} probes for '{dimension}' from {cites}")
+
+    # Controls sit OUTSIDE the checklist loop on purpose: they are not derived
+    # from a clause and are not requirements, so they carry no clause ids and are
+    # stamped CONTROL, which keeps them structurally out of every headline number.
+    if include_controls and probes:
+        controls = controls_gen.generate(ctx)
+        if controls:
+            probes.extend(controls)
+            notes.append(f"generated {len(controls)} positive controls "
+                         "(instrument checks, excluded from headline statistics)")
 
     ps = ProbeSet(
         domain=domain,
