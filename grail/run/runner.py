@@ -131,26 +131,54 @@ def run(probes: list, model, log_path: str, params: dict | None = None,
     called = cached = errors = 0
     started = time.time()
 
-    for i, probe in enumerate(chosen):
-        key = (probe.content_sha256, model.id, ph)
-        if key in already:
+    todo = []
+    for probe in chosen:
+        if (probe.content_sha256, model.id, ph) in already:
             cached += 1
-            continue
-        t0 = time.time()
-        text, err = "", ""
-        try:
-            text = model.generate(probe.prompt, **params)
-        except Exception as exc:                      # recorded, never raised
-            err = f"{type(exc).__name__}: {exc}"
-            errors += 1
-        called += 1
+        else:
+            todo.append(probe)
+
+    def record(probe, text, err, ms):
         fresh.append(ResponseRecord(
             probe_id=probe.id, probe_sha256=probe.content_sha256,
             domain=probe.domain, dimension=probe.dimension, model_id=model.id,
             params_hash=ph, params=params, response=text, run_id=run_id,
-            latency_ms=int((time.time() - t0) * 1000), error=err))
-        if on_progress and (i + 1) % 25 == 0:
-            on_progress(i + 1, len(chosen))
+            latency_ms=ms, error=err))
+
+    batch = getattr(model, "generate_batch", None)
+    if batch and todo:
+        # One call for everything. A local engine schedules the whole set far
+        # better than we can by feeding it one prompt at a time.
+        t0 = time.time()
+        try:
+            texts = batch([p.prompt for p in todo], **params)
+            if len(texts) != len(todo):
+                raise RuntimeError(
+                    f"batch returned {len(texts)} responses for {len(todo)} prompts — "
+                    "responses could be misaligned with their probes, so none are kept")
+            per = int((time.time() - t0) * 1000 / max(1, len(todo)))
+            for probe, text in zip(todo, texts):
+                record(probe, text, "", per)
+        except Exception as exc:      # a failed batch is recorded, never raised
+            errors = len(todo)
+            for probe in todo:
+                record(probe, "", f"{type(exc).__name__}: {exc}", 0)
+        called = len(todo)
+        if on_progress:
+            on_progress(called, len(chosen))
+    else:
+        for i, probe in enumerate(todo):
+            t0 = time.time()
+            text, err = "", ""
+            try:
+                text = model.generate(probe.prompt, **params)
+            except Exception as exc:                  # recorded, never raised
+                err = f"{type(exc).__name__}: {exc}"
+                errors += 1
+            called += 1
+            record(probe, text, err, int((time.time() - t0) * 1000))
+            if on_progress and (i + 1) % 25 == 0:
+                on_progress(i + 1, len(todo))
 
     if fresh:
         append(log_path, fresh)

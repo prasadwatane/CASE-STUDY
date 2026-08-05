@@ -152,6 +152,53 @@ def test_a_failing_model_is_recorded_not_raised(tmp_path):
     assert store.verify_chain(store.load(log))[0]
 
 
+def test_a_batching_model_is_used_in_one_call(tmp_path):
+    """Local engines batch; the runner must not feed them one prompt at a time."""
+    calls = {"batch": 0, "single": 0}
+
+    class Batching(StubModel):
+        def generate_batch(self, prompts, **params):
+            calls["batch"] += 1
+            return [hash_rule(p) for p in prompts]
+
+        def generate(self, prompt, **params):
+            calls["single"] += 1
+            return hash_rule(prompt)
+
+    probes = _probes(tmp_path)
+    log = str(tmp_path / "r.jsonl")
+    fresh, summary = run(probes, Batching(), log, limit=None, allow_stub=True)
+    assert calls["batch"] == 1 and calls["single"] == 0
+    assert len(fresh) == summary.called == len(probes)
+    assert store.verify_chain(store.load(log))[0]
+
+
+def test_a_misaligned_batch_is_rejected_rather_than_recorded(tmp_path):
+    """Dropping a response would silently pair every later probe with the wrong text."""
+    class Short(StubModel):
+        def generate_batch(self, prompts, **params):
+            return [hash_rule(p) for p in prompts[:-1]]        # one too few
+
+    probes = _probes(tmp_path)
+    log = str(tmp_path / "r.jsonl")
+    fresh, summary = run(probes, Short(), log, limit=None, allow_stub=True)
+    assert summary.errors == len(fresh) > 0
+    assert all("misaligned" in r.error for r in fresh)
+    assert all(r.response == "" for r in fresh), "a misaligned batch was kept"
+
+
+def test_batching_still_honours_the_cache(tmp_path):
+    class Batching(StubModel):
+        def generate_batch(self, prompts, **params):
+            return [hash_rule(p) for p in prompts]
+
+    probes = _probes(tmp_path)
+    log = str(tmp_path / "r.jsonl")
+    run(probes, Batching(), log, limit=None, allow_stub=True)
+    _, second = run(probes, Batching(), log, limit=None, allow_stub=True)
+    assert second.called == 0 and second.cached == len(probes)
+
+
 def test_truncating_the_response_log_is_detected(tmp_path):
     probes = _probes(tmp_path)
     log = str(tmp_path / "responses.jsonl")

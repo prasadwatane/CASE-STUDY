@@ -422,6 +422,48 @@ proportional sample lands one or two, which is worse than none because it looks
 like coverage). Refusals are never silently scored as declines — that would bias
 every rate toward the system looking harsher than it is.
 
+## Annotation study — built
+
+```bash
+python scripts/export_annotation.py finance --guidelines docs/annotation_guidelines.md
+#   → rater A: 300 items · rater B: 120 overlap items · key file (do not open)
+python scripts/score_annotation.py finance
+```
+
+Two raters, blinded sheets, an overlap subset that Cohen's κ is computed on, and
+a report that leads with the **human ceiling** before any judge number appears.
+If two people following frozen guidelines only reach κ = 0.65, a judge reaching
+0.65 has matched the best achievable — reporting the judge first invites the
+reader to measure it against 1.0 instead.
+
+**Three things the code refuses to do quietly.** It will not report κ without a
+bootstrap interval, because a threshold is met when the *lower bound* clears it,
+not the point estimate. It will not return a number when κ is undefined — two
+raters who use a single label have chance agreement of 1.0, so κ is 0/0, and
+returning 0.0 there reads as "no agreement" when the truth is the opposite. And
+it will not report κ alone: percent agreement, expected agreement and the
+marginals come with it, because κ is prevalence-sensitive.
+
+**Sizing the overlap is not a formality.** To put the lower bound above 0.61:
+
+| if true κ is | overlap items needed |
+|---|---|
+| 0.85 | 19 |
+| 0.80 | 39 |
+| 0.75 | **86** |
+| 0.70 | 242 |
+
+The committed 120 leaves margin over the 86. The cliff between 0.75 and 0.70 is
+the point worth noticing: **sharper guidelines are far cheaper than more
+annotation**. An hour spent on the pilot deciding edge cases in advance can save
+a hundred items of double annotation.
+
+Selection is stratified rather than uniform — high-confidence judge items (the
+confidently-wrong detector, since a confident wrong verdict is exactly what a
+confidence gate lets through), marginal-band fairness items, and a random
+remainder. A stratum that cannot be filled is reported as a shortfall, never
+topped up from elsewhere.
+
 ## What plugs in next (not in this repo yet)
 
 1. **Courtroom Inspect** — deterministic jury + gated LLM judge.

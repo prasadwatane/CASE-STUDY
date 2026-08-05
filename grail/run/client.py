@@ -27,6 +27,13 @@ class Model(Protocol):
     def generate(self, prompt: str, **params) -> str:
         """Return the raw response text for one prompt."""
 
+    # Optional. A model that can answer many prompts at once should implement
+    # this; the runner uses it when present and falls back to `generate`
+    # otherwise. For a local GPU this is not a minor optimisation — batching
+    # 3500 prompts through vLLM is roughly an order of magnitude faster than
+    # 3500 sequential HTTP calls to the same GPU.
+    # def generate_batch(self, prompts: list[str], **params) -> list[str]: ...
+
 
 def params_hash(params: dict) -> str:
     return hashlib.sha256(
@@ -121,3 +128,55 @@ class HTTPModel:
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
             payload = json.loads(resp.read())
         return payload["choices"][0]["message"]["content"]
+
+
+class VLLMModel:
+    """A local model held in this process, via vLLM's offline API.
+
+    No server, no ports, no second terminal — and every prompt in a run goes
+    through one batched call, which is what makes a full 3500-prompt sweep on a
+    single GPU take minutes rather than hours.
+
+    The model id recorded in the log is the HuggingFace repo id plus the
+    sampling parameters, because "we audited Qwen" is not a reproducible claim.
+    """
+
+    is_stub = False
+
+    def __init__(self, model_id: str, max_model_len: int = 4096,
+                 gpu_memory_utilization: float = 0.85, max_tokens: int = 512,
+                 dtype: str = "auto", **engine_kwargs):
+        from vllm import LLM
+
+        self.id = model_id
+        self.max_tokens = max_tokens
+        self.llm = LLM(model=model_id, max_model_len=max_model_len,
+                       gpu_memory_utilization=gpu_memory_utilization,
+                       dtype=dtype, **engine_kwargs)
+
+    def _sampling(self, params: dict):
+        from vllm import SamplingParams
+        return SamplingParams(
+            temperature=params.get("temperature", 0.0),
+            top_p=params.get("top_p", 1.0),
+            max_tokens=params.get("max_tokens", self.max_tokens),
+            seed=params.get("seed"))
+
+    def _as_text(self, prompts: list[str]) -> list[str]:
+        """Apply the model's own chat template — a raw prompt scores differently."""
+        tok = self.llm.get_tokenizer()
+        return [tok.apply_chat_template([{"role": "user", "content": p}],
+                                        tokenize=False, add_generation_prompt=True)
+                for p in prompts]
+
+    def generate_batch(self, prompts: list[str], **params) -> list[str]:
+        sp = self._sampling(params)
+        try:                                    # newer vLLM: chat() templates for us
+            outs = self.llm.chat([[{"role": "user", "content": p}] for p in prompts],
+                                 sampling_params=sp, use_tqdm=True)
+        except (AttributeError, TypeError):     # older vLLM: template by hand
+            outs = self.llm.generate(self._as_text(prompts), sp, use_tqdm=True)
+        return [o.outputs[0].text.strip() for o in outs]
+
+    def generate(self, prompt: str, **params) -> str:
+        return self.generate_batch([prompt], **params)[0]

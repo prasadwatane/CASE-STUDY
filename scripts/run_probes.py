@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import (PROBE_DIR, PROBE_SEED, ROBUSTNESS_ASSUMED_FLIP_RATE,
                     ROBUSTNESS_PSI, RUN_DIR, RUN_PARAMS)
 from grail.probe.schema import load_probes
-from grail.run.client import HTTPModel, StubModel
+from grail.run.client import HTTPModel, StubModel, VLLMModel
 from grail.run.pilot import report
 from grail.run.runner import run
 from grail.run.store import load, verify_chain
@@ -38,6 +38,10 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=None, help="pilot size")
     ap.add_argument("--model", default=None, help="model id (pinned into every record)")
     ap.add_argument("--base-url", default=None, help="OpenAI-compatible endpoint")
+    ap.add_argument("--local", default=None, metavar="HF_REPO_ID",
+                    help="run vLLM in this process (no server); batches every prompt")
+    ap.add_argument("--max-model-len", type=int, default=4096)
+    ap.add_argument("--gpu-mem", type=float, default=0.85)
     ap.add_argument("--api-key", default=os.environ.get("GRAIL_API_KEY", ""))
     ap.add_argument("--temperature", type=float, default=RUN_PARAMS["temperature"])
     ap.add_argument("--stub", action="store_true", help="dry run, not evidence")
@@ -61,13 +65,18 @@ def main() -> None:
     probes = load_probes(probes_path)
 
     if not args.report_only:
-        if args.base_url:
+        if args.local:
+            print(f"Loading {args.local} into this process (first run downloads weights)…")
+            model = VLLMModel(args.local, max_model_len=args.max_model_len,
+                              gpu_memory_utilization=args.gpu_mem)
+        elif args.base_url:
             model = HTTPModel(args.model or "unnamed-model", args.base_url, args.api_key)
         elif args.stub:
             model = StubModel()
         else:
             raise SystemExit(
-                "Give --base-url (and --model) for a real run, or --stub for a dry one.")
+                "Give --local <hf-repo-id> to run vLLM in-process, --base-url for a "
+                "served endpoint, or --stub for a dry run.")
 
         _, summary = run(probes, model, log_path,
                          params={"temperature": args.temperature},
