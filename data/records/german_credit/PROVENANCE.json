@@ -1,0 +1,50 @@
+{
+  "dataset": "Statlog (German Credit Data)",
+  "url": "https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/german.data",
+  "licence": "CC BY 4.0",
+  "attribution": "Hofmann, H. (1994). Statlog (German Credit Data). UCI Machine Learning Repository.",
+  "vintage_note": "1994 (amounts in Deutsche Mark; a period dataset, not current lending)",
+  "fetched_utc": "2026-08-05T11:32:34+00:00",
+  "sha256": "b21f3d81db8071257d5ff1deaeba1fd4303b62712e6fcc9715c7a86202cb5871",
+  "bytes": 79793,
+  "columns": [
+    "checking_status",
+    "duration_months",
+    "credit_history",
+    "purpose",
+    "credit_amount",
+    "savings",
+    "employment_since",
+    "instalment_rate",
+    "personal_status_sex",
+    "other_debtors",
+    "residence_since",
+    "property",
+    "age",
+    "other_instalment_plans",
+    "housing",
+    "existing_credits",
+    "job",
+    "liable_people",
+    "telephone",
+    "foreign_worker",
+    "label"
+  ],
+  "n_records": 1000,
+  "label_split": {
+    "repaid": 700,
+    "defaulted": 300
+  },
+  "recorded_gender_split": {
+    "male": 690,
+    "female": 310
+  },
+  "strength_score": {
+    "min": 0,
+    "max": 15,
+    "tercile_cuts": [
+      6,
+      8
+    ]
+  }
+}

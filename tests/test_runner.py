@@ -32,13 +32,18 @@ SMALL = {"fairness": 20, "robustness": 6, "consistency": 4, "transparency": 4,
          "truthfulness": 300}
 
 
-def _probes(tmp_path, domain="finance", dimension="fairness"):
+def _probes(tmp_path, domain="finance", dimension="fairness", pack=None):
+    # Pinned to the synthetic pack by default: the control tests drive a stub
+    # that reads a named field out of the prompt, so they must not follow
+    # whichever pack config commits. Pass pack= to exercise another.
+    if pack is None and domain == "finance":
+        pack = "credit"
     c = Checklist(domain, "EU AI Act", "2026-01-01T00:00:00+00:00")
     c.items = [ChecklistItem("AIA:Art10(2)(f)", "Article 10(2)(f)", "hybrid",
                              dimension, "text", "req", "")]
     p = tmp_path / f"{domain}_{dimension}_signed.json"
     save_signed(sign(c, "Tester"), str(p))
-    ps, _ = generate_probeset(str(p), core_n=SMALL)
+    ps, _ = generate_probeset(str(p), core_n=SMALL, pack=pack)
     return ps.probes
 
 
@@ -166,7 +171,7 @@ def test_pilot_selection_is_seeded_and_spread_across_dimensions(tmp_path):
                              "robustness", "t", "r", "")]
     p = tmp_path / "multi_signed.json"
     save_signed(sign(c, "Tester"), str(p))
-    ps, _ = generate_probeset(str(p), core_n=SMALL)
+    ps, _ = generate_probeset(str(p), core_n=SMALL, pack="credit")
 
     a = select(ps.probes, 30, seed=1)
     b = select(ps.probes, 30, seed=1)
@@ -195,7 +200,8 @@ def test_a_pilot_can_actually_answer_its_four_questions(tmp_path):
                              "robustness", "t", "r", "")]
     p = tmp_path / "four_signed.json"
     save_signed(sign(c, "Tester"), str(p))
-    ps, _ = generate_probeset(str(p), core_n={"fairness": 40, "robustness": 20})
+    ps, _ = generate_probeset(str(p), core_n={"fairness": 40, "robustness": 20},
+                              pack="credit")
 
     log = str(tmp_path / "r.jsonl")
     run(ps.probes, StubModel(), log, limit=50, seed=3, allow_stub=True)

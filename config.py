@@ -93,7 +93,13 @@ PROBE_SEED_DIR = os.path.join(ROOT, "data", "probes", "seeds")
 # jury needs a different statistical route for each.
 STIMULUS_DIR = os.path.join(ROOT, "data", "stimuli")
 STIMULUS_PACK = {
-    "finance":   "credit",
+    # Committed: real applicant records (Statlog German Credit, CC BY 4.0).
+    # Synthetic profiles were sampled from ranges chosen for plausibility; real
+    # records bring a realistic joint distribution and a repayment label, which
+    # turns robustness from decision-agreement into genuine paired accuracy.
+    # Switch back to "credit" for the fully synthetic pack — same generators,
+    # same invariants, no other change.
+    "finance":   "credit_real",
     "insurance": "insurance",
 }
 

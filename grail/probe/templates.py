@@ -53,7 +53,13 @@ def load_pack(name: str, stimulus_dir: str) -> dict:
 
 
 def _validate(pack: dict, path: str) -> None:
-    for key in ("name", "outcome", "vocab", "strata", "fields", "render", "compose"):
+    is_records = (pack.get("source") or {}).get("type") == "records"
+    required = ["name", "outcome", "strata", "render", "compose"]
+    if not is_records:
+        # a sampled pack builds cases from vocabulary and field specs; a
+        # record-backed one gets both from the dataset
+        required += ["vocab", "fields"]
+    for key in required:
         if key not in pack:
             raise SystemExit(f"stimulus pack {path} is missing '{key}'")
     if pack["outcome"].get("type") not in ("binary", "continuous"):
@@ -62,11 +68,15 @@ def _validate(pack: dict, path: str) -> None:
     for key in ("header", "fields", "decide"):
         if key not in en:
             raise SystemExit(f"stimulus pack {path}: render.en is missing '{key}'")
-    declared = {f["name"] for f in pack["fields"]}
-    for field in pack["compose"].values():
-        pass  # compose templates may reference axis slots, checked at render time
-    if not declared:
-        raise SystemExit(f"stimulus pack {path}: no fields declared")
+    if not pack.get("fields") and not is_records:
+        raise SystemExit(
+            f"stimulus pack {path}: declares no fields and no record source, so "
+            "there is nothing to build a case from")
+    if is_records and not pack["source"].get("licence"):
+        raise SystemExit(
+            f"stimulus pack {path}: a record source must record its licence and "
+            "attribution — redistributing someone's dataset without them is not "
+            "a detail to sort out later")
 
 
 def strata_names(pack: dict) -> list[str]:
@@ -102,18 +112,35 @@ def _draw(r, field: dict, pack: dict, stratum_cfg: dict, slots: dict):
     raise SystemExit(f"stimulus pack declares unknown field type '{kind}'")
 
 
-def sample_case(pack: dict, seed: int, domain: str, index: int, stratum: str,
-                ns: str = "case") -> dict:
-    """Deterministically sample one case from a pack.
+def records_path(pack: dict, root: str = "") -> str:
+    rel = pack["source"]["path"]
+    return os.path.join(root, rel) if root else rel
 
-    The RNG is derived from (seed, domain, ns, index, stratum) and **never** from
-    the protected arm, so the same case is reproduced identically for every arm.
-    Fields are drawn in the order the pack declares them, which is what makes the
-    draw sequence — and therefore the whole probe set — reproducible.
+
+def sample_case(pack: dict, seed: int, domain: str, index: int, stratum: str,
+                ns: str = "case", root: str = "") -> dict:
+    """Deterministically produce one case from a pack.
+
+    Two kinds of pack, one entry point. A *sampled* pack draws each field from
+    the ranges it declares; a *record-backed* pack draws a real applicant from a
+    dataset. Generators call this and never know which they got, which is what
+    lets real records replace synthetic profiles without touching a generator.
+
+    Either way the RNG is derived from (seed, domain, ns, index, stratum) and
+    **never** from the protected arm, so the same case is reproduced identically
+    for every arm. Fields are drawn in the order the pack declares them, so the
+    draw sequence — and therefore the whole probe set — is reproducible.
     """
     if stratum not in pack["strata"]:
         raise SystemExit(f"pack '{pack['name']}' has no stratum '{stratum}' "
                          f"(has: {strata_names(pack)})")
+
+    source = pack.get("source") or {}
+    if source.get("type") == "records":
+        from grail.probe.records import sample_record_case
+        return sample_record_case(pack, seed, domain, index, stratum, ns,
+                                  records_path(pack, root))
+
     r = derive_rng(seed, domain, ns, index, stratum)
     cfg = pack["strata"][stratum]
 

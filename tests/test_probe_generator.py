@@ -54,6 +54,11 @@ def _signed_checklist(tmp_path, dimension="fairness", partition="hybrid",
 
 
 def _fairness_probes(tmp_path, **kw):
+    # Pinned to the synthetic pack: these tests assert properties of the
+    # GENERATOR using scorers that read specific financial fields, so they must
+    # not follow whichever pack config happens to commit. Record-backed
+    # counterbalancing is covered in test_records.py.
+    kw.setdefault("pack", "credit")
     ps, notes = generate_probeset(_signed_checklist(tmp_path), core_n=SMALL, **kw)
     return ps, notes
 

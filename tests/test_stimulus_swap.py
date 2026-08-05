@@ -52,7 +52,9 @@ def test_pack_loads_and_declares_what_it_must(name):
     pack = load_pack(name, STIMULUS_DIR)
     assert pack["name"] == name
     assert pack["outcome"]["type"] in ("binary", "continuous")
-    assert pack["fields"] and pack["strata"] and pack["render"]["en"]
+    assert pack["strata"] and pack["render"]["en"]
+    # a pack builds cases either from field specs or from a record source
+    assert pack.get("fields") or (pack.get("source") or {}).get("type") == "records"
 
 
 def test_missing_pack_fails_loudly_rather_than_falling_back():
