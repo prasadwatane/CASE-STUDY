@@ -145,14 +145,22 @@ class VLLMModel:
 
     def __init__(self, model_id: str, max_model_len: int = 4096,
                  gpu_memory_utilization: float = 0.85, max_tokens: int = 512,
-                 dtype: str = "auto", **engine_kwargs):
+                 dtype: str = "auto", enforce_eager: bool = False,
+                 **engine_kwargs):
+        """`enforce_eager` skips torch.compile.
+
+        Worth roughly 10-20% throughput, and worth paying on a shared machine
+        where a stale native extension (a NumPy-1-era ml_dtypes, say) makes the
+        compilation path segfault. The audit does not care how the tensors were
+        scheduled, so a slower run that finishes beats a fast one that crashes.
+        """
         from vllm import LLM
 
         self.id = model_id
         self.max_tokens = max_tokens
         self.llm = LLM(model=model_id, max_model_len=max_model_len,
                        gpu_memory_utilization=gpu_memory_utilization,
-                       dtype=dtype, **engine_kwargs)
+                       dtype=dtype, enforce_eager=enforce_eager, **engine_kwargs)
 
     def _sampling(self, params: dict):
         from vllm import SamplingParams

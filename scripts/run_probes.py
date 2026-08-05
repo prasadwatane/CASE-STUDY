@@ -42,6 +42,8 @@ def main() -> None:
                     help="run vLLM in this process (no server); batches every prompt")
     ap.add_argument("--max-model-len", type=int, default=4096)
     ap.add_argument("--gpu-mem", type=float, default=0.85)
+    ap.add_argument("--eager", action="store_true",
+                    help="skip torch.compile (slower, avoids native-extension crashes)")
     ap.add_argument("--api-key", default=os.environ.get("GRAIL_API_KEY", ""))
     ap.add_argument("--temperature", type=float, default=RUN_PARAMS["temperature"])
     ap.add_argument("--stub", action="store_true", help="dry run, not evidence")
@@ -68,7 +70,8 @@ def main() -> None:
         if args.local:
             print(f"Loading {args.local} into this process (first run downloads weights)…")
             model = VLLMModel(args.local, max_model_len=args.max_model_len,
-                              gpu_memory_utilization=args.gpu_mem)
+                              gpu_memory_utilization=args.gpu_mem,
+                              enforce_eager=args.eager)
         elif args.base_url:
             model = HTTPModel(args.model or "unnamed-model", args.base_url, args.api_key)
         elif args.stub:
