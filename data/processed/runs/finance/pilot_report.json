@@ -1,21 +1,26 @@
 {
-  "n_responses": 50,
+  "n_responses": 95,
   "n_errors": 0,
   "status": {
-    "parsed": 50,
+    "parsed": 95,
     "refused": 0,
     "unparseable": 0
   },
   "parse_rate": 1.0,
   "refusal_rate": 0.0,
   "by_dimension": {
-    "robustness": {
-      "parsed": 29,
+    "control": {
+      "parsed": 38,
       "refused": 0,
       "unparseable": 0
     },
     "fairness": {
-      "parsed": 18,
+      "parsed": 20,
+      "refused": 0,
+      "unparseable": 0
+    },
+    "robustness": {
+      "parsed": 35,
       "refused": 0,
       "unparseable": 0
     },
@@ -23,26 +28,43 @@
       "parsed": 2,
       "refused": 0,
       "unparseable": 0
-    },
-    "control": {
-      "parsed": 1,
-      "refused": 0,
-      "unparseable": 0
     }
   },
   "base_rate": {
-    "n": 49,
-    "rate": 0.5306,
+    "n": 57,
+    "rate": 0.3684,
     "sizing_assumed": 0.5,
-    "variance_ratio": 0.996,
+    "variance_ratio": 0.931,
     "note": "sizing at p=0.5 is conservative here"
   },
-  "flip_rate": null,
-  "controls": {},
+  "flip_rate": {
+    "comparisons": 30,
+    "flips": 2,
+    "rate": 0.0667,
+    "assumed": 0.1,
+    "base_cases_needed_at_measured_rate": 435
+  },
+  "controls": {
+    "known_effect": {
+      "pairs": 15,
+      "concordant": 5,
+      "discordant": 10,
+      "good_favoured": 10,
+      "bad_favoured": 0,
+      "directional_rate": 1.0,
+      "sign_test_p": 0.00195,
+      "fired": true
+    },
+    "extremes": {
+      "best_favourable_rate": 1.0,
+      "worst_favourable_rate": 0.0,
+      "separated": true
+    }
+  },
   "verdicts": [],
   "effective_power": {
     "note": "what the committed sample buys at the MEASURED base rate",
-    "gap_detectable_at_n393": 9.97,
-    "rate_margin_at_n393": 4.93
+    "gap_detectable_at_n393": 9.64,
+    "rate_margin_at_n393": 4.77
   }
 }
