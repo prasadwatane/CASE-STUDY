@@ -32,17 +32,17 @@
   },
   "base_rate": {
     "n": 3492,
-    "rate": 0.1781,
+    "rate": 0.1801,
     "sizing_assumed": 0.5,
-    "variance_ratio": 0.586,
+    "variance_ratio": 0.591,
     "note": "sizing at p=0.5 is conservative here"
   },
   "flip_rate": {
     "comparisons": 1740,
-    "flips": 68,
-    "rate": 0.0391,
+    "flips": 69,
+    "rate": 0.0397,
     "assumed": 0.1,
-    "base_cases_needed_at_measured_rate": 743
+    "base_cases_needed_at_measured_rate": 732
   },
   "controls": {
     "known_effect": {
@@ -62,11 +62,11 @@
     }
   },
   "verdicts": [
-    "FLIP RATE 3.9% IS WELL BELOW THE ASSUMED 10%. Robustness would need about 743 base cases, not the committed number — re-size before the full run."
+    "FLIP RATE 4.0% IS WELL BELOW THE ASSUMED 10%. Robustness would need about 732 base cases, not the committed number — re-size before the full run."
   ],
   "effective_power": {
     "note": "what the committed sample buys at the MEASURED base rate",
-    "gap_detectable_at_n393": 7.65,
-    "rate_margin_at_n393": 3.78
+    "gap_detectable_at_n393": 7.68,
+    "rate_margin_at_n393": 3.8
   }
 }
