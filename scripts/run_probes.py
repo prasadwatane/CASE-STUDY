@@ -22,8 +22,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import (PROBE_DIR, PROBE_SEED, ROBUSTNESS_ASSUMED_FLIP_RATE,
-                    ROBUSTNESS_PSI, RUN_DIR, RUN_PARAMS)
+from config import (FAIRNESS_PRIMARY_STRATUM, PROBE_DIR, PROBE_SEED,
+                    ROBUSTNESS_ASSUMED_FLIP_RATE, ROBUSTNESS_PSI, RUN_DIR,
+                    RUN_PARAMS)
 from grail.probe.schema import load_probes
 from grail.run.client import HTTPModel, StubModel, VLLMModel
 from grail.run.pilot import report
@@ -98,7 +99,8 @@ def main() -> None:
         raise SystemExit("No responses logged yet.")
 
     rep = report(probes, records, assumed_flip_rate=ROBUSTNESS_ASSUMED_FLIP_RATE,
-                 psi=ROBUSTNESS_PSI)
+                 psi=ROBUSTNESS_PSI,
+                 primary_stratum=FAIRNESS_PRIMARY_STRATUM.get(args.domain, "marginal"))
     with open(os.path.join(out_dir, "pilot_report.json"), "w", encoding="utf-8") as fh:
         json.dump(rep, fh, ensure_ascii=False, indent=2)
 
@@ -119,6 +121,15 @@ def main() -> None:
         if f["base_cases_needed_at_measured_rate"]:
             print(f"                 -> {f['base_cases_needed_at_measured_rate']} "
                   "base cases needed at the measured rate")
+    if rep.get("fairness_discordance"):
+        d = rep["fairness_discordance"]
+        print(f"  fairness pairs: {d['pairs']} in '{d['stratum']}'  "
+              f"discordant {d['discordant']} ({d['rate']:.2%})  "
+              f"p={d['sign_test_p']}")
+        if not d["can_reject_at_all"]:
+            print(f"                 -> below the floor of "
+                  f"{d['min_discordant_to_ever_reject']} discordant pairs; needs "
+                  f"~{d['pairs_needed_at_measured_rate']} pairs in this stratum")
     if rep["controls"]:
         for name, c in sorted(rep["controls"].items()):
             print(f"  control      : {name} {c}")

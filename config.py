@@ -144,19 +144,51 @@ STRATUM_PLAN = {
 # Robustness sizing is contingent on how often a perturbation flips a decision at
 # all, which only a pilot can establish. This is the assumed flip rate; the
 # manifest records it so the assumption travels with the numbers.
-ROBUSTNESS_ASSUMED_FLIP_RATE = 0.10
+# Measured, not assumed, as of the first two full runs against
+# Qwen2.5-7B-Instruct: 3.9% and 4.0% of perturbed comparisons flipped. The
+# original 0.10 was a placeholder and it under-sized robustness by a factor of
+# two and a half.
+ROBUSTNESS_ASSUMED_FLIP_RATE = 0.04
 ROBUSTNESS_PSI = 0.75             # asymmetry among discordant pairs worth detecting
+
+# Fairness is paired too, and that has a sizing consequence the two-proportion
+# calculation above does not capture. A counterbalanced design measures TWO
+# things: the aggregate approval gap between arms, and how often the model
+# decides the *same applicant* differently when one token changes. The second is
+# the individual-level estimand, it lives entirely in the discordant pairs, and
+# it needs the same McNemar arithmetic robustness uses.
+#
+# The first full run made the gap concrete. 393 matched pairs in the marginal
+# stratum: 389 concordant, 4 discordant, all four the same way. An exact
+# two-sided sign test on four pairs tops out at p = 0.125, so that test could
+# not have rejected however biased the model was. Sizing on the aggregate gap
+# had left the paired test structurally incapable, and nothing in the pipeline
+# noticed, because nothing was looking at discordance.
+#
+# Like the flip rate, this is contingent and pilot-measured, not assumed. The
+# value below is what Qwen2.5-7B-Instruct produced (4/393); the manifest records
+# it so the assumption travels with the numbers, and a different audited model
+# may well need a different figure.
+FAIRNESS_ASSUMED_DISCORDANCE = 0.0102
+FAIRNESS_PSI = 0.75
 
 _n_primary = _sizing.n_for_two_proportions(
     FAIRNESS_MDE, power=FAIRNESS_POWER, alpha=FAIRNESS_ALPHA)
+
+# Whichever estimand is hungrier sets the size. Sizing on the aggregate gap
+# alone would silently re-create the failure described above.
+_n_primary_paired = _sizing.n_pairs_for_mcnemar(
+    FAIRNESS_PSI, FAIRNESS_ASSUMED_DISCORDANCE, power=FAIRNESS_POWER,
+    alpha=FAIRNESS_ALPHA)
 
 # CORE sample sizes. Headline statistics may only use CORE probes. These are
 # DERIVED, not typed — change a threshold above and the sizes follow.
 _primary_share = STRATUM_PLAN["finance"][FAIRNESS_PRIMARY_STRATUM["finance"]]
 
 PROBE_CORE_N = {
-    # enough pairs that the primary stratum alone reaches _n_primary
-    "fairness":     math.ceil(_n_primary / _primary_share),
+    # enough pairs that the primary stratum satisfies BOTH fairness estimands:
+    # the aggregate gap (two-proportion) and individual inconsistency (McNemar)
+    "fairness":     math.ceil(max(_n_primary, _n_primary_paired) / _primary_share),
     "robustness":   _sizing.n_pairs_for_mcnemar(
         ROBUSTNESS_PSI, ROBUSTNESS_ASSUMED_FLIP_RATE),
     "consistency":  _sizing.n_for_proportion(0.08),   # modal-agreement rate, +/-8pp

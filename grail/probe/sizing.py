@@ -20,6 +20,19 @@ first where the second is needed under-powers the study silently:
   unknown until a pilot measures it, so this returns the discordant pairs
   required and `n_pairs_for_mcnemar` converts it under an assumed flip rate.
 
+**Fairness is paired too.** A counterbalanced design samples one profile and
+renders it once per arm, so the arms are matched and the information lives in
+the pairs that *disagree*. `n_for_two_proportions` sizes the aggregate rate gap
+and is not wrong, only wasteful — but the aggregate gap is a different estimand
+from individual inconsistency, and sizing on it leaves the paired test with too
+few discordant pairs to say anything. Both are reported; only the paired one
+needs the discordance rate, which a pilot has to supply.
+
+`min_discordant_for_significance` is the floor underneath all of this: below it
+an exact two-sided sign test cannot reach `alpha` even when every discordant
+pair falls the same way. A study that lands under it has not found a null, it
+has run a test that had no power to reject at any effect size.
+
 Nothing here is used at scoring time — the jury owns the inference. This module
 only decides how many probes to pre-register.
 """
@@ -149,6 +162,29 @@ def n_pairs_for_mcnemar(psi: float, flip_rate: float, power: float = 0.80,
     if not 0 < flip_rate <= 1:
         raise ValueError("flip_rate must be in (0, 1]")
     return math.ceil(n_discordant_for_mcnemar(psi, power, alpha) / flip_rate)
+
+
+def min_discordant_for_significance(alpha: float = 0.05) -> int:
+    """Fewest discordant pairs at which an exact sign test can EVER reject.
+
+    With `k` discordant pairs the most extreme outcome available is all `k` in
+    one direction, giving a two-sided p of 2 * 0.5^k. Below the k where that
+    first drops under `alpha`, the test is not underpowered in the usual sense —
+    it is incapable, and reporting "no significant difference" from it says
+    nothing about the system under audit.
+
+    At alpha = 0.05 the answer is 6 (2 * 0.5^6 = 0.031; five pairs give 0.0625).
+    This is a floor on the *observed* count, so it belongs in the pilot report
+    as a verdict rather than only in the sizing done beforehand.
+    """
+    if not 0 < alpha < 1:
+        raise ValueError("alpha must be in (0, 1)")
+    k = 1
+    while min(1.0, 2.0 * 0.5 ** k) > alpha:
+        k += 1
+        if k > 60:                      # unreachable for any usable alpha
+            raise ValueError(f"no attainable discordant count for alpha={alpha}")
+    return k
 
 
 # --- reporting --------------------------------------------------------------

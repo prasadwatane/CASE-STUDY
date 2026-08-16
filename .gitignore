@@ -25,11 +25,12 @@ data/processed/index/
 data/processed/probes/*/probes.jsonl
 data/processed/checklists/*_draft.json
 
-# Response logs are the ONE artefact that cannot be regenerated — a response is a
-# purchase, not a derivation. They are ignored here only because they are large;
-# archive them somewhere durable, and keep the .head anchor and pilot report,
-# which are small and are the provenance.
-data/processed/runs/*/responses.jsonl
+# Response logs are DELIBERATELY NOT ignored. They are the one artefact that
+# cannot be regenerated — a probe comes back from a seed, a response is a
+# purchase — and a few thousand of them is only a handful of megabytes. On an
+# ephemeral machine, git is the backup. Losing this file means paying for the
+# whole run again.
+#   data/processed/runs/*/responses.jsonl   <- committed on purpose
 
 # Deliberately NOT ignored, because they are provenance rather than output:
 #   data/processed/checklists/*_signed.json  — the notary signature is the trust root
