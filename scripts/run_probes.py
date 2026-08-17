@@ -116,11 +116,15 @@ def main() -> None:
               f"variance is {b['variance_ratio']}x the p=0.5 assumption")
     if rep["flip_rate"]:
         f = rep["flip_rate"]
-        print(f"  flip rate    : {f['rate']:.1%} of {f['comparisons']} comparisons "
-              f"(assumed {f['assumed']:.0%})")
+        # Both units, labelled. The sizing assumption is per BASE CASE; printing
+        # only the per-comparison rate next to it invites the reader to compare
+        # two numbers that differ by the perturbation count.
+        print(f"  flip rate    : {f['rate']:.1%} of {f['comparisons']} comparisons")
+        print(f"                 {f['case_rate']:.1%} of {f['base_cases']} base cases "
+              f"flipped at least once (assumed {f['assumed']:.0%})")
         if f["base_cases_needed_at_measured_rate"]:
             print(f"                 -> {f['base_cases_needed_at_measured_rate']} "
-                  "base cases needed at the measured rate")
+                  f"base cases needed; {f['base_cases']} committed")
     if rep.get("fairness_discordance"):
         d = rep["fairness_discordance"]
         print(f"  fairness pairs: {d['pairs']} in '{d['stratum']}'  "

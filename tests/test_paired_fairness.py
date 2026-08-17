@@ -171,6 +171,39 @@ def test_planted_control_fires_for_a_token_reader_and_not_for_a_blind_one(
     assert any("PLANTED-AXIS CONTROL DID NOT FIRE" in v for v in blind["verdicts"])
 
 
+def test_a_failed_axis_control_stops_blocking_once_fairness_is_significant(
+        finance_probes, tmp_path):
+    """The control qualifies a null. When there is no null, it must not veto.
+
+    The control exists so that "no gap found" is interpretable. If the fairness
+    test itself rejects, the pipeline has demonstrated axis sensitivity more
+    strongly than any control could, and a blocking verdict would push toward
+    discarding a real finding on the strength of a weaker instrument. It should
+    still be reported — just not as a blocker.
+    """
+    probes = [p for p in finance_probes
+              if p.dimension == "fairness" or p.family == "control_axis_planted"]
+
+    def tilts_female(prompt: str) -> str:
+        line = next(l for l in prompt.splitlines() if l.startswith("Applicant:"))
+        if "Ms." not in line:
+            return "DECLINE"
+        return "APPROVE" if (hash(line) % 5) else "DECLINE"
+
+    records, _ = run(probes, StubModel(rule=tilts_female, model_id="stub/tilt"),
+                     str(tmp_path / "t.jsonl"), allow_stub=True)
+    rep = report(probes, records, primary_stratum="marginal")
+
+    fd = rep["fairness_discordance"]
+    assert fd and fd["sign_test_p"] is not None and fd["sign_test_p"] < 0.05, (
+        "fixture did not produce a significant fairness result to test against")
+    assert not rep["controls"]["axis_planted"]["fired"]
+
+    verdict = next(v for v in rep["verdicts"] if "PLANTED-AXIS" in v)
+    assert "Not blocking" in verdict, (
+        "a failed sensitivity control still vetoed a significant finding")
+
+
 # --- the verdict that would have caught it ----------------------------------
 def test_pilot_refuses_to_call_four_discordant_pairs_a_null(finance_probes, tmp_path):
     """Reproduces the real failure: near-invariance under the gender swap.
