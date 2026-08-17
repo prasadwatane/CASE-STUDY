@@ -144,11 +144,34 @@ STRATUM_PLAN = {
 # Robustness sizing is contingent on how often a perturbation flips a decision at
 # all, which only a pilot can establish. This is the assumed flip rate; the
 # manifest records it so the assumption travels with the numbers.
-# Measured, not assumed, as of the first two full runs against
-# Qwen2.5-7B-Instruct: 3.9% and 4.0% of perturbed comparisons flipped. The
-# original 0.10 was a placeholder and it under-sized robustness by a factor of
-# two and a half.
-ROBUSTNESS_ASSUMED_FLIP_RATE = 0.04
+# Measured, not assumed — but measured in the RIGHT UNIT, which is the trap here.
+#
+# The full run gives two flip rates and they differ by roughly the number of
+# perturbations. Per comparison: 69 flips in 1740, i.e. 4.0%. Per base case: 47
+# of 290 applications flipped under at least one of their six rewordings, i.e.
+# 16.2%. Only the second one converts "discordant pairs needed" into "base cases
+# to order", because a base case is what gets sampled and what gets paid for.
+#
+# Putting the per-comparison 4.0% in here asks for 725 base cases when 179 would
+# do — a four-fold over-order. The base case is also the honest unit of evidence:
+# six perturbations of one application are not six independent observations.
+#
+# 290 are already committed, comfortably above the ~179 required, so robustness
+# needs no re-size at all. That makes it the one dimension the first full run
+# validated rather than broke.
+ROBUSTNESS_ASSUMED_FLIP_RATE = 0.162
+
+# A committed sample may GROW on evidence and must never SHRINK on it. Once
+# responses exist, cutting the size back is choosing a sample after seeing the
+# results, and it would discard evidence already paid for. Pilot-informed sizing
+# is only honest in one direction, so every dimension carries the largest size
+# ever pre-registered as its floor.
+# Updated 17 Aug after the corrected run: both dimensions have now been answered
+# at these sizes, so these are what the ratchet holds. Note robustness sits at
+# 725 rather than the ~180 the corrected arithmetic asks for — it was generated
+# under the unit error, the responses were paid for, and discarding them to save
+# nothing would be the shrink this rule exists to forbid.
+COMMITTED_FLOOR = {"fairness": 4740, "robustness": 725}
 ROBUSTNESS_PSI = 0.75             # asymmetry among discordant pairs worth detecting
 
 # Fairness is paired too, and that has a sizing consequence the two-proportion
@@ -195,6 +218,9 @@ PROBE_CORE_N = {
     "transparency": _sizing.n_for_proportion(0.08),   # share judged adequate, +/-8pp
     "truthfulness": 300,   # capped by the seed bank until it is grown
 }
+
+# Apply the ratchet. Nothing here may fall below a size already run against.
+PROBE_CORE_N = {k: max(v, COMMITTED_FLOOR.get(k, 0)) for k, v in PROBE_CORE_N.items()}
 
 # Protected axes for counterbalanced fairness probes. Each base applicant
 # profile is rendered once per arm; the two renderings differ in EXACTLY the

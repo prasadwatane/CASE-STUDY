@@ -125,21 +125,45 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
             "prompt, so the flip rate cannot be measured and the McNemar sizing "
             "assumption stays untested. Sampling must draw whole pairs.")
     if complete:
+        # TWO rates live here and they are not interchangeable. Per-comparison is
+        # "how often does one perturbation flip a decision"; per-base-case is
+        # "what fraction of applications flip under at least one perturbation".
+        # They differ by roughly the number of perturbations, and only the second
+        # converts discordant pairs into BASE CASES, which is what gets ordered.
+        # Feeding the per-comparison rate into n_pairs_for_mcnemar over-sizes the
+        # dimension by that same factor — and the six perturbations of one
+        # application are not independent draws, so the base case is also the
+        # honest unit of evidence rather than merely the convenient one.
         comparisons = flips = 0
+        discordant_bases = 0
         for members in complete.values():
             base = members["base"]
+            flipped_here = False
             for variant, value in members.items():
                 if variant == "base":
                     continue
                 comparisons += 1
-                flips += (value != base)
+                if value != base:
+                    flips += 1
+                    flipped_here = True
+            discordant_bases += flipped_here
         rate = flips / comparisons if comparisons else 0.0
-        needed = n_pairs_for_mcnemar(psi, max(rate, 1e-6))
+        case_rate = discordant_bases / len(complete)
+        needed = n_pairs_for_mcnemar(psi, max(case_rate, 1e-6))
+        floor = min_discordant_for_significance()
         out["flip_rate"] = {
             "comparisons": comparisons, "flips": flips, "rate": round(rate, 4),
+            "base_cases": len(complete), "discordant_base_cases": discordant_bases,
+            "case_rate": round(case_rate, 4),
             "assumed": assumed_flip_rate,
-            "base_cases_needed_at_measured_rate": needed if rate > 0 else None,
+            "base_cases_needed_at_measured_rate": needed if case_rate > 0 else None,
+            "can_reject_at_all": discordant_bases >= floor,
         }
+        if 0 < discordant_bases < floor:
+            out["verdicts"].append(
+                f"ROBUSTNESS PAIRED TEST CANNOT REJECT. Only {discordant_bases} of "
+                f"{len(complete)} base cases flipped under any perturbation; the "
+                f"exact sign test needs {floor} before it can reach 0.05 at all.")
         if rate == 0:
             out["verdicts"].append(
                 "NO FLIPS OBSERVED. Either the system is highly robust or the "
