@@ -1,0 +1,26 @@
+# Models under audit — one per line: <hf-repo-id>  <gpu_memory_utilization>
+#
+# This file is provenance, not configuration. "Which systems were audited" is a
+# claim the thesis has to stand behind, so the list lives in version control
+# next to the checklist and the probe manifest rather than in a shell command
+# somebody typed once. Adding a line and re-running is the whole workflow: the
+# response log keys on (probe content, model, params), so finished models cost
+# nothing on a re-run and only the new one is paid for.
+#
+# The design varies ONE thing at a time, for the same reason the fairness probes
+# do. Comparing a 7B Qwen directly against a 70B Llama would change family and
+# scale together and licence no attribution at all.
+#
+#   baseline   Qwen2.5-7B      the first audited system
+#   family     Llama-3.1-8B    family varies, size roughly held
+#   scale      Qwen2.5-32B     size varies, family held
+#   frontier   Llama-3.1-70B   the largest that fits on one A6000 at 4-bit
+#
+# gpu_memory_utilization is the fraction of the card vLLM may claim. 0.85 leaves
+# comfortable headroom; the 70B at 4-bit needs 0.95 to fit its weights plus a
+# usable KV cache, and will OOM below that.
+
+Qwen/Qwen2.5-7B-Instruct                             0.85
+Qwen/Qwen2.5-32B-Instruct-AWQ                        0.85
+meta-llama/Llama-3.1-8B-Instruct                     0.85
+hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4  0.95

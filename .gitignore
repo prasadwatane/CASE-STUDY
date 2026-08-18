@@ -36,6 +36,13 @@ data/processed/checklists/*_draft.json
 #   data/processed/checklists/*_signed.json  — the notary signature is the trust root
 #   data/processed/probes/*/manifest.json    — seed, generator version, content hash
 
+# --- run scaffolding ----------------------------------------------------------
+# Sweep logs and the lock directory are operational noise, not provenance. What
+# a model answered is in the response log; how the shell felt about it is not.
+logs/
+.grail-cache/
+run_all.sh          # superseded by scripts/run_models.sh
+
 # --- model caches ------------------------------------------------------------
 .cache/
 models/

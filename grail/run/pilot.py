@@ -54,10 +54,29 @@ def sign_test(successes: int, n: int) -> float | None:
     return min(1.0, 2.0 * min(lower, upper))
 
 
-def _outcomes(probes: list, records: list) -> dict:
+def models_in(records: list) -> list[str]:
+    """Every distinct model that has answered into this log, in first-seen order."""
+    seen: dict[str, None] = {}
+    for rec in records:
+        seen.setdefault(rec.model_id, None)
+    return list(seen)
+
+
+def _outcomes(probes: list, records: list, model_id: str | None = None) -> dict:
+    """Parsed outcomes for ONE model.
+
+    The log is append-only and keyed on (probe, model, params), so a second
+    audited model writes into the same file — which is correct for provenance
+    and catastrophic for analysis if nothing filters it. Two models pooled into
+    one base rate is not a number about either of them, and nothing about the
+    result would look wrong. `model_id=None` is only safe when the caller has
+    already established there is exactly one.
+    """
     by_probe = {p.id: p for p in probes}
     out = {}
     for rec in records:
+        if model_id is not None and rec.model_id != model_id:
+            continue
         probe = by_probe.get(rec.probe_id)
         if probe is None or rec.error:
             continue
@@ -66,17 +85,27 @@ def _outcomes(probes: list, records: list) -> dict:
 
 
 def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
-           psi: float = 0.75, primary_stratum: str = "marginal") -> dict:
-    parsed = _outcomes(probes, records)
+           psi: float = 0.75, primary_stratum: str = "marginal",
+           model_id: str | None = None) -> dict:
+    present = models_in(records)
+    if model_id is None and len(present) > 1:
+        raise ValueError(
+            f"this log holds {len(present)} models ({', '.join(sorted(present))}) "
+            "and a report over all of them would pool them into numbers that "
+            "describe no model at all. Pass model_id, or call report_all().")
+    if model_id is None and present:
+        model_id = present[0]
+
+    parsed = _outcomes(probes, records, model_id)
     n = len(parsed)
-    errors = sum(1 for r in records if r.error)
+    errors = sum(1 for r in records if r.error and r.model_id == model_id)
 
     status = {PARSED: 0, REFUSED: 0, UNPARSEABLE: 0}
     for _, outcome in parsed.values():
         status[outcome.status] += 1
 
     out: dict = {
-        "n_responses": len(records),
+        "n_responses": sum(1 for r in records if r.model_id == model_id),
         "n_errors": errors,
         "status": status,
         "parse_rate": round(status[PARSED] / n, 4) if n else 0.0,
@@ -404,4 +433,15 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
             "rate_margin_at_n393": round(
                 margin_for_n(393, p=out["base_rate"]["rate"]) * 100, 2),
         }
+    out["model_id"] = model_id
     return out
+
+
+def report_all(probes: list, records: list, **kw) -> dict[str, dict]:
+    """One report per model in the log, keyed by model id.
+
+    A cross-model comparison is the point of auditing more than one system, and
+    it only means anything if each model was put through an identical frozen
+    probe set. That is what the shared log gives; this keeps the analyses apart.
+    """
+    return {m: report(probes, records, model_id=m, **kw) for m in models_in(records)}

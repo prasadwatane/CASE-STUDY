@@ -27,7 +27,7 @@ from config import (FAIRNESS_PRIMARY_STRATUM, PROBE_DIR, PROBE_SEED,
                     RUN_PARAMS)
 from grail.probe.schema import load_probes
 from grail.run.client import HTTPModel, StubModel, VLLMModel
-from grail.run.pilot import report
+from grail.run.pilot import report_all
 from grail.run.runner import run
 from grail.run.store import load, verify_chain
 
@@ -98,13 +98,35 @@ def main() -> None:
     if not records:
         raise SystemExit("No responses logged yet.")
 
-    rep = report(probes, records, assumed_flip_rate=ROBUSTNESS_ASSUMED_FLIP_RATE,
-                 psi=ROBUSTNESS_PSI,
-                 primary_stratum=FAIRNESS_PRIMARY_STRATUM.get(args.domain, "marginal"))
+    reports = report_all(probes, records,
+                         assumed_flip_rate=ROBUSTNESS_ASSUMED_FLIP_RATE,
+                         psi=ROBUSTNESS_PSI,
+                         primary_stratum=FAIRNESS_PRIMARY_STRATUM.get(args.domain, "marginal"))
     with open(os.path.join(out_dir, "pilot_report.json"), "w", encoding="utf-8") as fh:
-        json.dump(rep, fh, ensure_ascii=False, indent=2)
+        json.dump(reports if len(reports) > 1 else next(iter(reports.values())),
+                  fh, ensure_ascii=False, indent=2)
 
-    print("\n=== PILOT REPORT ===")
+    if len(reports) > 1:
+        print(f"\n{len(reports)} models in this log — reported separately.")
+    for model_name, rep in reports.items():
+        _print_report(model_name, rep, len(reports) > 1)
+
+    if len(reports) > 1:
+        print("\n=== CROSS-MODEL: fairness discordance ===")
+        for model_name, rep in reports.items():
+            d = rep.get("fairness_discordance")
+            if not d:
+                continue
+            arms = sorted(k for k in d if k.startswith("favoured_"))
+            split = "  ".join(f"{k.replace('favoured_',''):>8} {d[k]:>4}" for k in arms)
+            print(f"  {model_name:<38} {split}   p={d['sign_test_p']}")
+
+
+def _print_report(model_name: str, rep: dict, show_header: bool) -> None:
+    if show_header:
+        print(f"\n=== PILOT REPORT — {model_name} ===")
+    else:
+        print("\n=== PILOT REPORT ===")
     print(f"  responses    : {rep['n_responses']}  (errors {rep['n_errors']})")
     print(f"  parse rate   : {rep['parse_rate']:.0%}   refusals {rep['refusal_rate']:.0%}")
     for dim, st in sorted(rep["by_dimension"].items()):
