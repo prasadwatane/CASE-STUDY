@@ -49,8 +49,11 @@ def sign_test(successes: int, n: int) -> float | None:
     """Two-sided exact binomial test against p = 0.5. None when there is no data."""
     if n <= 0:
         return None
+    # Upper tail by symmetry, not as 1 - cdf: at p = 0.5 the two are identical
+    # algebraically, but subtracting from 1 a number within 1e-17 of it returns a
+    # hard 0.0 in float64. That turned a p of 1e-16 into "p = 0".
     lower = binom_cdf(successes, n, 0.5)
-    upper = 1.0 - binom_cdf(successes - 1, n, 0.5)
+    upper = binom_cdf(n - successes, n, 0.5)
     return min(1.0, 2.0 * min(lower, upper))
 
 

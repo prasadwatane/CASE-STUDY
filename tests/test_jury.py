@@ -77,6 +77,24 @@ def test_exact_mcnemar_floor():
     assert exact_mcnemar(0, 0) is None
 
 
+def test_extreme_p_values_do_not_collapse_to_zero():
+    """A tail computed as 1 - cdf cancels to a hard zero long before it underflows.
+
+    59 versus 1 discordant pairs has p about 1e-16 — comfortably representable,
+    and reported as exactly 0.0 by the naive route, which reads as a bug in any
+    write-up. Symmetry at p = 0.5 avoids the subtraction entirely.
+    """
+    p = exact_mcnemar(59, 1)
+    assert p is not None and 0 < p < 1e-15
+
+    p = exact_mcnemar(94, 1)
+    assert p is not None and 0 < p < 1e-25
+
+    # and still correct where the naive form was fine
+    assert exact_mcnemar(3, 3) == pytest.approx(1.0)
+    assert exact_mcnemar(10, 0) == pytest.approx(0.001953125)
+
+
 def test_newcombe_stays_in_range():
     iv = newcombe_diff(0, 50, 50, 50)
     assert -1.0 <= iv.low and iv.high <= 1.0
@@ -249,8 +267,10 @@ def test_jury_refuses_a_probe_set_that_was_not_the_one_run():
                          domain="finance", dimension="fairness", model_id="m",
                          params_hash="h", params={}, response="APPROVE", run_id="r")
 
-    with pytest.raises(ValueError, match="DIFFERENT probe set"):
+    with pytest.raises(ValueError, match="not the one that was run"):
         deliberate([on_disk], [rec], "m")
 
     out = deliberate([ran], [rec], "m")          # the right set scores fine
-    assert out["probe_match"] == {"matched": 1, "wrong_probe_set": 0}
+    assert out["probe_match"]["matched"] == 1
+    assert out["probe_match"]["superseded_responses"] == 0
+    assert out["probe_match"]["coverage"] == 1.0

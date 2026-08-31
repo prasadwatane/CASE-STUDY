@@ -94,19 +94,29 @@ def _parsed(probes: list, records: list, model_id: str) -> tuple[dict, dict]:
     """
     by_hash = {p.content_sha256: p for p in probes}
     by_id = {p.id: p for p in probes}
-    out, stale = {}, 0
+    out, superseded = {}, 0
     for rec in records:
         if rec.model_id != model_id or rec.error:
             continue
         probe = by_hash.get(rec.probe_sha256)
         if probe is None:
             if rec.probe_id in by_id:
-                stale += 1          # id exists, content does not: a different set
+                superseded += 1     # id exists, content does not: an older set
             continue
         outcome = parse(rec.response, probe.outcome_type)
         if outcome.status == PARSED:
             out[probe.id] = (probe, outcome)
-    return out, {"matched": len(out), "wrong_probe_set": stale}
+
+    # Superseded responses are provenance, not a fault. The log is append-only
+    # and outlives probe sets by design, so re-sizing a study leaves answers to
+    # prompts that no longer exist. They are simply not scored — hash matching
+    # makes that automatic. What must be reported instead is COVERAGE: the share
+    # of the current probe set that actually has an answer, because a partial
+    # run is a real threat to the analysis and looks identical to a complete one
+    # in every number downstream.
+    return out, {"matched": len(out), "probes_in_set": len(probes),
+                 "coverage": round(len(out) / len(probes), 4) if probes else 0.0,
+                 "superseded_responses": superseded}
 
 
 def _clauses(probes: list) -> tuple[list[str], list[str]]:
@@ -324,19 +334,14 @@ def deliberate(probes: list, records: list, model_id: str,
                primary_stratum: str = "marginal", alpha: float = 0.05) -> dict:
     parsed, match = _parsed(probes, records, model_id)
 
-    # Checked before the empty case, because a total mismatch and a partial one
-    # have the same cause and the same fix — and the partial one is the dangerous
-    # one, since it still produces a number.
-    if match["wrong_probe_set"]:
-        raise ValueError(
-            f"{match['wrong_probe_set']} of {match['wrong_probe_set'] + len(parsed)} "
-            f"responses for '{model_id}' were produced by a DIFFERENT probe set — "
-            "same ids, different prompts. Scoring the overlap would silently mix "
-            "two studies. probes.jsonl is derived rather than committed, so a fresh "
-            "clone has whatever was last generated: regenerate the set that was "
-            "actually run (scripts/generate_probes.py --force) and score again.")
     if not parsed:
-        raise ValueError(f"no parsed responses for model '{model_id}'")
+        raise ValueError(
+            f"no responses for '{model_id}' match this probe set by content hash"
+            + (f", though {match['superseded_responses']} carry its probe ids with "
+               "different prompts — the probe set on disk is not the one that was "
+               "run. probes.jsonl is derived rather than committed, so regenerate "
+               "it (scripts/generate_probes.py --force) and score again."
+               if match["superseded_responses"] else "."))
 
     findings = (fairness(parsed, primary_stratum, alpha)
                 + robustness(parsed, alpha)
@@ -359,14 +364,21 @@ def deliberate(probes: list, records: list, model_id: str,
             "controls_fired": len(fired),
             "fired": [f.estimand for f in fired],
         },
-        "caveats": _caveats(findings, instruments, fired),
+        "caveats": _caveats(findings, instruments, fired, match),
     }
 
 
 def _caveats(findings: list[Finding], instruments: list[Finding],
-             fired: list[Finding]) -> list[str]:
+             fired: list[Finding], match: dict | None = None) -> list[str]:
     """What a reader must know before quoting any number above."""
     out = []
+
+    if match and match["coverage"] < 0.99:
+        out.append(
+            f"INCOMPLETE RUN: only {match['coverage']:.1%} of the {match['probes_in_set']} "
+            "probes in this set have a scored response. A partial run is "
+            "indistinguishable from a complete one in every number above, and if "
+            "the missing probes are not missing at random the estimates are biased.")
     sig = [f for f in findings if f.role == CONFIRMATORY and f.significant]
 
     if not instruments:

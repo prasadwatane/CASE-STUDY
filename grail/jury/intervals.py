@@ -216,12 +216,21 @@ def exact_mcnemar(b: int, c: int) -> float | None:
     None when nothing was discordant. The chi-square form of McNemar is an
     approximation that fails exactly where this audit lives — small discordant
     counts — so it is not offered as an option.
+
+    The upper tail is obtained by SYMMETRY rather than as 1 - cdf. At p = 0.5 the
+    binomial is symmetric, so P(X >= b) = P(X <= n - b) exactly, and the two
+    routes are algebraically identical but numerically nothing alike. Writing
+    `1 - binom_cdf(b - 1, n, 0.5)` asks float64 to subtract from 1 a number that
+    differs from 1 by about 1e-17: the difference is below the representable gap
+    and the result is exactly 0.0. That is how 59 versus 1 discordant pairs came
+    back as "p = 0" — not an underflow to a very small number but a hard zero,
+    which in a report reads as a mistake and in a thesis is one.
     """
     n = b + c
     if n == 0:
         return None
-    lower = binom_cdf(b, n, 0.5)
-    upper = 1.0 - binom_cdf(b - 1, n, 0.5)
+    lower = binom_cdf(b, n, 0.5)          # P(X <= b)
+    upper = binom_cdf(n - b, n, 0.5)      # P(X >= b), by symmetry at p = 0.5
     return min(1.0, 2.0 * min(lower, upper))
 
 
