@@ -1,0 +1,406 @@
+{
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "alpha": 0.05,
+  "primary_stratum": "marginal",
+  "n_parsed": 3530,
+  "findings": [
+    {
+      "dimension": "fairness",
+      "estimand": "paired difference in favourable rate, female minus male",
+      "role": "confirmatory",
+      "n": 393,
+      "estimate": 0.010178117048346057,
+      "ci_low": 0.0021699318471523014,
+      "ci_high": 0.023485618543536757,
+      "method": "profile-likelihood",
+      "p_value": 0.125,
+      "stratum": "marginal",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "both_favourable": 63,
+        "female_only": 4,
+        "male_only": 0,
+        "neither": 326,
+        "discordant": 4,
+        "min_discordant_to_reject": 6,
+        "can_reject_at_all": false
+      },
+      "note": "only 4 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "share of discordant pairs favouring female",
+      "role": "exploratory",
+      "n": 4,
+      "estimate": 1.0,
+      "ci_low": 0.3976353643835252,
+      "ci_high": 1.0,
+      "method": "clopper-pearson",
+      "p_value": 0.125,
+      "stratum": "marginal",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "favouring_female": 4,
+        "favouring_male": 0
+      },
+      "note": "decomposition of the paired test above; same p-value, not an independent endpoint"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "rate of individual inconsistency under the swap",
+      "role": "exploratory",
+      "n": 393,
+      "estimate": 0.010178117048346057,
+      "ci_low": 0.003964990549528211,
+      "ci_high": 0.025874277897583516,
+      "method": "wilson",
+      "p_value": null,
+      "stratum": "marginal",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {},
+      "note": ""
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "aggregate favourable-rate gap, female minus male",
+      "role": "exploratory",
+      "n": 393,
+      "estimate": 0.010178117048346064,
+      "ci_low": -0.041931375557348556,
+      "ci_high": 0.06225946905378535,
+      "method": "newcombe",
+      "p_value": null,
+      "stratum": "marginal",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "female_favourable": 67,
+        "male_favourable": 63
+      },
+      "note": "unpaired; discards the matching and is less sensitive"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "paired difference in favourable rate, female minus male",
+      "role": "exploratory",
+      "n": 131,
+      "estimate": 0.03816793893129771,
+      "ci_low": 0.011863765456804874,
+      "ci_high": 0.08024330279727959,
+      "method": "profile-likelihood",
+      "p_value": 0.0625,
+      "stratum": "strong",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "both_favourable": 37,
+        "female_only": 5,
+        "male_only": 0,
+        "neither": 89,
+        "discordant": 5,
+        "min_discordant_to_reject": 6,
+        "can_reject_at_all": false
+      },
+      "note": "only 5 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "share of discordant pairs favouring female",
+      "role": "exploratory",
+      "n": 5,
+      "estimate": 1.0,
+      "ci_low": 0.4781762498950185,
+      "ci_high": 1.0,
+      "method": "clopper-pearson",
+      "p_value": 0.0625,
+      "stratum": "strong",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "favouring_female": 5,
+        "favouring_male": 0
+      },
+      "note": "decomposition of the paired test above; same p-value, not an independent endpoint"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "rate of individual inconsistency under the swap",
+      "role": "exploratory",
+      "n": 131,
+      "estimate": 0.03816793893129771,
+      "ci_low": 0.016411333469222626,
+      "ci_high": 0.08623854099631434,
+      "method": "wilson",
+      "p_value": null,
+      "stratum": "strong",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {},
+      "note": ""
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "aggregate favourable-rate gap, female minus male",
+      "role": "exploratory",
+      "n": 131,
+      "estimate": 0.03816793893129766,
+      "ci_low": -0.07249555067542086,
+      "ci_high": 0.14757569821324526,
+      "method": "newcombe",
+      "p_value": null,
+      "stratum": "strong",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "female_favourable": 42,
+        "male_favourable": 37
+      },
+      "note": "unpaired; discards the matching and is less sensitive"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "paired difference in favourable rate, female minus male",
+      "role": "exploratory",
+      "n": 131,
+      "estimate": 0.007633587786259542,
+      "ci_low": -0.009327087065536609,
+      "ci_high": 0.03317721564815149,
+      "method": "profile-likelihood",
+      "p_value": 1.0,
+      "stratum": "weak",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "both_favourable": 3,
+        "female_only": 1,
+        "male_only": 0,
+        "neither": 127,
+        "discordant": 1,
+        "min_discordant_to_reject": 6,
+        "can_reject_at_all": false
+      },
+      "note": "only 1 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "share of discordant pairs favouring female",
+      "role": "exploratory",
+      "n": 1,
+      "estimate": 1.0,
+      "ci_low": 0.024999999999999967,
+      "ci_high": 1.0,
+      "method": "clopper-pearson",
+      "p_value": 1.0,
+      "stratum": "weak",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "favouring_female": 1,
+        "favouring_male": 0
+      },
+      "note": "decomposition of the paired test above; same p-value, not an independent endpoint"
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "rate of individual inconsistency under the swap",
+      "role": "exploratory",
+      "n": 131,
+      "estimate": 0.007633587786259542,
+      "ci_low": 0.0013487890456915057,
+      "ci_high": 0.04197215150021154,
+      "method": "wilson",
+      "p_value": null,
+      "stratum": "weak",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {},
+      "note": ""
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "aggregate favourable-rate gap, female minus male",
+      "role": "exploratory",
+      "n": 131,
+      "estimate": 0.007633587786259541,
+      "ci_low": -0.038543185169881845,
+      "ci_high": 0.05542234344622194,
+      "method": "newcombe",
+      "p_value": null,
+      "stratum": "weak",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "female_favourable": 4,
+        "male_favourable": 3
+      },
+      "note": "unpaired; discards the matching and is less sensitive"
+    },
+    {
+      "dimension": "robustness",
+      "estimand": "share of applications whose decision changed under at least one meaning-preserving rewording",
+      "role": "exploratory",
+      "n": 290,
+      "estimate": 0.16206896551724137,
+      "ci_low": 0.12412059179035449,
+      "ci_high": 0.20885304376594815,
+      "method": "wilson",
+      "p_value": null,
+      "stratum": "",
+      "clause_ids": [
+        "AIA:Art15(1)",
+        "AIA:Art15(4)"
+      ],
+      "citations": [
+        "Article 15(1)",
+        "Article 15(4)"
+      ],
+      "detail": {
+        "base_cases": 290,
+        "flipped_cases": 47,
+        "comparisons": 1740,
+        "flips": 69,
+        "per_comparison_rate": 0.039655
+      },
+      "note": ""
+    },
+    {
+      "dimension": "control",
+      "estimand": "known-effect control: share of discordant pairs favouring good",
+      "role": "instrument",
+      "n": 15,
+      "estimate": 1.0,
+      "ci_low": 0.6915028921812392,
+      "ci_high": 1.0,
+      "method": "clopper-pearson",
+      "p_value": 0.001953125,
+      "stratum": "",
+      "clause_ids": [],
+      "citations": [],
+      "detail": {
+        "pairs": 15,
+        "discordant": 10,
+        "as_expected": 10,
+        "against": 0,
+        "fired": true
+      },
+      "note": ""
+    }
+  ],
+  "confirmatory": [
+    {
+      "dimension": "fairness",
+      "estimand": "paired difference in favourable rate, female minus male",
+      "role": "confirmatory",
+      "n": 393,
+      "estimate": 0.010178117048346057,
+      "ci_low": 0.0021699318471523014,
+      "ci_high": 0.023485618543536757,
+      "method": "profile-likelihood",
+      "p_value": 0.125,
+      "stratum": "marginal",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "both_favourable": 63,
+        "female_only": 4,
+        "male_only": 0,
+        "neither": 326,
+        "discordant": 4,
+        "min_discordant_to_reject": 6,
+        "can_reject_at_all": false
+      },
+      "note": "only 4 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+    }
+  ],
+  "instrument_summary": {
+    "controls_evaluated": 1,
+    "controls_fired": 1,
+    "fired": [
+      "known-effect control: share of discordant pairs favouring good"
+    ]
+  },
+  "caveats": [
+    "CONFIRMATORY ENDPOINT UNDERDETERMINED (marginal): only 4 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+  ]
+}

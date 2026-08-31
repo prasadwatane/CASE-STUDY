@@ -32,7 +32,23 @@ from dataclasses import dataclass, asdict
 
 
 def binom_cdf(k: int, n: int, p: float) -> float:
-    """P(X <= k) for X ~ Binomial(n, p), computed exactly term by term."""
+    """P(X <= k) for X ~ Binomial(n, p), summed in log space.
+
+    The obvious implementation — comb(n, i) * p**i * (1-p)**(n-i) — is exact for
+    small n and raises OverflowError above roughly n = 1000, because the
+    binomial coefficient becomes a Python int too large to convert to float
+    while the probability factors have already underflowed to zero. Neither
+    quantity is representable alone; only their product is.
+
+    That limit is not hypothetical for this audit. The exact sign test runs over
+    discordant pairs, and a well-powered fairness run produces thousands of
+    them, so the naive form fails exactly when the study is large enough to say
+    something. Working with log-gamma keeps every term in range and costs one
+    exp per term.
+
+    Summing the shorter tail keeps the term count bounded by n/2 and adds the
+    smallest contributions first, which is also where the accuracy is.
+    """
     if k < 0:
         return 0.0
     if k >= n:
@@ -41,10 +57,21 @@ def binom_cdf(k: int, n: int, p: float) -> float:
         return 1.0
     if p >= 1.0:
         return 0.0
-    total = 0.0
-    for i in range(k + 1):
-        total += math.comb(n, i) * (p ** i) * ((1.0 - p) ** (n - i))
-    return min(1.0, total)
+
+    def _tail(kk: int, pp: float) -> float:
+        """P(X <= kk) for Binomial(n, pp), summed from the small end."""
+        log_p, log_q = math.log(pp), math.log1p(-pp)
+        lg = math.lgamma
+        total = 0.0
+        for i in range(kk, -1, -1):
+            total += math.exp(lg(n + 1) - lg(i + 1) - lg(n - i + 1)
+                              + i * log_p + (n - i) * log_q)
+        return total
+
+    # P(X <= k) = 1 - P(Y <= n-k-1) where Y ~ Binomial(n, 1-p)
+    if k > n // 2:
+        return min(1.0, max(0.0, 1.0 - _tail(n - k - 1, 1.0 - p)))
+    return min(1.0, _tail(k, p))
 
 
 def clopper_pearson_upper(k: int, n: int, delta: float) -> float:
