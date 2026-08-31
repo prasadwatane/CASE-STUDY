@@ -223,3 +223,34 @@ def test_non_primary_strata_are_exploratory():
 def test_deliberate_refuses_an_unknown_model():
     with pytest.raises(ValueError):
         deliberate([], [], "nobody/nothing")
+
+
+def test_jury_refuses_a_probe_set_that_was_not_the_one_run():
+    """Probe ids are positional and are reused when a study is re-sized.
+
+    A response log outlives probe sets, so matching on id pairs a prompt from one
+    set with the answer to a different prompt from another. It raises nothing and
+    reports a plausible number about nothing — which is exactly what happened:
+    1.27% on 5 discordant pairs where the truth was 1.83% on 66.
+    """
+    from grail.probe.schema import CORE, GOLD_NONE, Probe
+    from grail.run.store import ResponseRecord
+
+    def probe(prompt):
+        return Probe(id="finance:fairness:gender:0001:female", domain="finance",
+                     dimension="fairness", family="f", clause_ids=[], citations=[],
+                     prompt=prompt, sample_kind=CORE, stratum="marginal",
+                     pair_id="p1", axis="gender", arm="female", gold_route=GOLD_NONE)
+
+    ran, on_disk = probe("Applicant: Ms. A. Income 30000"), probe("Applicant: Ms. B. Income 41000")
+    assert ran.id == on_disk.id and ran.content_sha256 != on_disk.content_sha256
+
+    rec = ResponseRecord(probe_id=ran.id, probe_sha256=ran.content_sha256,
+                         domain="finance", dimension="fairness", model_id="m",
+                         params_hash="h", params={}, response="APPROVE", run_id="r")
+
+    with pytest.raises(ValueError, match="DIFFERENT probe set"):
+        deliberate([on_disk], [rec], "m")
+
+    out = deliberate([ran], [rec], "m")          # the right set scores fine
+    assert out["probe_match"] == {"matched": 1, "wrong_probe_set": 0}

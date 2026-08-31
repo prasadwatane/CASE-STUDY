@@ -72,15 +72,18 @@ def _outcomes(probes: list, records: list, model_id: str | None = None) -> dict:
     result would look wrong. `model_id=None` is only safe when the caller has
     already established there is exactly one.
     """
-    by_probe = {p.id: p for p in probes}
+    # Matched on CONTENT HASH, not id. Ids are positional and get reused when the
+    # study is re-sized, so a log that outlives a probe set will otherwise pair
+    # old prompts with answers to new ones and report a number about neither.
+    by_hash = {p.content_sha256: p for p in probes}
     out = {}
     for rec in records:
         if model_id is not None and rec.model_id != model_id:
             continue
-        probe = by_probe.get(rec.probe_id)
+        probe = by_hash.get(rec.probe_sha256)
         if probe is None or rec.error:
             continue
-        out[rec.probe_id] = (probe, parse(rec.response, probe.outcome_type))
+        out[probe.id] = (probe, parse(rec.response, probe.outcome_type))
     return out
 
 

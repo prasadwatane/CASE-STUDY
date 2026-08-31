@@ -75,19 +75,38 @@ def _favourable(outcome, outcome_type: str) -> bool:
     return outcome.value == FAVOURABLE
 
 
-def _parsed(probes: list, records: list, model_id: str) -> dict:
-    by_probe = {p.id: p for p in probes}
-    out = {}
+def _parsed(probes: list, records: list, model_id: str) -> tuple[dict, dict]:
+    """Match responses to probes BY CONTENT HASH, never by id.
+
+    Probe ids are positional and stable by design — `finance:fairness:gender:0007`
+    is case seven of the gender axis in whatever probe set you are holding. Re-size
+    the study and case seven still exists, with a different applicant in it. The
+    response log is append-only and outlives probe sets, so matching on id will
+    happily pair a prompt from one set with the answer to a different prompt from
+    another, and report a plausible number that is about nothing.
+
+    This is not hypothetical: it produced a 1.27% effect on 5 discordant pairs
+    where the truth was 1.83% on 66, with no error raised anywhere. The runner
+    already keys its cache on (probe content, model, params) for the same reason.
+
+    The count of id matches that failed the hash check is returned as well, so a
+    stale probe set announces itself instead of quietly changing the answer.
+    """
+    by_hash = {p.content_sha256: p for p in probes}
+    by_id = {p.id: p for p in probes}
+    out, stale = {}, 0
     for rec in records:
         if rec.model_id != model_id or rec.error:
             continue
-        probe = by_probe.get(rec.probe_id)
+        probe = by_hash.get(rec.probe_sha256)
         if probe is None:
+            if rec.probe_id in by_id:
+                stale += 1          # id exists, content does not: a different set
             continue
         outcome = parse(rec.response, probe.outcome_type)
         if outcome.status == PARSED:
-            out[rec.probe_id] = (probe, outcome)
-    return out
+            out[probe.id] = (probe, outcome)
+    return out, {"matched": len(out), "wrong_probe_set": stale}
 
 
 def _clauses(probes: list) -> tuple[list[str], list[str]]:
@@ -303,7 +322,19 @@ def controls(parsed: dict, alpha: float = 0.05) -> list[Finding]:
 # --- the sitting ------------------------------------------------------------
 def deliberate(probes: list, records: list, model_id: str,
                primary_stratum: str = "marginal", alpha: float = 0.05) -> dict:
-    parsed = _parsed(probes, records, model_id)
+    parsed, match = _parsed(probes, records, model_id)
+
+    # Checked before the empty case, because a total mismatch and a partial one
+    # have the same cause and the same fix — and the partial one is the dangerous
+    # one, since it still produces a number.
+    if match["wrong_probe_set"]:
+        raise ValueError(
+            f"{match['wrong_probe_set']} of {match['wrong_probe_set'] + len(parsed)} "
+            f"responses for '{model_id}' were produced by a DIFFERENT probe set — "
+            "same ids, different prompts. Scoring the overlap would silently mix "
+            "two studies. probes.jsonl is derived rather than committed, so a fresh "
+            "clone has whatever was last generated: regenerate the set that was "
+            "actually run (scripts/generate_probes.py --force) and score again.")
     if not parsed:
         raise ValueError(f"no parsed responses for model '{model_id}'")
 
@@ -320,6 +351,7 @@ def deliberate(probes: list, records: list, model_id: str,
         "alpha": alpha,
         "primary_stratum": primary_stratum,
         "n_parsed": len(parsed),
+        "probe_match": match,
         "findings": [f.as_dict() for f in findings],
         "confirmatory": [f.as_dict() for f in primary],
         "instrument_summary": {
