@@ -210,6 +210,76 @@ def paired_diff(a: int, b: int, c: int, d: int, alpha: float = 0.05) -> Interval
     return Interval(point, bound(-0.999999), bound(0.999999), "profile-likelihood")
 
 
+def adverse_impact_ratio(a: int, b: int, c: int, d: int, alpha: float = 0.05,
+                         iterations: int = 4000, seed: int = 20260824) -> Interval:
+    """Ratio of favourable rates between two arms — the form banking reads.
+
+    Fair lending supervision runs on ratios and the four-fifths rule, not on rate
+    differences, so an audit that reports only a difference is speaking a
+    language its intended reader does not use. The ratio is reported for that
+    audience; it is NOT the primary estimand, and the contrast between the two is
+    itself a finding worth putting in front of people.
+
+    On this project's own data the two disagree completely. The ratio clears the
+    four-fifths rule in every stratum while the paired test returns p = 1e-16 on
+    the same responses, because aggregating over applicants destroys the pairing
+    that carries the signal: a ratio of group rates cannot see 59 against 1.
+
+    The interval is bootstrapped over PAIRS rather than computed by the usual
+    Katz log-ratio formula. Katz assumes the two arms are independent samples.
+    Here they are the same applicant rendered twice, so they are strongly
+    positively correlated and Katz is wide — conservative rather than wrong, but
+    conservative in a direction that would let a real disparity pass. Resampling
+    whole pairs keeps the correlation the design created.
+    """
+    n = a + b + c + d
+    if n == 0:
+        raise ValueError("empty table")
+    k1, k2 = a + b, a + c
+    if k2 == 0:
+        return Interval(float("inf"), 0.0, float("inf"), "bootstrap-pairs")
+    point = (k1 / n) / (k2 / n)
+
+    import random
+    rng = random.Random(seed)
+    cuts = [a / n, (a + b) / n, (a + b + c) / n]
+    draws = []
+    for _ in range(iterations):
+        ra = rb = rc = 0
+        for _ in range(n):
+            u = rng.random()
+            if u < cuts[0]:
+                ra += 1
+            elif u < cuts[1]:
+                rb += 1
+            elif u < cuts[2]:
+                rc += 1
+        if ra + rc:
+            draws.append((ra + rb) / (ra + rc))
+    if not draws:
+        return Interval(point, 0.0, float("inf"), "bootstrap-pairs")
+    draws.sort()
+    lo = draws[int((alpha / 2) * len(draws))]
+    hi = draws[min(len(draws) - 1, int((1 - alpha / 2) * len(draws)))]
+    return Interval(point, lo, hi, "bootstrap-pairs")
+
+
+def four_fifths(iv: Interval, low: float = 0.80, high: float = 1.25) -> str:
+    """The conventional reading of an adverse impact ratio.
+
+    Applied two-sided. The rule is usually quoted one-sided, because it was
+    written for a world where the protected group is the one disadvantaged; a
+    model that favours the protected arm passes a one-sided test while treating
+    identical applicants differently. This audit found exactly that, so the
+    band is symmetric here by deliberate choice, and the choice is recorded.
+    """
+    if iv.low >= low and iv.high <= high:
+        return "within the four-fifths band"
+    if iv.low > high or iv.high < low:
+        return "OUTSIDE the four-fifths band"
+    return "inconclusive: the interval spans the four-fifths boundary"
+
+
 def exact_mcnemar(b: int, c: int) -> float | None:
     """Two-sided exact McNemar: a binomial sign test on the discordant pairs.
 

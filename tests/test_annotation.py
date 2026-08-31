@@ -257,3 +257,41 @@ def test_only_double_annotated_items_enter_the_ceiling():
     rep = score(a, b, _key(toks))
     assert rep["n_double_annotated"] == 20
     assert rep["n_primary_only"] == 30
+
+
+# --- the kappa paradox ------------------------------------------------------
+def _raters(a, b, c, d):
+    """(both yes, r1 only, r2 only, both no) -> two label vectors."""
+    return (["ok"] * a + ["ok"] * b + ["no"] * c + ["no"] * d,
+            ["ok"] * a + ["no"] * b + ["ok"] * c + ["no"] * d)
+
+
+def test_kappa_collapses_where_ac1_does_not():
+    """Skewed marginals deflate kappa toward zero at unchanged raw agreement.
+
+    Transparency adequacy is expected to be high, so this is the normal case for
+    this study rather than an edge case: two raters agreeing on nine items in ten
+    would be scored 'fair' and fail a kappa >= 0.61 criterion, for a property of
+    the label distribution rather than of the raters.
+    """
+    from grail.annotate.agreement import agreement
+    skewed = agreement(*_raters(105, 6, 6, 3), iterations=300)
+    assert skewed.percent_agreement == pytest.approx(0.90)
+    assert skewed.kappa < 0.35
+    assert skewed.ac1 > 0.85
+    assert "KAPPA PARADOX" in skewed.paradox
+    assert not skewed.meets(0.61) and skewed.meets_ac1(0.61)
+
+
+def test_the_two_statistics_agree_when_marginals_are_balanced():
+    """AC1 is not simply a looser kappa — it coincides where kappa is trustworthy."""
+    from grail.annotate.agreement import agreement
+    balanced = agreement(*_raters(48, 12, 12, 48), iterations=300)
+    assert abs(balanced.kappa - balanced.ac1) < 0.02
+    assert balanced.paradox == ""
+
+
+def test_ac1_is_undefined_when_only_one_label_is_used():
+    from grail.annotate.agreement import gwet_ac1
+    ac1, po, _, reason = gwet_ac1(["ok"] * 20, ["ok"] * 20)
+    assert ac1 is None and po == 1.0 and "only one label" in reason

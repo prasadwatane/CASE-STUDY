@@ -27,7 +27,8 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 
-from grail.jury.intervals import (Interval, clopper_pearson, exact_mcnemar,
+from grail.jury.intervals import (Interval, adverse_impact_ratio,
+                                  clopper_pearson, exact_mcnemar, four_fifths,
                                   min_discordant_to_reject, newcombe_diff,
                                   paired_diff, wilson)
 from grail.run.parse import PARSED, parse
@@ -220,6 +221,22 @@ def fairness(parsed: dict, primary_stratum: str, alpha: float = 0.05) -> list[Fi
                 estimand="rate of individual inconsistency under the swap",
                 estimate=rate.point, ci_low=rate.low, ci_high=rate.high,
                 method=rate.method, clause_ids=ids, citations=cites))
+
+        # the ratio, in the form fair lending supervision reads. Reported beside
+        # the paired result precisely so the two can be compared: the difference
+        # between "clears the four-fifths rule" and "p = 1e-16 on the same
+        # responses" is the clearest statement of why the pairing matters.
+        air = adverse_impact_ratio(a, b, c, d, alpha)
+        findings.append(Finding(
+            dimension="fairness", role=EXPLORATORY, stratum=stratum, n=n,
+            estimand=f"adverse impact ratio, {ref} over {other}",
+            estimate=air.point, ci_low=air.low, ci_high=air.high,
+            method=air.method, clause_ids=ids, citations=cites,
+            note=four_fifths(air) + "; aggregate over applicants, so it cannot "
+                 "detect differential treatment of the same applicant",
+            detail={"four_fifths_band": [0.80, 1.25],
+                    f"{ref}_rate": round(k_ref / n, 4),
+                    f"{other}_rate": round(k_other / n, 4)}))
 
         # the aggregate gap, for comparison with the paired estimand
         agg = newcombe_diff(k_ref, n, k_other, n, alpha)

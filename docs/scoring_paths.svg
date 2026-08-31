@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 760" width="1180" height="760">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5F6368"/>
+    </marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1E6B34"/>
+    </marker>
+    <style>
+      .t  { font-family: Helvetica, Arial, sans-serif; fill: #1A1A1A; font-size: 14px; }
+      .bt { font-family: Helvetica, Arial, sans-serif; fill: #1A1A1A; font-weight: 600; font-size: 16px; }
+      .st { font-family: Helvetica, Arial, sans-serif; fill: #5F6368; font-size: 12.5px; }
+      .lb { font-family: Helvetica, Arial, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 1px; }
+      .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13px; fill: #1A1A1A; }
+    </style>
+  </defs>
+
+  <rect width="1180" height="760" fill="#FFFFFF"/>
+
+  <!-- source -->
+  <rect x="440" y="24" width="300" height="56" rx="7" fill="#1E6B34"/>
+  <text x="590" y="48" class="bt" fill="#FFFFFF" text-anchor="middle">Response log — one model</text>
+  <text x="590" y="68" class="st" fill="#D6EADC" text-anchor="middle">hash-chained, matched to probes by content</text>
+
+  <line x1="590" y1="80" x2="590" y2="112" stroke="#5F6368" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="600" y="102" class="st">split by dimension, not by convenience</text>
+
+  <!-- ============ LEFT: JURY ============ -->
+  <rect x="40" y="120" width="470" height="330" rx="10" fill="#F4F8F5" stroke="#DCE7DF"/>
+  <text x="62" y="146" class="lb" fill="#1E6B34">DETERMINISTIC PATH</text>
+  <text x="62" y="168" class="st">fairness · robustness — no model touches these numbers</text>
+
+  <rect x="62" y="184" width="426" height="72" rx="7" fill="#FFFFFF" stroke="#1E6B34" stroke-width="1.6"/>
+  <text x="275" y="210" class="bt" text-anchor="middle">JURY</text>
+  <text x="275" y="232" class="st" text-anchor="middle">exact McNemar · profile-likelihood · Wilson · Newcombe</text>
+  <text x="275" y="248" class="st" text-anchor="middle">validated by simulation: coverage, Type I, power</text>
+
+  <line x1="275" y1="256" x2="275" y2="288" stroke="#1E6B34" stroke-width="1.6" marker-end="url(#ag)"/>
+
+  <rect x="62" y="296" width="426" height="82" rx="7" fill="#FFFFFF" stroke="#1E6B34" stroke-width="1.6"/>
+  <text x="275" y="322" class="bt" text-anchor="middle">Effect + interval, per clause</text>
+  <text x="275" y="344" class="st" text-anchor="middle">compared directly against the signed criterion</text>
+  <text x="275" y="362" class="st" text-anchor="middle">PASS / FAIL / INCONCLUSIVE</text>
+
+  <rect x="62" y="392" width="426" height="42" rx="6" fill="#EDF5EF" stroke="#1E6B34" stroke-dasharray="4 3"/>
+  <text x="275" y="418" class="t" text-anchor="middle" font-weight="600">No composite. Nothing here is uncertain in a way averaging would fix.</text>
+
+  <!-- ============ RIGHT: JUDGE + HUMAN ============ -->
+  <rect x="540" y="120" width="600" height="330" rx="10" fill="#FAFAFA" stroke="#E2E2E2"/>
+  <text x="562" y="146" class="lb" fill="#8A5A00">GATED PATH</text>
+  <text x="562" y="168" class="st">transparency — free text, so a rubric and a human ceiling are required</text>
+
+  <rect x="562" y="184" width="270" height="72" rx="7" fill="#FFFFFF" stroke="#8A5A00" stroke-width="1.6"/>
+  <text x="697" y="210" class="bt" text-anchor="middle">JUDGE</text>
+  <text x="697" y="230" class="st" text-anchor="middle">rubric = clause + signed criterion</text>
+  <text x="697" y="246" class="st" text-anchor="middle">disjoint family; both orders; k runs</text>
+
+  <rect x="856" y="184" width="262" height="72" rx="7" fill="#FFFFFF" stroke="#9B2C2C" stroke-width="1.6"/>
+  <text x="987" y="210" class="bt" text-anchor="middle">HUMAN ANNOTATION</text>
+  <text x="987" y="230" class="st" text-anchor="middle">2 raters · 120 overlap items</text>
+  <text x="987" y="246" class="st" text-anchor="middle">blinded, guidelines frozen first</text>
+
+  <line x1="697" y1="256" x2="697" y2="292" stroke="#5F6368" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="987" y1="256" x2="987" y2="292" stroke="#5F6368" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <rect x="562" y="300" width="270" height="66" rx="7" fill="#FFFFFF" stroke="#8A5A00" stroke-width="1.6"/>
+  <text x="697" y="324" class="bt" text-anchor="middle">Conformal gate</text>
+  <text x="697" y="345" class="st" text-anchor="middle">accept or escalate to a human</text>
+  <text x="697" y="360" class="st" text-anchor="middle">selective error bounded at α</text>
+
+  <rect x="856" y="300" width="262" height="66" rx="7" fill="#FFFFFF" stroke="#9B2C2C" stroke-width="1.6"/>
+  <text x="987" y="324" class="bt" text-anchor="middle">The ceiling</text>
+  <text x="987" y="345" class="st" text-anchor="middle">κ(human, human) — reported FIRST</text>
+  <text x="987" y="360" class="st" text-anchor="middle">κ(judge, human) judged against it</text>
+
+  <path d="M856 333 L840 333" stroke="#9B2C2C" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <text x="700" y="392" class="st" text-anchor="middle">a judge is never compared against perfection —</text>
+  <text x="700" y="408" class="st" text-anchor="middle">only against how well two humans manage the same task</text>
+
+  <!-- ============ COMPOSITE ============ -->
+  <rect x="540" y="474" width="600" height="248" rx="10" fill="#FBF4E8" stroke="#E8D9BC"/>
+  <text x="562" y="500" class="lb" fill="#8A5A00">COMPOSITE — METEOR-SHAPED, GATED PATH ONLY</text>
+
+  <text x="562" y="530" class="st">METEOR combines two quantities harmonically, then penalises a known failure mode.</text>
+  <text x="562" y="548" class="st">Same skeleton, different quantities:</text>
+
+  <rect x="562" y="562" width="556" height="96" rx="6" fill="#FFFFFF" stroke="#E8D9BC"/>
+  <text x="578" y="586" class="mono">C   = coverage        share the gate accepted automatically</text>
+  <text x="578" y="606" class="mono">R   = reliability     1 − selective error among accepted</text>
+  <text x="578" y="626" class="mono">F   = C·R / (αC + (1−α)R)              α &lt; 0.5 → reliability wins</text>
+  <text x="578" y="648" class="mono">GCS = F · (1 − γ·max(0, (κhh−κjh)/κhh)^β)</text>
+
+  <text x="562" y="682" class="t" font-weight="600">The penalty is the load-bearing part.</text>
+  <text x="562" y="700" class="st">METEOR penalises right words in the wrong order. This penalises a judge that agrees with</text>
+  <text x="562" y="715" class="st">humans less than humans agree with each other — the same failure, one level up.</text>
+
+  <!-- caution -->
+  <rect x="40" y="474" width="470" height="248" rx="10" fill="#FBEEEE" stroke="#EDD3D3"/>
+  <text x="62" y="500" class="lb" fill="#9B2C2C">WHERE THIS GOES WRONG</text>
+
+  <text x="62" y="530" class="t" font-weight="600">METEOR itself does not transfer.</text>
+  <text x="62" y="550" class="st">It scores string overlap against a reference. An explanation can</text>
+  <text x="62" y="566" class="st">match the reference closely and name the wrong direction, or share</text>
+  <text x="62" y="582" class="st">no vocabulary with it and be perfectly adequate. Surface overlap</text>
+  <text x="62" y="598" class="st">also rewards paraphrasing the gold answer, which is gameable.</text>
+
+  <text x="62" y="628" class="t" font-weight="600">A composite hides why it fell.</text>
+  <text x="62" y="648" class="st">GCS can drop because the gate accepted little, because the judge</text>
+  <text x="62" y="664" class="st">was wrong, or because the raters disagreed with each other. Three</text>
+  <text x="62" y="680" class="st">different problems, three different fixes, one number.</text>
+  <text x="62" y="702" class="st" font-weight="600">Always report C, R, κhh and κjh beside it.</text>
+</svg>

@@ -274,3 +274,39 @@ def test_jury_refuses_a_probe_set_that_was_not_the_one_run():
     assert out["probe_match"]["matched"] == 1
     assert out["probe_match"]["superseded_responses"] == 0
     assert out["probe_match"]["coverage"] == 1.0
+
+
+# --- the banking view -------------------------------------------------------
+def test_the_ratio_clears_what_the_paired_test_rejects():
+    """The central methodological claim, as an executable assertion.
+
+    Fair lending supervision reads adverse impact ratios against the four-fifths
+    rule. On the real 2844-pair marginal stratum that test passes while the
+    paired test returns p ~ 1e-16 on the same responses — because aggregating
+    over applicants destroys the pairing that carries the signal.
+    """
+    from grail.jury.intervals import adverse_impact_ratio, four_fifths
+    a, b, c, d = 464, 59, 1, 2320          # marginal stratum, as measured
+
+    air = adverse_impact_ratio(a, b, c, d)
+    assert 1.0 < air.point < 1.25
+    assert "OUTSIDE" not in four_fifths(air)
+
+    paired = paired_diff(a, b, c, d)
+    assert paired.low > 0
+    assert exact_mcnemar(b, c) < 1e-12
+
+
+def test_four_fifths_is_applied_two_sided():
+    """A model favouring the protected arm must not pass by a one-sided rule."""
+    from grail.jury.intervals import Interval, four_fifths
+    assert four_fifths(Interval(1.6, 1.4, 1.8, "x")) == "OUTSIDE the four-fifths band"
+    assert four_fifths(Interval(0.5, 0.4, 0.6, "x")) == "OUTSIDE the four-fifths band"
+    assert four_fifths(Interval(1.0, 0.9, 1.1, "x")) == "within the four-fifths band"
+
+
+def test_ratio_interval_is_reproducible():
+    from grail.jury.intervals import adverse_impact_ratio
+    one = adverse_impact_ratio(464, 59, 1, 2320)
+    two = adverse_impact_ratio(464, 59, 1, 2320)
+    assert (one.low, one.high) == (two.low, two.high)

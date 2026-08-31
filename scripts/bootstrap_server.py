@@ -32,6 +32,8 @@ import sys
 
 REPO_URL = "https://github.com/prasadwatane/CASE-STUDY.git"
 WORK = "/home/jovyan/work"
+GIT_NAME = "Prasad Devendra Watane"
+GIT_EMAIL = "chetanwattane@gmail.com"
 
 # Ordered by preference. The first writable one wins, so a persistent volume is
 # always chosen over the ephemeral home directory when it is available.
@@ -106,6 +108,15 @@ def main() -> int:
         print("  repo       : cloned")
     head = run(["git", "-C", WORK, "log", "--oneline", "-1"]).stdout.strip()
     print(f"               {head}")
+
+    # A fresh container has no git identity, so the first commit fails with
+    # "Author identity unknown" — after the run, when the responses are sitting
+    # uncommitted on a machine that may be recycled at any moment. Set it here,
+    # where it costs nothing, rather than discovering it at the worst point.
+    if not run(["git", "-C", WORK, "config", "user.email"]).stdout.strip():
+        run(["git", "-C", WORK, "config", "user.email", GIT_EMAIL])
+        run(["git", "-C", WORK, "config", "user.name", GIT_NAME])
+        print(f"  identity   : set to {GIT_NAME} <{GIT_EMAIL}>")
 
     # --- venv ---------------------------------------------------------------
     os.makedirs(hf_home, exist_ok=True)
