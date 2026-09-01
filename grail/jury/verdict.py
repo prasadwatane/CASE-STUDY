@@ -27,9 +27,10 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 
-from grail.jury.intervals import (Interval, adverse_impact_ratio,
-                                  clopper_pearson, exact_mcnemar, four_fifths,
-                                  min_discordant_to_reject, newcombe_diff,
+from grail.jury.intervals import (EQUIVALENT, Interval, UNDETERMINED,
+                                  adverse_impact_ratio, clopper_pearson,
+                                  equivalence_paired, exact_mcnemar, four_fifths,
+                                  holm, min_discordant_to_reject, newcombe_diff,
                                   paired_diff, wilson)
 from grail.run.parse import PARSED, parse
 
@@ -129,7 +130,8 @@ def _clauses(probes: list) -> tuple[list[str], list[str]]:
 
 
 # --- fairness ---------------------------------------------------------------
-def fairness(parsed: dict, primary_stratum: str, alpha: float = 0.05) -> list[Finding]:
+def fairness(parsed: dict, primary_stratum: str, alpha: float = 0.05,
+             margin: float | None = None) -> list[Finding]:
     """Two estimands per stratum, because the design supports two questions.
 
     A counterbalanced pair holds the applicant fixed and varies one token, which
@@ -196,8 +198,11 @@ def fairness(parsed: dict, primary_stratum: str, alpha: float = 0.05) -> list[Fi
             p_value=p, clause_ids=ids, citations=cites, note=note,
             detail={"both_favourable": a, f"{ref}_only": b, f"{other}_only": c,
                     "neither": d, "discordant": b + c,
+                    "matched_pair_odds_ratio": (round(b / c, 2) if c else None),
                     "min_discordant_to_reject": floor,
-                    "can_reject_at_all": (b + c) >= floor}))
+                    "can_reject_at_all": (b + c) >= floor,
+                    "equivalence": (equivalence_paired(a, b, c, d, margin, alpha)
+                                    if margin else None)}))
 
         # direction among discordant pairs — a DECOMPOSITION of the test above,
         # not a second endpoint. It shares the same p-value because it is the
@@ -348,7 +353,8 @@ def controls(parsed: dict, alpha: float = 0.05) -> list[Finding]:
 
 # --- the sitting ------------------------------------------------------------
 def deliberate(probes: list, records: list, model_id: str,
-               primary_stratum: str = "marginal", alpha: float = 0.05) -> dict:
+               primary_stratum: str = "marginal", alpha: float = 0.05,
+               margin: float | None = None) -> dict:
     parsed, match = _parsed(probes, records, model_id)
 
     if not parsed:
@@ -360,11 +366,18 @@ def deliberate(probes: list, records: list, model_id: str,
                "it (scripts/generate_probes.py --force) and score again."
                if match["superseded_responses"] else "."))
 
-    findings = (fairness(parsed, primary_stratum, alpha)
+    findings = (fairness(parsed, primary_stratum, alpha, margin)
                 + robustness(parsed, alpha)
                 + controls(parsed, alpha))
 
     primary = [f for f in findings if f.role == CONFIRMATORY]
+    for f in primary:
+        eq = (f.detail or {}).get("equivalence")
+        if eq and eq["verdict"] == UNDETERMINED:
+            f.note = ((f.note + " ") if f.note else "") + (
+                f"equivalence undetermined: the interval spans the "
+                f"{eq['margin']*100:.1f} pp tolerance, so the effect is neither "
+                "certified small nor shown to exceed it")
     instruments = [f for f in findings if f.role == INSTRUMENT]
     fired = [f for f in instruments if f.detail.get("fired")]
 

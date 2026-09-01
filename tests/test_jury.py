@@ -310,3 +310,58 @@ def test_ratio_interval_is_reproducible():
     one = adverse_impact_ratio(464, 59, 1, 2320)
     two = adverse_impact_ratio(464, 59, 1, 2320)
     assert (one.low, one.high) == (two.low, two.high)
+
+
+# --- equivalence testing ----------------------------------------------------
+def test_tost_gives_three_verdicts_where_the_old_test_gave_two():
+    """The point of equivalence testing, as an assertion on the real data.
+
+    An ordinary test answers "not zero" or "cannot tell" and never "small
+    enough". A conformity assessment needs the third answer, so the burden sits
+    on demonstrating conformity rather than on the auditor disproving it.
+    """
+    from grail.jury.intervals import (EQUIVALENT, NOT_EQUIVALENT, UNDETERMINED,
+                                      equivalence_paired)
+    n, M = 2844, 0.01
+
+    def verdict(b, c):
+        return equivalence_paired(500, b, c, n - 500 - b - c, margin=M)["verdict"]
+
+    assert verdict(59, 1) == NOT_EQUIVALENT     # Qwen 7B  — proven too big
+    assert verdict(36, 0) == UNDETERMINED       # Llama 8B — significant, not proven big
+    assert verdict(39, 17) == UNDETERMINED      # Qwen 32B
+    assert verdict(5, 0) == EQUIVALENT          # Llama 70B — proven small
+
+
+def test_significant_is_not_the_same_as_material():
+    """Llama-8B: p ~ 1e-11 yet equivalence undetermined at a 1 pp tolerance."""
+    from grail.jury.intervals import UNDETERMINED, equivalence_paired
+    b, c, n = 36, 0, 2844
+    assert exact_mcnemar(b, c) < 1e-10
+    assert equivalence_paired(500, b, c, n - 500 - b, margin=0.01)["verdict"] == UNDETERMINED
+
+
+def test_tost_uses_the_ninety_percent_interval():
+    """TOST at 5% is containment of the 1 - 2*alpha interval, not the 95% one."""
+    from grail.jury.intervals import equivalence_paired
+    r = equivalence_paired(500, 5, 0, 2339, margin=0.01, alpha=0.05)
+    assert r["interval_level"] == pytest.approx(0.90)
+    wide = paired_diff(500, 5, 0, 2339, alpha=0.05)
+    assert r["ci_high"] < wide.high        # 90% is tighter than 95%
+
+
+def test_a_wider_tolerance_can_only_help_the_system():
+    from grail.jury.intervals import EQUIVALENT, equivalence_paired
+    assert equivalence_paired(500, 36, 0, 2308, margin=0.03)["verdict"] == EQUIVALENT
+    assert equivalence_paired(500, 36, 0, 2308, margin=0.01)["verdict"] != EQUIVALENT
+
+
+def test_holm_is_step_down_and_stops_at_the_first_failure():
+    from grail.jury.intervals import holm
+    out = holm({"a": 1e-16, "b": 3e-11, "c": 5e-3, "d": 6e-2})
+    assert [out[k]["rejected"] for k in "abcd"] == [True, True, True, False]
+    assert out["a"]["threshold"] == pytest.approx(0.0125)   # alpha/4
+    assert out["d"]["threshold"] == pytest.approx(0.05)     # alpha/1
+    # once one fails, everything weaker fails too, however small its own p
+    out2 = holm({"x": 0.9, "y": 0.001})
+    assert out2["y"]["rejected"] and not out2["x"]["rejected"]

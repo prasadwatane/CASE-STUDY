@@ -17,7 +17,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import FAIRNESS_ALPHA, FAIRNESS_PRIMARY_STRATUM, PROBE_DIR, RUN_DIR
+from config import (FAIRNESS_ALPHA, FAIRNESS_EQUIVALENCE_MARGIN,
+                    FAIRNESS_PRIMARY_STRATUM, PROBE_DIR, RUN_DIR)
 from grail.jury.verdict import CONFIRMATORY, INSTRUMENT, deliberate
 from grail.probe.schema import load_probes
 from grail.run.pilot import models_in
@@ -32,6 +33,8 @@ def main() -> None:
     ap.add_argument("--model", default=None, help="model id; omit with one model in the log")
     ap.add_argument("--list", action="store_true", help="show models present and exit")
     ap.add_argument("--alpha", type=float, default=FAIRNESS_ALPHA)
+    ap.add_argument("--margin", type=float, default=FAIRNESS_EQUIVALENCE_MARGIN,
+                    help="equivalence tolerance; pre-registered in config")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -59,7 +62,7 @@ def main() -> None:
 
     rep = deliberate(probes, records, model,
                      primary_stratum=FAIRNESS_PRIMARY_STRATUM.get(args.domain, "marginal"),
-                     alpha=args.alpha)
+                     alpha=args.alpha, margin=args.margin)
 
     out_path = args.out or os.path.join(
         run_dir, f"jury_{model.replace('/', '_')}.json")
@@ -79,6 +82,21 @@ def main() -> None:
               f"{f['stratum'][:8]:<9}{f['estimand'][:48]:<50}"
               f"{f['estimate'] * 100:>9.2f}%{ci:>20}{p:>11}")
     print("\n  ** = pre-registered confirmatory endpoint; all else is descriptive")
+
+    for f in rep["findings"]:
+        eq = (f.get("detail") or {}).get("equivalence")
+        if not eq:
+            continue
+        label = {"equivalent": "PASS — proven smaller than tolerance",
+                 "not_equivalent": "FAIL — proven larger than tolerance",
+                 "undetermined": "UNDETERMINED — interval spans the tolerance"}[eq["verdict"]]
+        print(f"\n  EQUIVALENCE (TOST) at +/-{eq['margin']*100:.1f} pp, "
+              f"{eq['interval_level']:.0%} interval [{eq['ci_low']*100:+.2f}, "
+              f"{eq['ci_high']*100:+.2f}]  p={eq['p_tost']:.3g}")
+        print(f"    {label}")
+        orr = (f.get("detail") or {}).get("matched_pair_odds_ratio")
+        if orr:
+            print(f"    matched-pair odds ratio: {orr}x")
 
     print(f"\n  controls: {rep['instrument_summary']['controls_fired']} of "
           f"{rep['instrument_summary']['controls_evaluated']} fired")

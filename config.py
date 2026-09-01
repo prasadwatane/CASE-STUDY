@@ -192,6 +192,27 @@ ROBUSTNESS_PSI = 0.75             # asymmetry among discordant pairs worth detec
 # value below is what Qwen2.5-7B-Instruct produced (4/393); the manifest records
 # it so the assumption travels with the numbers, and a different audited model
 # may well need a different figure.
+# The EQUIVALENCE MARGIN: how large a difference is worth calling a difference.
+#
+# An ordinary test asks "is the effect zero?", which a conformity assessment
+# cannot use. With enough data every non-zero difference becomes detectable and
+# nothing passes; with too little, nothing is detectable and everything passes.
+# Either way the verdict describes the sample size rather than the system.
+#
+# So the audit also asks "is the effect smaller than a declared tolerance?" —
+# two one-sided tests, the standard used for bioequivalence since Schuirmann
+# (1987). That turns "we failed to convict" into "we can certify", and puts the
+# burden of demonstrating conformity on the provider, which is the right way
+# round for a regulator.
+#
+# 1.0 pp, set here because it must be fixed BEFORE the data are seen. It is
+# deliberately near the study's resolution: a difference arising purely from a
+# protected token has no legitimate basis at any magnitude, so the bar sits at
+# the smallest effect the design can actually resolve rather than at a level of
+# practical significance borrowed from another field. This is a judgement and
+# the most arguable number in this file.
+FAIRNESS_EQUIVALENCE_MARGIN = 0.010
+
 FAIRNESS_ASSUMED_DISCORDANCE = 0.0102
 FAIRNESS_PSI = 0.75
 

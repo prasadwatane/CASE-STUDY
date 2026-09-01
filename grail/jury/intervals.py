@@ -197,17 +197,125 @@ def paired_diff(a: int, b: int, c: int, d: int, alpha: float = 0.05) -> Interval
     point = (b - c) / n
     mle = _paired_loglik(a, b, c, d, point)
 
+    # The critical value must follow alpha. An earlier version hard-coded the
+    # 95% point and silently returned a 95% interval whatever alpha was asked
+    # for — which made the equivalence test, whose whole construction needs the
+    # 1 - 2*alpha interval, quietly conservative. Chi-square on one degree of
+    # freedom is the square of the normal quantile, so this is exact.
+    crit = _z(alpha) ** 2
+
     def bound(far: float) -> float:
         lo, hi = far, point
         for _ in range(120):
             mid = (lo + hi) / 2
-            if 2 * (mle - _paired_loglik(a, b, c, d, mid)) > CHI2_95:
+            if 2 * (mle - _paired_loglik(a, b, c, d, mid)) > crit:
                 lo = mid
             else:
                 hi = mid
         return (lo + hi) / 2
 
     return Interval(point, bound(-0.999999), bound(0.999999), "profile-likelihood")
+
+
+EQUIVALENT = "equivalent"          # proven smaller than the tolerance
+NOT_EQUIVALENT = "not_equivalent"  # proven larger than the tolerance
+UNDETERMINED = "undetermined"      # the interval crosses the tolerance boundary
+
+
+def _chi2_sf_1df(x: float) -> float:
+    """Upper tail of chi-square on 1 degree of freedom, via the error function."""
+    if x <= 0:
+        return 1.0
+    return math.erfc(math.sqrt(x / 2.0))
+
+
+def equivalence_paired(a: int, b: int, c: int, d: int, margin: float,
+                       alpha: float = 0.05) -> dict:
+    """Two one-sided tests: is the paired difference SMALLER than `margin`?
+
+    An ordinary test puts the null at zero, so a system passes whenever the data
+    fail to convict it. That is the wrong way round for a conformity assessment.
+    With a large enough sample every non-zero difference becomes detectable and
+    everything fails; with a small one nothing is detectable and everything
+    passes. In both cases the verdict is about the sample size.
+
+    TOST inverts the burden. The null is that the difference is at least as
+    large as the declared tolerance, and the system passes only on affirmative
+    evidence that it is smaller. That is the standard used for bioequivalence
+    since Schuirmann (1987), and it is the standard a regulator should want:
+    the provider demonstrates conformity rather than the auditor demonstrating
+    its absence.
+
+    Three verdicts, not two:
+
+      EQUIVALENT      the whole interval sits inside +/- margin — a PASS that
+                      can be defended, not merely a failure to convict
+      NOT_EQUIVALENT  the whole interval sits outside — a FAIL
+      UNDETERMINED    the interval straddles the boundary — the honest answer,
+                      and the one an ordinary test never gives
+
+    The margin is a human judgement about what magnitude matters. It has to be
+    declared before the data are seen, which is why it lives in the signed
+    checklist rather than in this function's defaults.
+
+    Implementation note: TOST at level alpha is exactly the containment of the
+    (1 - 2*alpha) interval, so the 90% interval is used for a 5% test. Quoting
+    the 95% interval here is a standard and conservative mistake.
+    """
+    if margin <= 0:
+        raise ValueError("margin must be positive")
+    n = a + b + c + d
+    if n == 0:
+        raise ValueError("empty table")
+
+    iv = paired_diff(a, b, c, d, alpha=2 * alpha)
+    point = iv.point
+    mle = _paired_loglik(a, b, c, d, point)
+
+    def one_sided_p(bound: float) -> float:
+        """P of a result this far from `bound`, on the side away from it."""
+        lr = 2 * (mle - _paired_loglik(a, b, c, d, bound))
+        half = 0.5 * _chi2_sf_1df(lr)
+        # if the estimate sits beyond the bound, the evidence points the wrong
+        # way and the one-sided test cannot reject
+        return half if abs(point) < abs(bound) or (point - bound) * bound < 0 else 1.0 - half
+
+    p_upper = one_sided_p(margin)     # H0: difference >= +margin
+    p_lower = one_sided_p(-margin)    # H0: difference <= -margin
+    p_tost = max(p_upper, p_lower)
+
+    if iv.low > -margin and iv.high < margin:
+        verdict = EQUIVALENT
+    elif iv.low >= margin or iv.high <= -margin:
+        verdict = NOT_EQUIVALENT
+    else:
+        verdict = UNDETERMINED
+
+    return {"verdict": verdict, "margin": margin, "alpha": alpha,
+            "estimate": iv.point, "ci_low": iv.low, "ci_high": iv.high,
+            "interval_level": round(1 - 2 * alpha, 3),
+            "p_tost": min(1.0, p_tost), "method": "TOST / profile-likelihood"}
+
+
+def holm(p_values: dict[str, float], alpha: float = 0.05) -> dict:
+    """Holm-Bonferroni step-down correction over a family of tests.
+
+    Four audited models means four confirmatory tests, and the chance of at
+    least one spurious rejection at 5% each is not 5%. Holm controls the
+    family-wise error rate, is uniformly more powerful than plain Bonferroni,
+    and makes no assumption about dependence between the tests — which matters
+    here because the models share a probe set and are therefore not independent.
+    """
+    ordered = sorted(p_values.items(), key=lambda kv: kv[1])
+    m = len(ordered)
+    out, previous_rejected = {}, True
+    for i, (name, p) in enumerate(ordered):
+        threshold = alpha / (m - i)
+        rejected = previous_rejected and p <= threshold
+        previous_rejected = rejected
+        out[name] = {"p": p, "threshold": round(threshold, 6),
+                     "rejected": rejected, "rank": i + 1, "family_size": m}
+    return out
 
 
 def adverse_impact_ratio(a: int, b: int, c: int, d: int, alpha: float = 0.05,
