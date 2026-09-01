@@ -66,7 +66,34 @@ def writable(path: str) -> bool:
         return False
 
 
-def pick_persistent() -> tuple[str, bool]:
+def pick_persistent(wait_s: int = 45) -> tuple[str, bool]:
+    """First writable candidate wins — but wait for the mount before giving up.
+
+    The persistent volume is attached a moment AFTER the container starts, so a
+    probe run immediately at boot sees a read-only directory that is writable
+    thirty seconds later. Getting that wrong is expensive in exactly one
+    direction: the script silently falls back to ephemeral storage, rebuilds a
+    ten-minute virtual environment and re-downloads fifteen gigabytes of weights,
+    all of which vanish on the next recycle. So it is worth waiting.
+
+    Only the persistent candidates are retried; the ephemeral fallback is always
+    writable and would short-circuit the loop.
+    """
+    import time
+    persistent = [p for p in PERSIST_CANDIDATES if not p.startswith(WORK)]
+    deadline = time.time() + wait_s
+    announced = False
+    while True:
+        for path in persistent:
+            if writable(path):
+                return path, True
+        if time.time() >= deadline:
+            break
+        if not announced:
+            print("  waiting for the persistent volume to mount…", flush=True)
+            announced = True
+        time.sleep(5)
+
     for path in PERSIST_CANDIDATES:
         if writable(path):
             return path, not path.startswith(WORK)
@@ -119,6 +146,9 @@ def main() -> int:
         print(f"  identity   : set to {GIT_NAME} <{GIT_EMAIL}>")
 
     # --- venv ---------------------------------------------------------------
+    # Everything else in the repo looks for $ROOT/.venv. When the real venv lives
+    # on the persistent volume, a symlink lets run_models.sh and every pasted
+    # command keep working without knowing where it ended up.
     os.makedirs(hf_home, exist_ok=True)
     if os.path.isfile(py):
         print("  venv       : reused (already present)")
@@ -138,6 +168,15 @@ def main() -> int:
                 print(f"               FAILED: {' '.join(step[:3])}\n" + (r.stdout + r.stderr)[-1200:])
                 return 1
             print(f"               ok  {os.path.basename(step[0])} {step[1] if len(step) > 1 else ''}")
+
+    link = os.path.join(WORK, ".venv")
+    if is_persistent and os.path.realpath(link) != os.path.realpath(venv):
+        if os.path.islink(link) or os.path.isfile(link):
+            os.remove(link)
+        elif os.path.isdir(link):
+            shutil.rmtree(link)
+        os.symlink(venv, link)
+        print(f"  linked     : {link} -> {venv}")
 
     # --- verify -------------------------------------------------------------
     r = run([py, "-c",
