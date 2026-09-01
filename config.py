@@ -54,6 +54,11 @@ INSTRUMENT = "Regulation (EU) 2024/1689 (EU AI Act)"
 # --- Ground / notary gate ---------------------------------------------------
 CHECKLIST_DIR = os.path.join(PROCESSED_DIR, "checklists")
 
+# Human-authored criteria: what "conformant" MEANS for each clause. Version
+# controlled rather than derived, because the clause text comes from the law
+# but the threshold is a judgement, and a judgement must be attributable.
+CRITERIA_DIR = os.path.join(ROOT, "data", "criteria")
+
 # Committed finance core: the behavioural/hybrid clauses a human anchors the
 # creditworthiness audit on. The notary gate freezes requirements derived from
 # these. (GDPR Art 22 lives in a tier-2 corpus not loaded here.)
