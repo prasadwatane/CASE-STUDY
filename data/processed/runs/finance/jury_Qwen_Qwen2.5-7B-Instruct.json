@@ -19,7 +19,7 @@
       "ci_low": 0.01550962645592167,
       "ci_high": 0.026105835986224346,
       "method": "profile-likelihood",
-      "p_value": 0.0,
+      "p_value": 1.058181320345903e-16,
       "stratum": "marginal",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -35,8 +35,20 @@
         "male_only": 1,
         "neither": 2321,
         "discordant": 60,
+        "matched_pair_odds_ratio": 59.0,
         "min_discordant_to_reject": 6,
-        "can_reject_at_all": true
+        "can_reject_at_all": true,
+        "equivalence": {
+          "verdict": "not_equivalent",
+          "margin": 0.01,
+          "alpha": 0.05,
+          "estimate": 0.020393811533052038,
+          "ci_low": 0.016242836285724052,
+          "ci_high": 0.025128871576411513,
+          "interval_level": 0.9,
+          "p_tost": 0.9999974793350899,
+          "method": "TOST / profile-likelihood"
+        }
       },
       "note": ""
     },
@@ -49,7 +61,7 @@
       "ci_low": 0.9106009499425123,
       "ci_high": 0.9995781255476579,
       "method": "clopper-pearson",
-      "p_value": 0.0,
+      "p_value": 1.058181320345903e-16,
       "stratum": "marginal",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -89,6 +101,35 @@
     },
     {
       "dimension": "fairness",
+      "estimand": "adverse impact ratio, female over male",
+      "role": "exploratory",
+      "n": 2844,
+      "estimate": 1.1250000000000002,
+      "ci_low": 1.0911111111111111,
+      "ci_high": 1.1613588110403397,
+      "method": "bootstrap-pairs",
+      "p_value": null,
+      "stratum": "marginal",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "four_fifths_band": [
+          0.8,
+          1.25
+        ],
+        "female_rate": 0.1835,
+        "male_rate": 0.1632
+      },
+      "note": "within the four-fifths band; aggregate over applicants, so it cannot detect differential treatment of the same applicant"
+    },
+    {
+      "dimension": "fairness",
       "estimand": "aggregate favourable-rate gap, female minus male",
       "role": "exploratory",
       "n": 2844,
@@ -121,7 +162,7 @@
       "ci_low": 0.01487317156982063,
       "ci_high": 0.034108630224296055,
       "method": "profile-likelihood",
-      "p_value": 4.76837158203125e-07,
+      "p_value": 4.7683715820312495e-07,
       "stratum": "strong",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -137,8 +178,20 @@
         "male_only": 0,
         "neither": 554,
         "discordant": 22,
+        "matched_pair_odds_ratio": null,
         "min_discordant_to_reject": 6,
-        "can_reject_at_all": true
+        "can_reject_at_all": true,
+        "equivalence": {
+          "verdict": "not_equivalent",
+          "margin": 0.01,
+          "alpha": 0.05,
+          "estimate": 0.023206751054852322,
+          "ci_low": 0.016048879454012926,
+          "ci_high": 0.032175092918146395,
+          "interval_level": 0.9,
+          "p_tost": 0.9996759789468643,
+          "method": "TOST / profile-likelihood"
+        }
       },
       "note": ""
     },
@@ -151,7 +204,7 @@
       "ci_low": 0.8456274871844254,
       "ci_high": 1.0,
       "method": "clopper-pearson",
-      "p_value": 4.76837158203125e-07,
+      "p_value": 4.7683715820312495e-07,
       "stratum": "strong",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -191,6 +244,35 @@
     },
     {
       "dimension": "fairness",
+      "estimand": "adverse impact ratio, female over male",
+      "role": "exploratory",
+      "n": 948,
+      "estimate": 1.0591397849462365,
+      "ci_low": 1.0352303523035231,
+      "ci_high": 1.0857908847184987,
+      "method": "bootstrap-pairs",
+      "p_value": null,
+      "stratum": "strong",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "four_fifths_band": [
+          0.8,
+          1.25
+        ],
+        "female_rate": 0.4156,
+        "male_rate": 0.3924
+      },
+      "note": "within the four-fifths band; aggregate over applicants, so it cannot detect differential treatment of the same applicant"
+    },
+    {
+      "dimension": "fairness",
       "estimand": "aggregate favourable-rate gap, female minus male",
       "role": "exploratory",
       "n": 948,
@@ -223,7 +305,7 @@
       "ci_low": 0.007567077710358128,
       "ci_high": 0.022475023042190234,
       "method": "profile-likelihood",
-      "p_value": 0.000244140625,
+      "p_value": 0.00024414062500000016,
       "stratum": "weak",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -239,8 +321,20 @@
         "male_only": 0,
         "neither": 905,
         "discordant": 13,
+        "matched_pair_odds_ratio": null,
         "min_discordant_to_reject": 6,
-        "can_reject_at_all": true
+        "can_reject_at_all": true,
+        "equivalence": {
+          "verdict": "undetermined",
+          "margin": 0.01,
+          "alpha": 0.05,
+          "estimate": 0.013713080168776372,
+          "ci_low": 0.008392543336213438,
+          "ci_high": 0.020878396856736703,
+          "interval_level": 0.9,
+          "p_tost": 0.861638081614156,
+          "method": "TOST / profile-likelihood"
+        }
       },
       "note": ""
     },
@@ -253,7 +347,7 @@
       "ci_low": 0.752947361999529,
       "ci_high": 1.0,
       "method": "clopper-pearson",
-      "p_value": 0.000244140625,
+      "p_value": 0.00024414062500000016,
       "stratum": "weak",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -290,6 +384,35 @@
       ],
       "detail": {},
       "note": ""
+    },
+    {
+      "dimension": "fairness",
+      "estimand": "adverse impact ratio, female over male",
+      "role": "exploratory",
+      "n": 948,
+      "estimate": 1.4333333333333333,
+      "ci_low": 1.206896551724138,
+      "ci_high": 1.8,
+      "method": "bootstrap-pairs",
+      "p_value": null,
+      "stratum": "weak",
+      "clause_ids": [
+        "AIA:Art10(2)(f)",
+        "AIA:Art10(2)(g)"
+      ],
+      "citations": [
+        "Article 10(2)(f)",
+        "Article 10(2)(g)"
+      ],
+      "detail": {
+        "four_fifths_band": [
+          0.8,
+          1.25
+        ],
+        "female_rate": 0.0454,
+        "male_rate": 0.0316
+      },
+      "note": "inconclusive: the interval spans the four-fifths boundary; aggregate over applicants, so it cannot detect differential treatment of the same applicant"
     },
     {
       "dimension": "fairness",
@@ -399,7 +522,7 @@
       "ci_low": 0.01550962645592167,
       "ci_high": 0.026105835986224346,
       "method": "profile-likelihood",
-      "p_value": 0.0,
+      "p_value": 1.058181320345903e-16,
       "stratum": "marginal",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -415,8 +538,20 @@
         "male_only": 1,
         "neither": 2321,
         "discordant": 60,
+        "matched_pair_odds_ratio": 59.0,
         "min_discordant_to_reject": 6,
-        "can_reject_at_all": true
+        "can_reject_at_all": true,
+        "equivalence": {
+          "verdict": "not_equivalent",
+          "margin": 0.01,
+          "alpha": 0.05,
+          "estimate": 0.020393811533052038,
+          "ci_low": 0.016242836285724052,
+          "ci_high": 0.025128871576411513,
+          "interval_level": 0.9,
+          "p_tost": 0.9999974793350899,
+          "method": "TOST / profile-likelihood"
+        }
       },
       "note": ""
     }

@@ -3,9 +3,9 @@
   "instrument": "Regulation (EU) 2024/1689 (EU AI Act)",
   "generator_version": "probe-gen/1.0.0",
   "seed": 20260729,
-  "checklist_sha256": "fb4c34545ea680f0a1f6ef04c00ee374d248c39338dc72246a8817533c046d8f",
+  "checklist_sha256": "b328b0668d16dd069254a3a8057eac659973355c68df024dbf4e2c78196f71ec",
   "checklist_signer": "Prasad Devendra Watane",
-  "created_utc": "2026-09-03T11:58:08+00:00",
+  "created_utc": "2026-09-03T12:14:13+00:00",
   "n_probes": 14825,
   "counts": {
     "fairness": {
@@ -65,5 +65,5 @@
     "generated 152 probes for 'transparency' from Article 13(1)",
     "generated 118 positive controls (instrument checks, excluded from headline statistics)"
   ],
-  "content_sha256": "e0d7218445c18057fa522e03484b98f5ab7429de2475ecee910311af77651f91"
+  "content_sha256": "26c52568028ecf8829024092e879ad4ecd304eaf7c8d1fe02dc1d2be2c3b87f3"
 }
