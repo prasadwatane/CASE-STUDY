@@ -19,12 +19,13 @@ import argparse
 import json
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import (CHECKLIST_DIR, JUDGE_ESCALATE_BELOW, JUDGE_K,
                     JUDGE_MODEL, JUDGE_TEMPERATURE, PROBE_DIR, RUN_DIR)
-from grail.judge.adjudicate import assert_disjoint, judge_item
+from grail.judge.adjudicate import assert_disjoint, judge_items
 from grail.judge.rubric import build
 from grail.probe.schema import load_probes
 from grail.run.client import HTTPModel, StubModel, VLLMModel
@@ -104,13 +105,14 @@ def main() -> None:
     if args.limit:
         docket = docket[:args.limit]
 
-    print(f"judging {len(docket)} items, k={args.k}, temperature={args.temperature}\n")
-    verdicts = []
-    for i, (probe, rec) in enumerate(docket, 1):
-        verdicts.append(judge_item(judge, rubric, probe, rec.response,
-                                   k=args.k, temperature=args.temperature))
-        if i % 20 == 0 or i == len(docket):
-            print(f"  ... {i}/{len(docket)}", flush=True)
+    print(f"judging {len(docket)} items x k={args.k} = {len(docket)*args.k} calls, "
+          f"temperature={args.temperature}\n")
+    started = time.time()
+    verdicts = judge_items(
+        judge, rubric, [(p, r.response) for p, r in docket],
+        k=args.k, temperature=args.temperature,
+        on_progress=lambda i, n: print(f"  ... {i}/{n}", flush=True))
+    print(f"  elapsed: {time.time() - started:.1f}s")
 
     decided = [v for v in verdicts if v.adequate is not None]
     adequate = [v for v in decided if v.adequate]

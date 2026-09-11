@@ -111,32 +111,9 @@ def _parse(raw: str) -> dict:
     return json.loads(text)
 
 
-def judge_item(model, rubric: Rubric, probe, response: str, k: int = 5,
-               temperature: float = 0.3) -> ItemVerdict:
-    """Judge one response k times and reduce the runs to one verdict."""
-    det = checks.check(response, probe.slots)
-    settled = det.settled
-    prompt = render(rubric, probe.slots, response, settled=settled)
-
-    per_condition: dict[str, list[tuple[str, str]]] = {
-        c["key"]: [] for c in rubric.conditions}
-    errors: list[str] = []
-
-    for _ in range(k):
-        try:
-            raw = model.generate(f"{SYSTEM}\n\n{prompt}", temperature=temperature)
-            parsed = _parse(raw)
-        except Exception as exc:                      # noqa: BLE001 — recorded, not raised
-            errors.append(f"{type(exc).__name__}: {exc}")
-            continue
-        got = parsed.get("conditions", {})
-        for c in rubric.conditions:
-            entry = got.get(c["key"]) or {}
-            answer = str(entry.get("answer", CANNOT_TELL)).strip().lower()
-            if answer not in ("yes", "no", CANNOT_TELL):
-                answer = CANNOT_TELL
-            per_condition[c["key"]].append((answer, str(entry.get("quote", ""))))
-
+def _reduce(rubric, probe, response, det, settled, per_condition, errors,
+            judge_id, k) -> ItemVerdict:
+    """Turn k runs into one verdict. Identical whether the runs were batched."""
     verdicts: list[ConditionVerdict] = []
     ungrounded = 0
     for c in rubric.conditions:
@@ -180,7 +157,86 @@ def judge_item(model, rubric: Rubric, probe, response: str, k: int = 5,
                 if len(decided) == len(verdicts) else None)
 
     return ItemVerdict(
-        probe_id=probe.id, clause_id=rubric.clause_id, judge_id=model.id, k=k,
+        probe_id=probe.id, clause_id=rubric.clause_id, judge_id=judge_id, k=k,
         conditions=verdicts, adequate=adequate,
         self_agreement=min((v.agreement for v in verdicts), default=0.0),
         ungrounded_quotes=ungrounded, deterministic=det.as_dict(), errors=errors)
+
+
+def judge_items(model, rubric: Rubric, items: list, k: int = 5,
+                temperature: float = 0.3, on_progress=None) -> list[ItemVerdict]:
+    """Judge many responses at once, putting every call through one GPU pass.
+
+    `items` is a list of (probe, response) pairs.
+
+    Batching matters more here than it looks. Judging is k runs per item, so a
+    152-item docket at k = 5 is 760 inferences; issued one at a time on a 14B
+    model that is roughly seventy-five minutes, and four audited models is most
+    of a working day. The same prompts sent as one batch fill the KV cache and
+    finish in about a tenth of the time.
+
+    Nothing statistical changes. The k runs are independent draws either way and
+    the reduction is the same function, so batching buys time and costs nothing.
+
+    Falls back to sequential calls when the backend has no `generate_batch`, so
+    an HTTP judge or the offline stub still works unchanged.
+    """
+    prepared = []
+    for probe, response in items:
+        det = checks.check(response, probe.slots)
+        settled = det.settled
+        prompt = f"{SYSTEM}\n\n{render(rubric, probe.slots, response, settled=settled)}"
+        prepared.append((probe, response, det, settled, prompt))
+
+    flat = [p[4] for p in prepared for _ in range(k)]   # (item0 x k), (item1 x k), …
+
+    batch = getattr(model, "generate_batch", None)
+    if batch is not None:
+        replies = batch(flat, temperature=temperature)
+        if len(replies) != len(flat):
+            raise RuntimeError(
+                f"judge returned {len(replies)} replies for {len(flat)} prompts. "
+                "A misaligned batch would attribute answers to the wrong items, "
+                "so it is refused rather than recorded.")
+    else:
+        replies = []
+        for i, prompt in enumerate(flat):
+            try:
+                replies.append(model.generate(prompt, temperature=temperature))
+            except Exception as exc:                   # noqa: BLE001
+                replies.append(exc)
+            if on_progress and (i + 1) % (k * 10) == 0:
+                on_progress((i + 1) // k, len(prepared))
+
+    out = []
+    for idx, (probe, response, det, settled, _) in enumerate(prepared):
+        per_condition = {c["key"]: [] for c in rubric.conditions}
+        errors = []
+        for raw in replies[idx * k:(idx + 1) * k]:
+            if isinstance(raw, Exception):
+                errors.append(f"{type(raw).__name__}: {raw}")
+                continue
+            try:
+                parsed = _parse(raw)
+            except Exception as exc:                   # noqa: BLE001
+                errors.append(f"{type(exc).__name__}: {exc}")
+                continue
+            got = parsed.get("conditions", {})
+            for c in rubric.conditions:
+                entry = got.get(c["key"]) or {}
+                answer = str(entry.get("answer", CANNOT_TELL)).strip().lower()
+                if answer not in ("yes", "no", CANNOT_TELL):
+                    answer = CANNOT_TELL
+                per_condition[c["key"]].append((answer, str(entry.get("quote", ""))))
+        out.append(_reduce(rubric, probe, response, det, settled,
+                           per_condition, errors, model.id, k))
+    if on_progress:
+        on_progress(len(prepared), len(prepared))
+    return out
+
+
+def judge_item(model, rubric: Rubric, probe, response: str, k: int = 5,
+               temperature: float = 0.3) -> ItemVerdict:
+    """Judge a single response. Thin wrapper over the batched path."""
+    return judge_items(model, rubric, [(probe, response)], k=k,
+                       temperature=temperature)[0]
