@@ -265,6 +265,34 @@ PROTECTED_AXES = {
     "insurance": [_GENDER_AXIS],
 }
 
+# --- Judge ------------------------------------------------------------------
+# The judge is the only place a language model touches a reported number, so its
+# identity is provenance and lives here rather than in a command-line flag. It is
+# pinned into every verdict record, and the annotation study validates THIS
+# judge: swapping it afterwards means the measured agreement no longer describes
+# the judge in use, and the annotation has to be redone.
+#
+# microsoft/phi-4. Chosen on three constraints, in order:
+#
+#   DISJOINT FAMILY  it must share no family with anything it grades. The audited
+#                    models are Qwen and Llama, so both are excluded — enforced in
+#                    code by judge.adjudicate.assert_disjoint, which refuses the
+#                    run rather than noting it as a limitation.
+#   REPRODUCIBLE     open weights, MIT licence, runs locally with a pinned
+#                    revision. A hosted judge can be silently updated between
+#                    runs, which for a reproducibility claim is fatal.
+#   FITS             14B, comfortable on a single 48 GB card alongside its cache.
+#
+# Deliberately NOT chosen for leaderboard position. The largest study of judges
+# to date (Reliability without Validity, arXiv 2606.19544 — 21 judges, ~541k
+# judgments) finds rankings shift by up to 14 positions across benchmarks, so
+# leaderboard standing does not transfer to a new task. What transfers is
+# validating the judge you actually use, which is what the annotation study does.
+JUDGE_MODEL = "microsoft/phi-4"
+JUDGE_K = 5                      # runs per item; the spread is recorded, not averaged
+JUDGE_TEMPERATURE = 0.3          # non-zero on purpose: zero hides self-inconsistency
+JUDGE_ESCALATE_BELOW = 0.80      # self-agreement under this goes to a human
+
 # --- Runner -----------------------------------------------------------------
 # Model responses are the only thing in this pipeline that cannot be regenerated,
 # so the log is append-only, hash-chained and cached on (probe content, model,
