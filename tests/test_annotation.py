@@ -112,21 +112,47 @@ def test_interpretation_bands():
 
 
 # --- design and export ------------------------------------------------------
-def _candidates(n=400):
+MODELS = ["vendor/small", "vendor/large", "other/small", "other/large"]
+
+
+def _candidates(n=200, models=MODELS):
+    """Every probe answered by every model — which is what the log holds.
+
+    The fixture carries model_id on purpose: a probe answered by four models is
+    four explanations to rate, and selection, overlap and item tokens all have
+    to treat them as four distinct things.
+    """
     out = []
     for i in range(n):
-        strata = ["random"]
-        if i % 3 == 0:
-            strata.append("fairness_marginal")
-        if i % 5 == 0:
-            strata.append("judge_high_confidence")
-        if i % 7 == 0:
-            strata.append("judge_borderline")
-        out.append({"probe_id": f"p{i:04d}", "dimension": "transparency",
-                    "criterion": "states the decisive details",
-                    "prompt": f"prompt {i}", "response": f"response {i}",
-                    "strata": strata})
+        for m in models:
+            strata = ["random"]
+            if i % 3 == 0:
+                strata.append("judge_high_confidence")
+            if i % 5 == 0:
+                strata.append("judge_borderline")
+            if i % 11 == 0:
+                strata.append("judge_undecided")
+            out.append({"probe_id": f"p{i:04d}", "model_id": m,
+                        "dimension": "transparency",
+                        "criterion": "states the decisive details",
+                        "prompt": f"prompt {i}", "response": f"response {i} from {m}",
+                        "strata": strata})
     return out
+
+
+def test_the_same_probe_from_two_models_is_two_items():
+    """The failure this guards is silent: sheets look right, numbers are wrong."""
+    from grail.annotate.study import token_for
+    a = token_for("p0001", 7, "vendor/small")
+    b = token_for("p0001", 7, "vendor/large")
+    assert a != b, "two explanations were given the same blinded item id"
+
+
+def test_selection_keeps_every_model_in_play():
+    d = StudyDesign(domain="finance", n_items=80, n_overlap=20)
+    items = select(_candidates(), d)
+    models = {it["model_id"] for it in items}
+    assert len(models) == 4, f"selection collapsed to {models}"
 
 
 def test_allocation_sums_exactly():
@@ -140,26 +166,33 @@ def test_selection_is_deterministic_and_stratified():
     a = select(_candidates(), d)
     b = select(_candidates(), d)
     assert [x["probe_id"] for x in a] == [x["probe_id"] for x in b]
-    assert len({x["probe_id"] for x in a}) == len(a), "an item was selected twice"
+    # Uniqueness is over (probe, model): the same probe legitimately appears
+    # once per model, because each model wrote its own explanation of it.
+    ids = {(x["probe_id"], x["model_id"]) for x in a}
+    assert len(ids) == len(a), "an item was selected twice"
     assert len({x["stratum"] for x in a}) > 1
 
 
 def test_a_stratum_shortfall_is_reported_not_topped_up():
     """Quietly filling a stratum with random items fakes coverage."""
-    thin = [{"probe_id": f"q{i}", "strata": ["random"], "dimension": "transparency",
-             "prompt": "p", "response": "r", "criterion": "c"} for i in range(50)]
+    thin = [{"probe_id": f"q{i}", "model_id": "vendor/small", "strata": ["random"],
+             "dimension": "transparency", "prompt": "p", "response": "r",
+             "criterion": "c"} for i in range(50)]
     d = StudyDesign(domain="finance", n_items=40, n_overlap=10)
     items = select(thin, d)
     shortfall = items[0]["_shortfall"]
-    assert "fairness_marginal" in shortfall and shortfall["fairness_marginal"] > 0
+    # No judge verdicts in this pool, so every judge stratum must come up short
+    # and say so rather than being topped up from the random remainder.
+    assert shortfall.get("judge_high_confidence", 0) > 0
+    assert shortfall.get("judge_borderline", 0) > 0
 
 
 def test_overlap_assignment_is_a_subset_of_the_primary_sheet():
     d = StudyDesign(domain="finance", n_items=100, n_overlap=40)
     items = select(_candidates(), d)
     sheets = assign(items, d)
-    ids_a = {x["probe_id"] for x in sheets[PRIMARY]}
-    ids_b = {x["probe_id"] for x in sheets[SECOND]}
+    ids_a = {(x["probe_id"], x["model_id"]) for x in sheets[PRIMARY]}
+    ids_b = {(x["probe_id"], x["model_id"]) for x in sheets[SECOND]}
     assert len(sheets[PRIMARY]) == 100 and len(sheets[SECOND]) == 40
     assert ids_b < ids_a
 
@@ -194,8 +227,9 @@ def test_key_file_holds_the_mapping_and_the_guidelines_hash(tmp_path):
     assert key["design"]["guidelines_sha256"] == "abc123"
     assert len(key["items"]) == 40
     assert len(key["overlap_ids"]) == 20
-    tok = token_for(items[0]["probe_id"], d.seed)
+    tok = token_for(items[0]["probe_id"], d.seed, items[0]["model_id"])
     assert key["items"][tok]["probe_id"] == items[0]["probe_id"]
+    assert key["items"][tok]["model_id"] == items[0]["model_id"]
 
 
 def test_unrated_and_invalid_rows_are_counted_not_guessed(tmp_path):

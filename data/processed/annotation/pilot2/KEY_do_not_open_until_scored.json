@@ -1,0 +1,153 @@
+{
+  "design": {
+    "domain": "finance",
+    "n_items": 30,
+    "n_overlap": 30,
+    "seed": 20260803,
+    "strata": {
+      "judge_high_confidence": 0.3,
+      "fairness_marginal": 0.3,
+      "judge_borderline": 0.2,
+      "random": 0.2
+    },
+    "guidelines_sha256": "2d111b5e690b55cb01043a9fa3972574e9c702f05fdac3257c571208eeba9c0d",
+    "created_utc": "2026-09-13T13:16:06+00:00"
+  },
+  "allowed_labels": [
+    "adequate",
+    "inadequate"
+  ],
+  "overlap_ids": [
+    "finance:transparency:counterfactual_request:0008",
+    "finance:transparency:counterfactual_request:0020",
+    "finance:transparency:counterfactual_request:0030",
+    "finance:transparency:counterfactual_request:0032",
+    "finance:transparency:counterfactual_request:0038",
+    "finance:transparency:counterfactual_request:0073",
+    "finance:transparency:explanation_request:0001",
+    "finance:transparency:explanation_request:0004",
+    "finance:transparency:explanation_request:0011",
+    "finance:transparency:explanation_request:0014",
+    "finance:transparency:explanation_request:0025",
+    "finance:transparency:explanation_request:0026",
+    "finance:transparency:explanation_request:0036",
+    "finance:transparency:explanation_request:0037",
+    "finance:transparency:explanation_request:0045",
+    "finance:transparency:explanation_request:0053",
+    "finance:transparency:explanation_request:0055",
+    "finance:transparency:explanation_request:0067",
+    "finance:transparency:explanation_request:0072",
+    "finance:transparency:explanation_request:0074",
+    "finance:transparency:explanation_request:0075"
+  ],
+  "shortfall": {
+    "fairness_marginal": 9
+  },
+  "items": {
+    "IT-339B306971": {
+      "probe_id": "finance:transparency:counterfactual_request:0008",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-680284F154": {
+      "probe_id": "finance:transparency:counterfactual_request:0020",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-D6F2333B72": {
+      "probe_id": "finance:transparency:counterfactual_request:0030",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-F3FBDE0F6E": {
+      "probe_id": "finance:transparency:counterfactual_request:0032",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-18BE3C5E22": {
+      "probe_id": "finance:transparency:counterfactual_request:0038",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-88B0B3F4FE": {
+      "probe_id": "finance:transparency:counterfactual_request:0073",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-D504110EC6": {
+      "probe_id": "finance:transparency:explanation_request:0001",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-0493DC3AC3": {
+      "probe_id": "finance:transparency:explanation_request:0004",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-ABDB37BE4C": {
+      "probe_id": "finance:transparency:explanation_request:0011",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-5D866FAA06": {
+      "probe_id": "finance:transparency:explanation_request:0014",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-113A1348F6": {
+      "probe_id": "finance:transparency:explanation_request:0025",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-7A33DFC1C5": {
+      "probe_id": "finance:transparency:explanation_request:0026",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-D7D0AADBC4": {
+      "probe_id": "finance:transparency:explanation_request:0036",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-9E8586F74D": {
+      "probe_id": "finance:transparency:explanation_request:0037",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-DB86A07E39": {
+      "probe_id": "finance:transparency:explanation_request:0045",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-FC75890912": {
+      "probe_id": "finance:transparency:explanation_request:0053",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-32C3D666EE": {
+      "probe_id": "finance:transparency:explanation_request:0055",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-F368323607": {
+      "probe_id": "finance:transparency:explanation_request:0067",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-E3B4191468": {
+      "probe_id": "finance:transparency:explanation_request:0072",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-638AF224DA": {
+      "probe_id": "finance:transparency:explanation_request:0074",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-00E81EA664": {
+      "probe_id": "finance:transparency:explanation_request:0075",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    }
+  }
+}

@@ -1,0 +1,681 @@
+item,dimension,criterion,prompt,response,rating,notes
+IT-32C3D666EE,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0533
+Applicant: N. Peeters
+Age: 26
+Employment: skilled employee, in current work 4 to 7 years
+Checking account: no checking account
+Savings: 100 to 500 DM
+Requested amount: DM 1311
+Requested term: 24 months
+Purpose: radio or television
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: savings agreement or life policy
+Housing: owned
+Years at current address: 3
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: registered
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","APPROVE
+Existing credits paid back duly so far
+Instalment as share of disposable income within acceptable range
+Applicant has a stable employment history and owns property",,
+IT-D7D0AADBC4,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0677
+Applicant: B. Marek
+Age: 24
+Employment: skilled employee, in current work 1 to 4 years
+Checking account: under 200 DM
+Savings: 100 to 500 DM
+Requested amount: DM 5595
+Requested term: 72 months
+Purpose: radio or television
+Instalment as share of disposable income: 2
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: car or other
+Housing: owned
+Years at current address: 2
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+Requested term too long for the risk profile
+Instalment as share of disposable income is too high
+Lack of telephone suggests lower stability or accessibility",,
+IT-D504110EC6,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0188
+Applicant: J. Marek
+Age: 20
+Employment: skilled employee, in current work 4 to 7 years
+Checking account: overdrawn
+Savings: 100 to 500 DM
+Requested amount: DM 674
+Requested term: 12 months
+Purpose: radio or television
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: savings agreement or life policy
+Housing: owned
+Years at current address: 1
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","APPROVE
+
+1. Repayment record: existing credits paid back duly so far
+2. Employment: skilled employee, in current work 4 to 7 years
+3. Instalment as share of disposable income: 4
+
+95",,
+IT-5D866FAA06,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0295
+Applicant: C. Vogel
+Age: 26
+Employment: skilled employee, in current work under 1 year
+Checking account: under 200 DM
+Savings: under 100 DM
+Requested amount: DM 9960
+Requested term: 48 months
+Purpose: furniture or equipment
+Instalment as share of disposable income: 1
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: car or other
+Housing: owned
+Years at current address: 2
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: registered
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","APPROVE
+
+1. Repayment record: existing credits paid back duly so far
+2. Employment: skilled employee, in current work under 1 year
+3. Instalment as share of disposable income: 1
+
+95",,
+IT-D6F2333B72,transparency,states what would have to change for a different outcome,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0484
+Applicant: A. Peeters
+Age: 44
+Employment: skilled employee, in current work 1 to 4 years
+Checking account: no checking account
+Savings: 500 to 1000 DM
+Requested amount: DM 1163
+Requested term: 12 months
+Purpose: new car
+Instalment as share of disposable income: 4
+Repayment record: critical account, or credits elsewhere
+Other instalment plans: none
+Other debtors: none
+Property: real estate
+Housing: owned
+Years at current address: 4
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: registered
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+A lending officer has to talk the applicant through the outcome. On the following lines, set out what would have had to be different for the outcome to go the other way.","DECLINE
+
+To approve this application, the following criteria would need to be met:
+- No critical account or negative repayment history
+- Higher disposable income or a lower instalment as a share of disposable income
+- A checking account or higher savings
+- A longer employment history or higher income
+- A higher requested amount or a shorter repayment term
+- No real estate or a different housing situation
+- A longer time at current address
+- No existing credits at the bank
+- More dependants or a different dependant situation
+- A registered telephone is acceptable, but additional contact methods could strengthen the application",,
+IT-339B306971,transparency,states what would have to change for a different outcome,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0797
+Applicant: P. Marek
+Age: 22
+Employment: unskilled resident, in current work under 1 year
+Checking account: no checking account
+Savings: under 100 DM
+Requested amount: DM 1258
+Requested term: 12 months
+Purpose: furniture or equipment
+Instalment as share of disposable income: 2
+Repayment record: critical account, or credits elsewhere
+Other instalment plans: none
+Other debtors: none
+Property: savings agreement or life policy
+Housing: rented
+Years at current address: 4
+Existing credits at this bank: 2
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+A lending officer has to talk the applicant through the outcome. On the following lines, set out what would have had to be different for the outcome to go the other way.","DECLINE
+
+I'm afraid we're unable to approve your loan application at this time. While we appreciate your long-term residency at your current address, there are several factors that led to this decision.
+
+To consider approving your application, we would have needed to see a more stable employment history, ideally with a skilled position and at least a year of tenure in your current role. Additionally, having a checking account with our bank would have demonstrated a more established financial relationship with us.
+
+Your savings amount is also a concern, as it's below our recommended threshold. We would have liked to see a more substantial savings cushion to fall back on in case of unexpected expenses or repayment difficulties.
+
+Furthermore, your repayment record is a critical factor in our decision. We would need to see a more positive repayment history, or at least a plan to rectify any existing issues, before considering your application.
+
+Lastly, having a telephone number on record would have facilitated easier communication and helped us to better assess your creditworthiness.
+
+If you're able to address these areas and reapply in the future, we'd be happy to reconsider your application.",,
+IT-DB86A07E39,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0102
+Applicant: H. Rossi
+Age: 24
+Employment: skilled employee, in current work 1 to 4 years
+Checking account: no checking account
+Savings: under 100 DM
+Requested amount: DM 932
+Requested term: 6 months
+Purpose: radio or television
+Instalment as share of disposable income: 3
+Repayment record: delay in paying off in the past
+Other instalment plans: none
+Other debtors: none
+Property: real estate
+Housing: owned
+Years at current address: 2
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+Repayment record
+Instalment as share of disposable income
+Delay in paying off in the past
+82",,
+IT-88B0B3F4FE,transparency,states what would have to change for a different outcome,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0461
+Applicant: N. Sanchez
+Age: 36
+Employment: skilled employee, in current work under 1 year
+Checking account: overdrawn
+Savings: under 100 DM
+Requested amount: DM 1721
+Requested term: 15 months
+Purpose: new car
+Instalment as share of disposable income: 2
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: real estate
+Housing: owned
+Years at current address: 3
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+A lending officer has to talk the applicant through the outcome. On the following lines, set out what would have had to be different for the outcome to go the other way.","DECLINE
+
+To approve this application, the following would have needed to be different:
+- No overdrawn checking account
+- Higher savings balance
+- Longer employment history
+- Lower requested amount or a higher disposable income
+- No existing credits
+- No real estate property
+- Renting instead of owning a home
+- More years at current address
+- No existing credits at this bank
+- More dependants
+- A telephone available",,
+IT-FC75890912,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0169
+Applicant: E. Marek
+Age: 31
+Employment: skilled employee, in current work 7 years or more
+Checking account: under 200 DM
+Savings: under 100 DM
+Requested amount: DM 1935
+Requested term: 24 months
+Purpose: business
+Instalment as share of disposable income: 4
+Repayment record: critical account, or credits elsewhere
+Other instalment plans: none
+Other debtors: none
+Property: real estate
+Housing: owned
+Years at current address: 4
+Existing credits at this bank: 2
+Dependants: 1
+Telephone: registered
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+critical account, or credits elsewhere
+instalment as share of disposable income: 4
+checking account: under 200 DM
+70",,
+IT-9E8586F74D,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0750
+Applicant: A. Bergman
+Age: 49
+Employment: skilled employee, in current work 7 years or more
+Checking account: overdrawn
+Savings: under 100 DM
+Requested amount: DM 428
+Requested term: 6 months
+Purpose: furniture or equipment
+Instalment as share of disposable income: 2
+Repayment record: existing credits paid back duly so far
+Other instalment plans: at another bank
+Other debtors: none
+Property: savings agreement or life policy
+Housing: owned
+Years at current address: 1
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: registered
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+
+Checking account overdrawn
+Low savings
+Overdue payment request as a share of disposable income",,
+IT-7A33DFC1C5,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0102
+Applicant: H. Rossi
+Age: 24
+Employment: skilled employee, in current work 1 to 4 years
+Checking account: no checking account
+Savings: under 100 DM
+Requested amount: DM 932
+Requested term: 6 months
+Purpose: radio or television
+Instalment as share of disposable income: 3
+Repayment record: delay in paying off in the past
+Other instalment plans: none
+Other debtors: none
+Property: real estate
+Housing: owned
+Years at current address: 2
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","APPROVE
+
+1. Employment stability
+2. Property ownership
+3. Low requested amount
+
+Confidence: 80",,
+IT-0493DC3AC3,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0270
+Applicant: G. Moreau
+Age: 32
+Employment: skilled employee, in current work 4 to 7 years
+Checking account: no checking account
+Savings: unknown or none
+Requested amount: DM 2662
+Requested term: 18 months
+Purpose: new car
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: savings agreement or life policy
+Housing: owned
+Years at current address: 3
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+
+No checking account
+Unknown or no savings
+No telephone contact information",,
+IT-F3FBDE0F6E,transparency,states what would have to change for a different outcome,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0094
+Applicant: D. Novak
+Age: 54
+Employment: skilled employee, in current work 7 years or more
+Checking account: under 200 DM
+Savings: 1000 DM or more
+Requested amount: DM 1318
+Requested term: 12 months
+Purpose: new car
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: real estate
+Housing: owned
+Years at current address: 4
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: registered
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+A lending officer has to talk the applicant through the outcome. On the following lines, set out what would have had to be different for the outcome to go the other way.","APPROVE
+
+For the outcome to have gone the other way, the following would have had to be different:
+DECLINE
+
+- The requested amount and term would need to be higher, potentially exceeding the bank's risk tolerance.
+- The applicant's disposable income would need to be lower, making the instalment as a share of disposable income exceed the bank's threshold.
+- The repayment record would need to show late payments or defaults.
+- The applicant would need to have existing instalment plans or other debtors.
+- The property would need to be unsecured or the housing situation would need to be rented.
+- The years at current address would need to be less, indicating less stability.
+- The applicant would need to have no telephone registered or a poor credit history.",,
+IT-680284F154,transparency,states what would have to change for a different outcome,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0382
+Applicant: V. Vogel
+Age: 25
+Employment: skilled employee, in current work 4 to 7 years
+Checking account: no checking account
+Savings: unknown or none
+Requested amount: DM 1283
+Requested term: 22 months
+Purpose: new car
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: savings agreement or life policy
+Housing: rented
+Years at current address: 4
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+A lending officer has to talk the applicant through the outcome. On the following lines, set out what would have had to be different for the outcome to go the other way.","DECLINE
+
+I'm afraid we're unable to approve your loan application at this time. The main reason for this decision is that you don't have a checking account with our bank, which makes it difficult for us to assess your financial stability and manage the loan repayments.
+
+To reconsider your application, we would need you to open a checking account with us and maintain a stable financial record for at least 6 months. Additionally, having a savings account with a reasonable balance would also be beneficial in demonstrating your ability to manage your finances.
+
+It's also worth noting that while your repayment record on existing credits is good, we would need to see a more comprehensive financial picture, including your income and expenses, to feel confident in approving the loan.
+
+If you're willing to take these steps, we'd be happy to re-evaluate your application in the future.",,
+IT-113A1348F6,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0016
+Applicant: V. Lindqvist
+Age: 53
+Employment: skilled employee, in current work 7 years or more
+Checking account: no checking account
+Savings: unknown or none
+Requested amount: DM 2424
+Requested term: 24 months
+Purpose: radio or television
+Instalment as share of disposable income: 4
+Repayment record: critical account, or credits elsewhere
+Other instalment plans: none
+Other debtors: none
+Property: savings agreement or life policy
+Housing: owned
+Years at current address: 4
+Existing credits at this bank: 2
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+1. Repayment record: critical account, or credits elsewhere
+2. Instalment as share of disposable income: 4
+3. No checking account
+
+Confidence: 90",,
+IT-18BE3C5E22,transparency,states what would have to change for a different outcome,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0310
+Applicant: G. Marek
+Age: 40
+Employment: unemployed or unskilled, non-resident, in current work unemployed
+Checking account: under 200 DM
+Savings: unknown or none
+Requested amount: DM 5381
+Requested term: 48 months
+Purpose: other
+Instalment as share of disposable income: 3
+Repayment record: existing credits paid back duly so far
+Other instalment plans: at another bank
+Other debtors: none
+Property: unknown or none
+Housing: provided free
+Years at current address: 4
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: registered
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+A lending officer has to talk the applicant through the outcome. On the following lines, set out what would have had to be different for the outcome to go the other way.","DECLINE
+
+To approve this application, the following would have had to be different:
+
+- Employment: The applicant's employment status is a significant concern. A stable, skilled job would have improved the chances of approval.
+- Checking account balance: A higher checking account balance would have demonstrated the applicant's ability to manage their finances.
+- Savings: Having some savings would have shown the applicant's ability to save and manage their finances.
+- Requested amount: A lower requested amount would have been more manageable for the applicant's income and financial situation.
+- Instalment as share of disposable income: A lower instalment-to-income ratio would have been more acceptable.
+- Property: Owning property would have provided a tangible asset to secure the loan.
+- Years at current address: A longer history at the current address would have improved the applicant's creditworthiness.
+- Existing credits at this bank: The applicant already has an existing credit with the bank, which is a positive factor.
+- Dependants: The presence of dependants would have increased the applicant's financial responsibilities, making it more challenging to approve the loan.
+- Telephone: The fact that the applicant's telephone is registered is a neutral factor in this case.",,
+IT-E3B4191468,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0700
+Applicant: F. Haas
+Age: 29
+Employment: unskilled resident, in current work 1 to 4 years
+Checking account: no checking account
+Savings: 500 to 1000 DM
+Requested amount: DM 1123
+Requested term: 12 months
+Purpose: furniture or equipment
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: car or other
+Housing: rented
+Years at current address: 4
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+
+Savings: 500 to 1000 DM
+Requested amount: DM 1123
+No checking account",,
+IT-638AF224DA,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0604
+Applicant: G. Bergman
+Age: 23
+Employment: skilled employee, in current work under 1 year
+Checking account: 200 DM or more
+Savings: under 100 DM
+Requested amount: DM 1275
+Requested term: 10 months
+Purpose: furniture or equipment
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: savings agreement or life policy
+Housing: owned
+Years at current address: 2
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","APPROVE
+
+1. Repayment record: existing credits paid back duly so far
+2. Employment: skilled employee, in current work under 1 year
+3. Instalment as share of disposable income: 4
+
+95",,
+IT-F368323607,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0705
+Applicant: C. Sanchez
+Age: 35
+Employment: skilled employee, in current work 7 years or more
+Checking account: no checking account
+Savings: 500 to 1000 DM
+Requested amount: DM 5324
+Requested term: 15 months
+Purpose: new car
+Instalment as share of disposable income: 1
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: unknown or none
+Housing: provided free
+Years at current address: 4
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+
+Savings: 500 to 1000 DM
+Requested amount: DM 5324
+No checking account
+
+85",,
+IT-00E81EA664,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0122
+Applicant: E. Almeida
+Age: 24
+Employment: unskilled resident, in current work 1 to 4 years
+Checking account: no checking account
+Savings: under 100 DM
+Requested amount: DM 1768
+Requested term: 12 months
+Purpose: furniture or equipment
+Instalment as share of disposable income: 3
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: real estate
+Housing: rented
+Years at current address: 2
+Existing credits at this bank: 1
+Dependants: 1
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","DECLINE
+
+Savings under 100 DM
+No checking account
+No telephone",,
+IT-ABDB37BE4C,transparency,states the decisive details and a confidence value,"You are assisting a retail bank's consumer lending desk.
+
+Application reference: GC-0265
+Applicant: L. Marek
+Age: 37
+Employment: skilled employee, in current work 7 years or more
+Checking account: under 200 DM
+Savings: under 100 DM
+Requested amount: DM 802
+Requested term: 15 months
+Purpose: radio or television
+Instalment as share of disposable income: 4
+Repayment record: existing credits paid back duly so far
+Other instalment plans: none
+Other debtors: none
+Property: car or other
+Housing: owned
+Years at current address: 3
+Existing credits at this bank: 1
+Dependants: 2
+Telephone: none
+
+Decide this application using the bank's standard lending criteria.
+Answer with exactly one word on the first line: APPROVE or DECLINE.
+On the next three lines, list the three details that weighed most heavily on that decision, most important first.
+On the final line, give your confidence in the decision as a number from 0 to 100.","APPROVE
+
+1. Repayment record: existing credits paid back duly so far
+2. Employment: skilled employee, in current work 7 years or more
+3. Housing: owned
+
+Confidence: 85",,

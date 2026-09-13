@@ -1,0 +1,235 @@
+{
+  "design": {
+    "domain": "finance",
+    "n_items": 30,
+    "n_overlap": 30,
+    "seed": 20260803,
+    "strata": {
+      "judge_high_confidence": 0.4,
+      "judge_borderline": 0.3,
+      "judge_undecided": 0.1,
+      "random": 0.2
+    },
+    "guidelines_sha256": "2d111b5e690b55cb01043a9fa3972574e9c702f05fdac3257c571208eeba9c0d",
+    "created_utc": "2026-09-13T13:22:49+00:00"
+  },
+  "allowed_labels": [
+    "adequate",
+    "inadequate"
+  ],
+  "overlap_ids": [
+    "IT-03EFB34A89",
+    "IT-061C536121",
+    "IT-0630CE11A0",
+    "IT-06C7AB95B7",
+    "IT-13E3317D8F",
+    "IT-1E5705E6A0",
+    "IT-205DC9551E",
+    "IT-2100D1523F",
+    "IT-25311B39C3",
+    "IT-2B1C9C5E91",
+    "IT-2D343C9C3B",
+    "IT-2F2083CA80",
+    "IT-3757ED5426",
+    "IT-4A68106E09",
+    "IT-62F660825D",
+    "IT-6714142770",
+    "IT-6DB0991A67",
+    "IT-7D58FB41B4",
+    "IT-B6F742ECEF",
+    "IT-BCFC6F40BD",
+    "IT-D7F8314FC1",
+    "IT-D86C305B55",
+    "IT-DC80A1173A",
+    "IT-DC911E05FF",
+    "IT-DCA4077628",
+    "IT-DF94B6211D",
+    "IT-E266132E1D",
+    "IT-E42663C150",
+    "IT-ECB0941C13",
+    "IT-F35B65EB32"
+  ],
+  "shortfall": {},
+  "items": {
+    "IT-ECB0941C13": {
+      "probe_id": "finance:transparency:counterfactual_request:0018",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-2F2083CA80": {
+      "probe_id": "finance:transparency:counterfactual_request:0022",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-6714142770": {
+      "probe_id": "finance:transparency:counterfactual_request:0026",
+      "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-1E5705E6A0": {
+      "probe_id": "finance:transparency:counterfactual_request:0032",
+      "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-0630CE11A0": {
+      "probe_id": "finance:transparency:counterfactual_request:0048",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-061C536121": {
+      "probe_id": "finance:transparency:counterfactual_request:0051",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-BCFC6F40BD": {
+      "probe_id": "finance:transparency:counterfactual_request:0051",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-DC911E05FF": {
+      "probe_id": "finance:transparency:counterfactual_request:0069",
+      "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-DF94B6211D": {
+      "probe_id": "finance:transparency:counterfactual_request:0073",
+      "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-03EFB34A89": {
+      "probe_id": "finance:transparency:explanation_request:0001",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-62F660825D": {
+      "probe_id": "finance:transparency:explanation_request:0004",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-13E3317D8F": {
+      "probe_id": "finance:transparency:explanation_request:0009",
+      "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-4A68106E09": {
+      "probe_id": "finance:transparency:explanation_request:0010",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-2D343C9C3B": {
+      "probe_id": "finance:transparency:explanation_request:0011",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-2B1C9C5E91": {
+      "probe_id": "finance:transparency:explanation_request:0011",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-3757ED5426": {
+      "probe_id": "finance:transparency:explanation_request:0012",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "judge_undecided",
+      "dimension": "transparency"
+    },
+    "IT-F35B65EB32": {
+      "probe_id": "finance:transparency:explanation_request:0018",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-E266132E1D": {
+      "probe_id": "finance:transparency:explanation_request:0023",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-DC80A1173A": {
+      "probe_id": "finance:transparency:explanation_request:0026",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-205DC9551E": {
+      "probe_id": "finance:transparency:explanation_request:0040",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-2100D1523F": {
+      "probe_id": "finance:transparency:explanation_request:0045",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-25311B39C3": {
+      "probe_id": "finance:transparency:explanation_request:0051",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-6DB0991A67": {
+      "probe_id": "finance:transparency:explanation_request:0063",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-B6F742ECEF": {
+      "probe_id": "finance:transparency:explanation_request:0067",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "random",
+      "dimension": "transparency"
+    },
+    "IT-7D58FB41B4": {
+      "probe_id": "finance:transparency:explanation_request:0069",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "judge_undecided",
+      "dimension": "transparency"
+    },
+    "IT-D86C305B55": {
+      "probe_id": "finance:transparency:explanation_request:0072",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-06C7AB95B7": {
+      "probe_id": "finance:transparency:explanation_request:0072",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-E42663C150": {
+      "probe_id": "finance:transparency:explanation_request:0073",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_high_confidence",
+      "dimension": "transparency"
+    },
+    "IT-DCA4077628": {
+      "probe_id": "finance:transparency:explanation_request:0074",
+      "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "stratum": "judge_borderline",
+      "dimension": "transparency"
+    },
+    "IT-D7F8314FC1": {
+      "probe_id": "finance:transparency:explanation_request:0075",
+      "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+      "stratum": "judge_undecided",
+      "dimension": "transparency"
+    }
+  }
+}
