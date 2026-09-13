@@ -49,17 +49,39 @@ class Agreement:
         return asdict(self)
 
     def meets(self, threshold: float) -> bool:
-        """Threshold is met only if the LOWER bound clears it, not the estimate.
+        """Kappa against the threshold. Reported, no longer the criterion.
 
-        Still keyed on kappa, deliberately: the criterion is pre-registered on
-        kappa and moving the goalposts after seeing a deflated value would be
-        exactly the manoeuvre pre-registration forbids. `meets_ac1` is provided
-        alongside so the paradox case can be reported honestly rather than
-        resolved by quietly switching statistic.
+        Kept because the LLM-as-judge literature reports kappa almost
+        universally and a result that cannot be compared with it is worth less.
+        See `meets_primary` for what H2 is now stated over, and why that is not
+        the manoeuvre this docstring used to warn against.
         """
         return self.ci_low is not None and self.ci_low >= threshold
 
     def meets_ac1(self, threshold: float) -> bool:
+        return self.ac1_ci_low is not None and self.ac1_ci_low >= threshold
+
+    def meets_primary(self, threshold: float) -> bool:
+        """H2's criterion: Gwet's AC1, lower bound, per the filed amendment.
+
+        This used to be keyed on kappa, with a note that switching statistic
+        after seeing a deflated value is exactly what pre-registration forbids.
+        That note was right, and it still is. The switch is legitimate here for
+        one reason and only one: it was made and dated in
+        `docs/expose_amendment_H2_AC1.md` on 13 September 2026, **before the
+        first annotation label was recorded**. Nobody has seen a kappa on this
+        docket. There is no value to move goalposts around.
+
+        The substantive argument is in the amendment: the Art 13(1) docket is
+        known in advance to be heavily skewed toward 'adequate', kappa deflates
+        under skewed marginals (Feinstein & Cicchetti 1990), and an instrument
+        that reports a false negative about its own reliability is worse than
+        one that reports nothing.
+
+        Threshold is met only if the LOWER bound clears it, never the estimate —
+        a point estimate over the line with an interval straddling it is a small
+        sample, not a validated judge.
+        """
         return self.ac1_ci_low is not None and self.ac1_ci_low >= threshold
 
 

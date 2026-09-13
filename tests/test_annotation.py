@@ -295,3 +295,23 @@ def test_ac1_is_undefined_when_only_one_label_is_used():
     from grail.annotate.agreement import gwet_ac1
     ac1, po, _, reason = gwet_ac1(["ok"] * 20, ["ok"] * 20)
     assert ac1 is None and po == 1.0 and "only one label" in reason
+
+
+def test_h2_is_stated_over_ac1_not_kappa():
+    """The amendment is only legitimate if the code actually follows it.
+
+    Filed 13 Sep 2026, before any label existed. A docket skewed toward one
+    label is the case the amendment exists for: kappa deflates, AC1 does not,
+    and H2 must not fail for the wrong reason.
+    """
+    from grail.annotate.agreement import agreement
+    # 40 items, raters disagree on 2. Heavily skewed toward "yes".
+    a = ["yes"] * 38 + ["no", "yes"]
+    b = ["yes"] * 38 + ["yes", "no"]
+    r = agreement(a, b)
+
+    assert r.percent_agreement >= 0.90          # they plainly agree
+    assert r.kappa is not None and r.kappa < 0.61   # yet kappa says otherwise
+    assert r.meets_primary(0.61)                # AC1 does not make that mistake
+    assert not r.meets(0.61)                    # and kappa is still reported
+    assert r.paradox, "the divergence must be surfaced, not silently resolved"
