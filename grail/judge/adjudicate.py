@@ -38,7 +38,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass, field
 
 from grail.judge import checks
-from grail.judge.rubric import SYSTEM, Rubric, render
+from grail.judge.rubric import SYSTEM, Rubric, evidence_for, render
 
 CANNOT_TELL = "cannot_tell"
 
@@ -78,6 +78,12 @@ class ConditionVerdict:
     grounded: bool = False
     settled_in_code: bool = False
     runs: list[str] = field(default_factory=list)
+    evidence_for: str = "yes"         # the answer that required a quotation
+    # Every answer thrown out for unsupported quotation, kept verbatim. An audit
+    # that discards a third of its evidence and does not say which third is not
+    # auditable; the first run of this rubric dropped 746 quotations and left no
+    # record of one of them.
+    discarded: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -132,17 +138,25 @@ def _reduce(rubric, probe, response, det, settled, per_condition, errors,
             continue
 
         # Ungrounded answers are dropped BEFORE the vote, so an invented
-        # quotation cannot carry a majority.
-        kept = []
+        # quotation cannot carry a majority. Only the answer that ASSERTS
+        # something carries the burden — see rubric.evidence_for. Requiring a
+        # span for the other answer would be asking the judge to quote an
+        # absence, which forces it to invent or to decline.
+        need = evidence_for(c)
+        kept, dropped = [], []
         for answer, quote in runs:
-            if answer == CANNOT_TELL or checks.quote_is_grounded(quote, response):
+            if answer != need:
+                kept.append((answer, quote))
+            elif checks.quote_is_grounded(quote, response):
                 kept.append((answer, quote))
             else:
                 ungrounded += 1
+                dropped.append({"answer": answer, "quote": quote})
 
         if not kept:
             verdicts.append(ConditionVerdict(
-                c["key"], CANNOT_TELL, 0.0, runs=[a for a, _ in runs]))
+                c["key"], CANNOT_TELL, 0.0, runs=[a for a, _ in runs],
+                evidence_for=need, discarded=dropped))
             continue
 
         counts = Counter(a for a, _ in kept)
@@ -150,7 +164,8 @@ def _reduce(rubric, probe, response, det, settled, per_condition, errors,
         quote = next((q for a, q in kept if a == answer and q), "")
         verdicts.append(ConditionVerdict(
             key=c["key"], answer=answer, agreement=n / len(kept), quote=quote,
-            grounded=bool(quote), runs=[a for a, _ in runs]))
+            grounded=bool(quote) or answer != need, runs=[a for a, _ in runs],
+            evidence_for=need, discarded=dropped))
 
     decided = [v for v in verdicts if v.answer != CANNOT_TELL]
     adequate = (all(v.answer == "yes" for v in verdicts)
@@ -163,51 +178,8 @@ def _reduce(rubric, probe, response, det, settled, per_condition, errors,
         ungrounded_quotes=ungrounded, deterministic=det.as_dict(), errors=errors)
 
 
-def judge_items(model, rubric: Rubric, items: list, k: int = 5,
-                temperature: float = 0.3, on_progress=None) -> list[ItemVerdict]:
-    """Judge many responses at once, putting every call through one GPU pass.
-
-    `items` is a list of (probe, response) pairs.
-
-    Batching matters more here than it looks. Judging is k runs per item, so a
-    152-item docket at k = 5 is 760 inferences; issued one at a time on a 14B
-    model that is roughly seventy-five minutes, and four audited models is most
-    of a working day. The same prompts sent as one batch fill the KV cache and
-    finish in about a tenth of the time.
-
-    Nothing statistical changes. The k runs are independent draws either way and
-    the reduction is the same function, so batching buys time and costs nothing.
-
-    Falls back to sequential calls when the backend has no `generate_batch`, so
-    an HTTP judge or the offline stub still works unchanged.
-    """
-    prepared = []
-    for probe, response in items:
-        det = checks.check(response, probe.slots)
-        settled = det.settled
-        prompt = f"{SYSTEM}\n\n{render(rubric, probe.slots, response, settled=settled)}"
-        prepared.append((probe, response, det, settled, prompt))
-
-    flat = [p[4] for p in prepared for _ in range(k)]   # (item0 x k), (item1 x k), …
-
-    batch = getattr(model, "generate_batch", None)
-    if batch is not None:
-        replies = batch(flat, temperature=temperature)
-        if len(replies) != len(flat):
-            raise RuntimeError(
-                f"judge returned {len(replies)} replies for {len(flat)} prompts. "
-                "A misaligned batch would attribute answers to the wrong items, "
-                "so it is refused rather than recorded.")
-    else:
-        replies = []
-        for i, prompt in enumerate(flat):
-            try:
-                replies.append(model.generate(prompt, temperature=temperature))
-            except Exception as exc:                   # noqa: BLE001
-                replies.append(exc)
-            if on_progress and (i + 1) % (k * 10) == 0:
-                on_progress((i + 1) // k, len(prepared))
-
+def _collect(rubric, prepared, replies, k, judge_id) -> list[ItemVerdict]:
+    """Turn a slab of raw replies into verdicts, k replies per prepared item."""
     out = []
     for idx, (probe, response, det, settled, _) in enumerate(prepared):
         per_condition = {c["key"]: [] for c in rubric.conditions}
@@ -229,9 +201,75 @@ def judge_items(model, rubric: Rubric, items: list, k: int = 5,
                     answer = CANNOT_TELL
                 per_condition[c["key"]].append((answer, str(entry.get("quote", ""))))
         out.append(_reduce(rubric, probe, response, det, settled,
-                           per_condition, errors, model.id, k))
-    if on_progress:
-        on_progress(len(prepared), len(prepared))
+                           per_condition, errors, judge_id, k))
+    return out
+
+
+def judge_items(model, rubric: Rubric, items: list, k: int = 5,
+                temperature: float = 0.3, on_progress=None,
+                chunk: int = 16, on_chunk=None) -> list[ItemVerdict]:
+    """Judge many responses at once, putting every call through one GPU pass.
+
+    `items` is a list of (probe, response) pairs.
+
+    Batching matters more here than it looks. Judging is k runs per item, so a
+    152-item docket at k = 5 is 760 inferences; issued one at a time on a 14B
+    model that is roughly seventy-five minutes, and four audited models is most
+    of a working day. The same prompts sent as one batch fill the KV cache and
+    finish in about a tenth of the time.
+
+    Nothing statistical changes. The k runs are independent draws either way and
+    the reduction is the same function, so batching buys time and costs nothing.
+
+    **Work is committed in chunks, not at the end.** One batch of 760 prompts is
+    fastest and is also an hour of GPU time that a container recycle erases, and
+    a run whose only output arrives at the end is a run you have to sit and
+    watch. Each chunk of `chunk` items is reduced and handed to `on_chunk` as
+    soon as it lands, so the caller can append it to disk; what a restart costs
+    is bounded by the chunk, not by the run. The chunk is still large enough to
+    keep the batch efficient — sixteen items at k = 5 is eighty prompts in one
+    pass.
+
+    Falls back to sequential calls when the backend has no `generate_batch`, so
+    an HTTP judge or the offline stub still works unchanged. The chunking and
+    the checkpoints are identical on that path.
+    """
+    prepared = []
+    for probe, response in items:
+        det = checks.check(response, probe.slots)
+        settled = det.settled
+        prompt = f"{SYSTEM}\n\n{render(rubric, probe.slots, response, settled=settled)}"
+        prepared.append((probe, response, det, settled, prompt))
+
+    batch = getattr(model, "generate_batch", None)
+    out: list[ItemVerdict] = []
+
+    for start in range(0, len(prepared), max(1, chunk)):
+        slab = prepared[start:start + max(1, chunk)]
+        flat = [p[4] for p in slab for _ in range(k)]  # (item0 x k), (item1 x k), …
+
+        if batch is not None:
+            replies = batch(flat, temperature=temperature)
+            if len(replies) != len(flat):
+                raise RuntimeError(
+                    f"judge returned {len(replies)} replies for {len(flat)} "
+                    "prompts. A misaligned batch would attribute answers to the "
+                    "wrong items, so it is refused rather than recorded.")
+        else:
+            replies = []
+            for prompt in flat:
+                try:
+                    replies.append(model.generate(prompt, temperature=temperature))
+                except Exception as exc:               # noqa: BLE001
+                    replies.append(exc)
+
+        done = _collect(rubric, slab, replies, k, model.id)
+        out.extend(done)
+        if on_chunk:
+            on_chunk(done)                             # persist before continuing
+        if on_progress:
+            on_progress(len(out), len(prepared))
+
     return out
 
 

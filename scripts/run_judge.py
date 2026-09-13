@@ -35,6 +35,30 @@ from grail.run.store import load
 CLAUSE = "AIA:Art13(1)"
 
 
+class _V:
+    """A verdict read back from the checkpoint file.
+
+    Items recovered from a partial run and items judged in this process have to
+    be summarised by the same code, so the resumed ones are wrapped to expose
+    the handful of attributes the summary reads. Deliberately dumb: it must not
+    be possible for a resumed verdict to mean something different from a fresh
+    one, so this adapts shape and nothing else.
+    """
+    __slots__ = ("_d",)
+
+    def __init__(self, d: dict):
+        self._d = d
+
+    def __getattr__(self, name):
+        try:
+            return self._d[name]
+        except KeyError as exc:
+            raise AttributeError(name) from exc
+
+    def as_dict(self) -> dict:
+        return self._d
+
+
 class StubJudge:
     """Offline stand-in. Never evidence; keeps the pipeline runnable."""
     id = "stub/judge-1.0"
@@ -70,6 +94,11 @@ def main() -> None:
     ap.add_argument("--gpu-mem", type=float, default=0.85)
     ap.add_argument("--eager", action="store_true")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--chunk", type=int, default=16,
+                    help="items per batch; also how much a restart can cost")
+    ap.add_argument("--part", default=None, help="checkpoint path")
+    ap.add_argument("--fresh", action="store_true",
+                    help="ignore any checkpoint and re-judge everything")
     args = ap.parse_args()
 
     run_dir = os.path.join(RUN_DIR, args.domain)
@@ -105,22 +134,66 @@ def main() -> None:
     if args.limit:
         docket = docket[:args.limit]
 
-    print(f"judging {len(docket)} items x k={args.k} = {len(docket)*args.k} calls, "
-          f"temperature={args.temperature}\n")
+    # --- resume ------------------------------------------------------------
+    # Judging is expensive and the container is not ours. Completed items are
+    # appended to a partial file as they land, and a rerun picks up from it, so
+    # a recycle costs the chunk in flight rather than the run. Delete the
+    # partial to force a clean re-judge.
+    stem = args.model.replace("/", "_")
+    part_path = args.part or os.path.join(run_dir, f"judge_{stem}.partial.jsonl")
+    done: dict[str, dict] = {}
+    if os.path.exists(part_path) and not args.fresh:
+        with open(part_path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    item = json.loads(line)
+                except json.JSONDecodeError:
+                    continue          # a torn final line from a hard kill
+                done[item["probe_id"]] = item
+        if done:
+            print(f"resuming: {len(done)} items already judged in "
+                  f"{os.path.basename(part_path)}")
+
+    todo = [(p, r) for p, r in docket if p.id not in done]
+    if not todo:
+        print("every item already judged; assembling from the partial file")
+
+    print(f"judging {len(todo)} items x k={args.k} = {len(todo)*args.k} calls, "
+          f"temperature={args.temperature}"
+          + (f"  ({len(done)} skipped)" if done else "") + "\n")
+
+    part_fh = open(part_path, "w" if args.fresh else "a", encoding="utf-8")
+
+    def checkpoint(batch_done):
+        for v in batch_done:
+            part_fh.write(json.dumps(v.as_dict(), ensure_ascii=False) + "\n")
+        part_fh.flush()
+        os.fsync(part_fh.fileno())    # survive a container kill, not just a crash
+
     started = time.time()
-    verdicts = judge_items(
-        judge, rubric, [(p, r.response) for p, r in docket],
-        k=args.k, temperature=args.temperature,
-        on_progress=lambda i, n: print(f"  ... {i}/{n}", flush=True))
+    fresh = judge_items(
+        judge, rubric, [(p, r.response) for p, r in todo],
+        k=args.k, temperature=args.temperature, chunk=args.chunk,
+        on_chunk=checkpoint,
+        on_progress=lambda i, n: print(
+            f"  ... {i}/{n}  ({time.time() - started:.0f}s)", flush=True))
+    part_fh.close()
     print(f"  elapsed: {time.time() - started:.1f}s")
+
+    # Docket order, not completion order, so the output is stable across resumes.
+    by_id = {v.probe_id: v.as_dict() for v in fresh}
+    by_id.update({k_: v for k_, v in done.items() if k_ not in by_id})
+    verdicts = [_V(by_id[p.id]) for p, _ in docket if p.id in by_id]
 
     decided = [v for v in verdicts if v.adequate is not None]
     adequate = [v for v in decided if v.adequate]
     low = [v for v in verdicts if v.self_agreement < JUDGE_ESCALATE_BELOW]
     ungrounded = sum(v.ungrounded_quotes for v in verdicts)
 
-    out_path = args.out or os.path.join(
-        run_dir, f"judge_{args.model.replace('/', '_')}.json")
+    out_path = args.out or os.path.join(run_dir, f"judge_{stem}.json")
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump({"audited_model": args.model, "judge": judge.id, "k": args.k,
                    "clause": CLAUSE, "rubric": rubric.as_dict(),
@@ -141,6 +214,9 @@ def main() -> None:
     print(f"  one when judge-human agreement has been measured against the")
     print(f"  human-human ceiling. Until then this is an input to that study.")
     print(f"\n  verdicts -> {out_path}")
+    print(f"  checkpoint kept at {os.path.basename(part_path)} — a rerun RESUMES "
+          "from it.\n  To re-judge from scratch after changing the rubric, pass "
+          "--fresh.")
 
 
 if __name__ == "__main__":

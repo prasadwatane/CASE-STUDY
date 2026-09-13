@@ -103,7 +103,15 @@ def check(response: str, slots: dict) -> DeterministicVerdict:
     # assertion about a different application. Small integers are excluded
     # because they are list markers ("1.", "2.") and confidence values, neither
     # of which claims anything about the applicant.
-    said = set(re.findall(r"\d{3,}", response))
+    #
+    # Digit-group separators are stripped FIRST. Without that, a response
+    # writing the amount the way a person would — "EUR 6,300" against a stored
+    # 6300 — yields the fragment "300", which matches nothing in the case and is
+    # recorded as an invented number, which settles `no_contradiction` to false
+    # in code with no judge involved. A model would have been failed for
+    # formatting a number correctly.
+    flat = re.sub(r"(?<=\d)[,  ](?=\d{3}\b)", "", response)
+    said = set(re.findall(r"\d{3,}", flat))
     invented = sorted(said - numbers)
 
     return DeterministicVerdict(

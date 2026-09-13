@@ -186,3 +186,86 @@ def test_the_prompt_never_names_the_model_under_audit():
     for leak in ("qwen", "llama", "mistral", "gpt", "model under audit"):
         assert leak not in low
     assert "already been established" in low and "names_field" in text
+
+
+# --- the burden of proof runs in the direction a quotation can exist ---------
+#
+# Added after the first real run: 85 of 152 items came back undecided on
+# `no_contradiction` and 746 quotations were discarded across the docket. The
+# cause was not a bad judge but a bad question — the rubric demanded a verbatim
+# span in support of "nothing here contradicts the case", and no such span can
+# exist. These fix that shape in place.
+
+from grail.judge.adjudicate import judge_items                    # noqa: E402
+from grail.judge.adjudicate import CANNOT_TELL                     # noqa: E402
+from grail.judge.rubric import CONDITIONS, evidence_for           # noqa: E402
+
+INVERTED = Rubric(
+    clause_id=RUBRIC.clause_id, citation=RUBRIC.citation,
+    clause_text=RUBRIC.clause_text, criterion=RUBRIC.criterion,
+    conditions=CONDITIONS["AIA:Art13(1)"])
+
+
+def test_the_universal_condition_asks_for_evidence_of_contradiction():
+    by_key = {c["key"]: c for c in CONDITIONS["AIA:Art13(1)"]}
+    assert evidence_for(by_key["names_field"]) == "yes"
+    assert evidence_for(by_key["states_direction"]) == "yes"
+    # The one that cannot be shown by a span in the affirmative direction.
+    assert evidence_for(by_key["no_contradiction"]) == "no"
+
+
+def test_finding_no_contradiction_needs_no_quote():
+    """'I checked and found none' is an answer, not an unsupported claim."""
+    judge = FakeJudge([reply(contra="yes", quote="")] * 5)
+    v = judge_item(judge, INVERTED, Probe(), GOOD, k=5)
+    contra = next(c for c in v.conditions if c.key == "no_contradiction")
+    assert contra.answer == "yes"
+    assert contra.agreement == 1.0
+    assert contra.discarded == []        # nothing thrown away on this condition
+
+
+def test_claiming_a_contradiction_still_requires_showing_it():
+    """The assertive direction keeps the full grounding burden."""
+    judge = FakeJudge([reply(contra="no", quote="the applicant is unemployed")] * 5)
+    v = judge_item(judge, INVERTED, Probe(), GOOD, k=5)
+    contra = next(c for c in v.conditions if c.key == "no_contradiction")
+    assert contra.answer == CANNOT_TELL        # every run discarded
+    assert len(contra.discarded) == 5
+
+
+def test_discarded_quotations_are_kept_verbatim():
+    """A run that throws away evidence and cannot say which is not auditable."""
+    judge = FakeJudge([reply(contra="no", quote="the applicant is unemployed")] * 5)
+    v = judge_item(judge, INVERTED, Probe(), GOOD, k=5)
+    contra = next(c for c in v.conditions if c.key == "no_contradiction")
+    assert len(contra.discarded) == 5
+    assert contra.discarded[0] == {"answer": "no",
+                                   "quote": "the applicant is unemployed"}
+
+
+def test_a_formatted_amount_is_not_an_invented_number():
+    """'EUR 6,300' against a stored 6300 must not read as a different case."""
+    for written in ("the requested EUR 6,300", "the requested EUR 6 300",
+                    "the requested 6300"):
+        d = checks.check(f"DECLINE. {written} over 48 months is high.", CASE)
+        assert d.invented_numbers == [], written
+        assert d.contradicts is False, written
+    # and the guard still catches a genuinely different figure
+    assert checks.check("the requested EUR 99,999", CASE).contradicts
+
+
+# --- chunking is an accounting change, not a statistical one ----------------
+
+def test_chunking_does_not_change_a_single_verdict():
+    items = [(Probe(), GOOD)] * 7
+    whole = judge_items(FakeJudge([reply()]), INVERTED, items, k=3, chunk=99)
+    split = judge_items(FakeJudge([reply()]), INVERTED, items, k=3, chunk=2)
+    assert [v.as_dict() for v in whole] == [v.as_dict() for v in split]
+
+
+def test_every_chunk_is_handed_back_before_the_next_one_runs():
+    """What a restart costs is bounded by the chunk only if this holds."""
+    seen = []
+    judge_items(FakeJudge([reply()]), INVERTED, [(Probe(), GOOD)] * 7, k=2,
+                chunk=3, on_chunk=lambda done: seen.append(len(done)))
+    assert seen == [3, 3, 1]

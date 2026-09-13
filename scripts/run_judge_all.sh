@@ -6,9 +6,15 @@
 # instead of putting two models on one card, and pushed per model so a container
 # recycle costs at most the one in flight.
 #
-# The judge is loaded ONCE and reused across all audited models. Loading a 14B
-# model from network storage costs twelve minutes; doing that four times would be
-# most of the run.
+# KNOWN COST: the judge is loaded once PER AUDITED MODEL, not once for the sweep,
+# because each model is a separate `run_judge.py` process. A 14B judge off
+# network storage is about twelve minutes, so four models pay roughly forty-five
+# minutes of loading for forty minutes of judging. Worth fixing by moving the
+# loop inside the Python process; not fixed yet, and recorded here rather than
+# discovered from a wall clock.
+#
+# Each model resumes from its own checkpoint, so a recycle mid-sweep costs the
+# chunk in flight — not the model, and not the sweep.
 #
 #   HF_TOKEN=… GIT_TOKEN=… nohup bash scripts/run_judge_all.sh &
 #   tail -f logs/judge.log
@@ -53,6 +59,12 @@ while read -r model; do
   echo ""; echo "===================================================================="
   echo "JUDGING  $(date '+%H:%M:%S')  $model"
   echo "===================================================================="
+
+  # A finished verdict file is not re-judged. Rerunning the sweep after one
+  # model failed should cost that model, not all four.
+  if [ -f "data/processed/runs/$DOMAIN/judge_${model//\//_}.json" ] && [ "${FORCE:-}" != "1" ]; then
+    echo "  already judged — skipping (FORCE=1 to redo)"; ok=$((ok+1)); continue
+  fi
 
   if "$PY" scripts/run_judge.py "$DOMAIN" --model "$model" --local --eager; then
     ok=$((ok+1))
