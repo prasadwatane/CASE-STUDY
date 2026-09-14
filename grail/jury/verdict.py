@@ -375,9 +375,13 @@ def deliberate(probes: list, records: list, model_id: str,
         eq = (f.detail or {}).get("equivalence")
         if eq and eq["verdict"] == UNDETERMINED:
             f.note = ((f.note + " ") if f.note else "") + (
+                # "certified" is deliberately avoided: in an AI Act context it
+                # names a conformity assessment procedure with a legal meaning,
+                # and the report's language guard refuses the word for exactly
+                # that reason. The statistical sense is "shown".
                 f"equivalence undetermined: the interval spans the "
                 f"{eq['margin']*100:.1f} pp tolerance, so the effect is neither "
-                "certified small nor shown to exceed it")
+                "shown to be smaller than it nor shown to exceed it")
     instruments = [f for f in findings if f.role == INSTRUMENT]
     fired = [f for f in instruments if f.detail.get("fired")]
 

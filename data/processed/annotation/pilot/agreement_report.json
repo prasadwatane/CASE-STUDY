@@ -1,0 +1,36 @@
+{
+  "n_double_annotated": 25,
+  "n_primary_only": 4,
+  "ceiling": {
+    "kappa": 0.05405405405405374,
+    "ci": [
+      -0.2500000000000007,
+      0.49999999999999967
+    ],
+    "percent_agreement": 0.72,
+    "expected_agreement": 0.704,
+    "interpretation": "slight",
+    "undefined_reason": "",
+    "meets_threshold": false,
+    "threshold": 0.61
+  },
+  "by_dimension": {
+    "transparency": {
+      "n": 25,
+      "kappa": 0.05405405405405374,
+      "ci": [
+        -0.2500000000000007,
+        0.49999999999999967
+      ],
+      "percent_agreement": 0.72,
+      "interpretation": "slight",
+      "meets_threshold": false,
+      "undefined_reason": "",
+      "warning": "only 25 double-annotated items — the interval is too wide to support a claim about this dimension"
+    }
+  },
+  "judge": null,
+  "notes": [
+    "The human ceiling does not clear κ ≥ 0.61 at the lower bound (κ = 0.054, CI [-0.250, 0.500]). No judge can be shown to exceed a ceiling that has not itself been established — either the guidelines need sharpening or the dimension is not reliably automatable, and the second of those is a finding."
+  ]
+}

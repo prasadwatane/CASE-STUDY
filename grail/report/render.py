@@ -209,6 +209,14 @@ def render_markdown(ledger, *, domain: str, checklist_signer: str = "",
                 w(f"- {e.estimand}: {_interval(e)} (n = {e.n:,}) — "
                   f"{e.verdict}; excluded from headline claims because "
                   f"{why_not}.")
+                # A finding's note reaches the page even when the finding
+                # carries no claim. Provenance disclosures live in notes — a
+                # post-hoc threshold revision, a sample below the floor at which
+                # the test can reject — and suppressing them for non-headline
+                # findings would hide exactly the entries most in need of the
+                # caveat.
+                if e.note:
+                    w(f"  - {e.note}")
             w("")
 
         if controls:

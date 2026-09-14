@@ -349,3 +349,34 @@ def test_h2_is_stated_over_ac1_not_kappa():
     assert r.meets_primary(0.61)                # AC1 does not make that mistake
     assert not r.meets(0.61)                    # and kappa is still reported
     assert r.paradox, "the divergence must be surfaced, not silently resolved"
+
+
+def test_the_simulation_matches_the_agreement_implementation_of_record():
+    """The power study keeps a stripped copy of the statistics for speed.
+
+    A second implementation is a second definition unless something holds them
+    together. This is that something: if the fast path in the simulation ever
+    drifts from grail.annotate.agreement, the sizing justification in the
+    methods chapter stops describing the study that was actually run.
+    """
+    import importlib.util, os, sys as _s
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "scripts", "simulate_agreement.py")
+    spec = importlib.util.spec_from_file_location("sim", path)
+    sim = importlib.util.module_from_spec(spec)
+    _s.modules["sim"] = sim
+    spec.loader.exec_module(sim)
+
+    cases = [
+        (["adequate"] * 27 + ["inadequate"] * 3,
+         ["adequate"] * 25 + ["inadequate"] * 5),
+        (["adequate"] * 15 + ["inadequate"] * 15,
+         ["adequate"] * 14 + ["inadequate"] * 16),
+        (["adequate"] * 38 + ["inadequate", "adequate"],
+         ["adequate"] * 38 + ["adequate", "inadequate"]),
+    ]
+    for a, b in cases:
+        k_fast, g_fast = sim._stats(list(zip(a, b)))
+        r = agreement(a, b)
+        assert abs(k_fast - r.kappa) < 1e-9, (k_fast, r.kappa)
+        assert abs(g_fast - r.ac1) < 1e-9, (g_fast, r.ac1)

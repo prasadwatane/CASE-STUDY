@@ -94,6 +94,15 @@ TEMPLATE = """<!DOCTYPE html>
     <div class="g">{guidelines}</div>
   </details>
   <div id="card"></div>
+  <div id="fallback" style="display:none; margin-top:28px;">
+    <h2>If the download did not work</h2>
+    <p style="font-size:14px">Some mail and chat clients preview this page in a sandbox that
+       blocks downloads. Press <b>Copy instead</b>, then paste into a plain text file and send
+       that back — or select everything in the box below and copy it.</p>
+    <textarea id="csvout" readonly style="width:100%; height:220px; font:12px/1.5
+       ui-monospace,Menlo,monospace; border:1px solid var(--line); border-radius:6px;
+       padding:10px;"></textarea>
+  </div>
 </main>
 
 <footer><div class="acts">
@@ -103,6 +112,7 @@ TEMPLATE = """<!DOCTYPE html>
   <input id="note" placeholder="note (optional)">
   <button id="back" class="ghost">&larr;</button>
   <button id="dl">Download CSV</button>
+  <button id="cp">Copy instead</button>
   <span class="unsaved" id="warn"></span>
 </div></footer>
 
@@ -177,19 +187,56 @@ document.addEventListener("keydown", e => {{
 
 function csvCell(s) {{ return '"' + String(s||"").replace(/"/g,'""') + '"'; }}
 
-document.getElementById("dl").onclick = () => {{
+function buildCsv() {{
   const head = ["item","dimension","criterion","prompt","response","rating","notes"];
   const lines = [head.join(",")];
   for (const it of ITEMS) lines.push([
     it.item, it.dimension, it.criterion, it.prompt, it.response,
     ratings[it.item] || "", notes[it.item] || ""
   ].map(csvCell).join(","));
-  const blob = new Blob([lines.join("\\n")], {{type:"text/csv;charset=utf-8"}});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "{download_name}";
-  a.click();
-  dirty = false; paint();
+  return lines.join("\\n");
+}}
+
+function showFallback(csv) {{
+  const box = document.getElementById("fallback");
+  box.style.display = "block";
+  document.getElementById("csvout").value = csv;
+  box.scrollIntoView({{behavior:"smooth"}});
+}}
+
+// Three routes out, because the first two fail in real mail and chat clients:
+// a sandboxed preview (Teams, Outlook) blocks programmatic downloads, and
+// Safari ignores the download attribute on file:// URLs. The textarea always
+// works, so the rater is never stuck with labels they cannot return.
+document.getElementById("dl").onclick = () => {{
+  const csv = buildCsv();
+  try {{
+    const blob = new Blob([csv], {{type:"text/csv;charset=utf-8"}});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "{download_name}";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    dirty = false; paint();
+    // The click may have been silently swallowed by a sandbox, so offer the
+    // fallback regardless rather than assuming success.
+    showFallback(csv);
+  }} catch (e) {{
+    showFallback(csv);
+  }}
+}};
+
+document.getElementById("cp").onclick = async () => {{
+  const csv = buildCsv();
+  try {{
+    await navigator.clipboard.writeText(csv);
+    document.getElementById("warn").textContent = "copied to clipboard";
+    dirty = false; paint();
+  }} catch (e) {{
+    showFallback(csv);
+    const ta = document.getElementById("csvout");
+    ta.focus(); ta.select();
+  }}
 }};
 
 window.addEventListener("beforeunload", e => {{

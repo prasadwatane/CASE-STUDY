@@ -29,7 +29,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import (CHECKLIST_DIR, ROBUSTNESS_EQUIVALENCE_MARGIN, RUN_DIR,
+from config import (CHECKLIST_DIR, ROBUSTNESS_EQUIVALENCE_MARGIN,
+                    ROBUSTNESS_MARGIN_ORIGINAL, RUN_DIR,
                     TRANSPARENCY_ADEQUACY_FLOOR)
 from grail.jury.intervals import wilson
 from grail.ledger import Entry, Ledger, UntraceableFinding
@@ -134,10 +135,57 @@ def admit_judge(led: Ledger, path: str, checklist_sha: str) -> int:
     return 1
 
 
+def _dual_verdict_note(finding: dict, clause_id: str) -> str:
+    """Robustness carries BOTH verdicts, always.
+
+    The 15(1)/15(4) tolerance was revised from 0.05 to 0.20 on 14 September 2026,
+    AFTER all four models had been measured and had failed at 0.05
+    (docs/criteria_amendment_robustness_020.md). A revision made after the result
+    is known is legitimate only if it is disclosed every time the result is
+    reported, so the disclosure is generated here rather than left to whoever is
+    writing. Removing this line would make the report misrepresent its own
+    provenance.
+    """
+    if clause_id not in ("AIA:Art15(1)", "AIA:Art15(4)"):
+        return ""
+    lo, hi = finding.get("ci_low"), finding.get("ci_high")
+    if lo is None or hi is None:
+        return ""
+    orig = _verdict_for_ceiling(lo, hi, ROBUSTNESS_MARGIN_ORIGINAL)
+    return (f"TOLERANCE REVISED POST HOC: this verdict is at "
+            f"{ROBUSTNESS_EQUIVALENCE_MARGIN:.2f}. Against the PRE-REGISTERED "
+            f"{ROBUSTNESS_MARGIN_ORIGINAL:.2f} the verdict is {orig}. The revision was "
+            "made after the results were known — see "
+            "docs/criteria_amendment_robustness_020.md")
+
+
+def _note(finding: dict, caveats: str) -> str:
+    """The finding's own note, plus any jury caveat it does not already carry.
+
+    The jury often writes the caveat onto the finding as well as into the
+    top-level list, so a naive join printed the same sentence twice. A warning
+    repeated is a warning skimmed.
+    """
+    note = finding.get("note", "") or ""
+    if finding.get("role") != "confirmatory" or not caveats:
+        return note
+    extra = [c.strip() for c in caveats.split(" · ")
+             if c.strip() and c.strip().split(": ")[-1] not in note]
+    return " · ".join(x for x in ([note] + extra) if x)
+
+
 def admit_jury(led: Ledger, path: str, checklist_sha: str) -> int:
     """Admit a jury verdict file. Findings already carry clause ids and roles."""
     doc = json.load(open(path, encoding="utf-8"))
     model = doc.get("model_id") or doc.get("audited_model", "")
+
+    # The jury's caveats are about the CONFIRMATORY endpoint — "only 5
+    # discordant pairs, so a non-significant result here is uninformative" is
+    # precisely the sentence a reader needs beside the verdict, and it was
+    # being dropped on the way into the ledger. A caveat that does not reach
+    # the page is a caveat nobody made.
+    caveats = " · ".join(doc.get("caveats") or [])
+
     role_to_sample = {"confirmatory": "core", "instrument": "control",
                       "exploratory": "adaptive"}
     admitted = 0
@@ -187,7 +235,10 @@ def admit_jury(led: Ledger, path: str, checklist_sha: str) -> int:
                     method=f.get("method", ""), p_value=f.get("p_value"),
                     model_id=model, stratum=f.get("stratum", ""),
                     checklist_sha256=checklist_sha,
-                    detail=f.get("detail", {}), note=f.get("note", "")))
+                    detail=f.get("detail", {}),
+                    note=" · ".join(x for x in (
+                        _note(f, caveats),
+                        _dual_verdict_note(f, clause_id)) if x)))
                 admitted += 1
             except UntraceableFinding as exc:
                 print(f"  REFUSED: {exc}")

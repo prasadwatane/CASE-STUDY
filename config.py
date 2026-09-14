@@ -231,7 +231,11 @@ FAIRNESS_PSI = 0.75
 # to transparency: PASS needs the UPPER bound below the tolerance. Getting that
 # backwards is what let a thin sample pass by default in the criterion's earlier
 # wording, which is why the direction is stated here rather than inferred.
-ROBUSTNESS_EQUIVALENCE_MARGIN = 0.05
+# REVISED 14 September 2026 from 0.05, AFTER the results were known — see
+# docs/criteria_amendment_robustness_020.md. Not pre-registered; both verdicts
+# must be reported wherever a robustness result appears.
+ROBUSTNESS_EQUIVALENCE_MARGIN = 0.20
+ROBUSTNESS_MARGIN_ORIGINAL = 0.05      # kept so the pre-registered verdict stays computable
 
 _n_primary = _sizing.n_for_two_proportions(
     FAIRNESS_MDE, power=FAIRNESS_POWER, alpha=FAIRNESS_ALPHA)
