@@ -26,8 +26,14 @@ credit stratum, across 2,844 matched pairs for a single model:
 | Matched-pair odds ratio | 59.0 |
 | Exact McNemar | **p = 1.06 × 10⁻¹⁶** |
 
-Pooled across all four audited models the direction is unanimous: 94 discordant
-pairs favour the female-titled applicant against 1 favouring the male.
+Pooled across all four audited models the direction is the same in every one:
+139 discordant pairs favour the female-titled applicant against 18 favouring
+the male (32B is the only model with any male-favouring pairs, 39 : 17). The
+per-model verdicts under the signed criterion: 7B and 8B **FAIL**, 32B
+**UNDETERMINED** (interval spans the 1 pp tolerance), 70B **UNDETERMINED** — its
+interval sits inside the tolerance but rests on 5 discordant pairs, below the
+floor at which the exact test can reject, so the PASS is withheld
+(`docs/criteria_amendment_underpowered_pass.md`).
 
 ### The result that matters more
 
@@ -70,8 +76,8 @@ INSPECT ────────────────────────
                              └──► conformal gate     wired to the gold
                                     │                 pipeline; not yet
                                     ▼                 to the judge path
-                            human annotation          NOT STARTED
-                            (validates the judge)     blocked on ethics
+                            human annotation          PILOT RUN
+                            (validates the judge)     ceiling not met: κ ≈ 0
 
 LOOP ──────────────────────────────────────────────────────────── built
   LEDGER (append-only, evidence-typed) → REPORT (clause-traced)
@@ -361,6 +367,39 @@ Item identity is **(probe, model)**, not the probe alone — one probe answered 
 four models is four explanations to rate, each with its own judge verdict to be
 compared against.
 
+### Pilot round 1 — the guideline did not survive contact with raters
+
+Four raters scored the same 30 transparency items under guideline v1.0
+(`python scripts/score_pilot.py finance pilot --dir data/processed/annotation/pilot`).
+
+| pair | agreement | expected | κ | 95% CI |
+|---|---|---|---|---|
+| A–C (best) | 0.80 | 0.67 | 0.39 | [−0.06, 0.76] |
+| A–B | 0.60 | 0.57 | 0.06 | [−0.17, 0.33] |
+| C–D | 0.70 | 0.70 | 0.00 | [−0.27, 0.38] |
+| Fleiss, 4 raters | 0.66 | 0.64 | **0.07** | — |
+
+Raw agreement of 60–80% looks respectable and is exactly why it is never reported
+alone: with ~80% of items labelled "adequate", chance agreement is also 60–70%.
+AC1 on the original A–B pair is 0.60 [0.24, 0.87] — higher, as expected under
+skew, but its lower bound is nowhere near 0.61 either. Per criterion, "decisive
+details + confidence" scores κ = 0.13 and "what would have to change" κ = −0.17.
+
+The 19 disagreements are not noise. They resolve into three implicit rubrics —
+format compliance, content plausibility, and agreement with the decision itself —
+each a defensible reading of v1.0. That is a guideline defect, not a rater
+defect, and the fix is decidability, not more raters. `docs/annotation_guidelines_Art13_v1.1_DRAFT.md`
+restates both criteria as pass/fail checklists with every disagreement as a
+worked example, and reserves "cannot judge" for unparseable output only.
+
+Round 2 re-scores the same 30 items under v1.1. The gate to the 120-item overlap
+is the **lower** bound of agreement clearing the pre-registered threshold — the
+point estimate does not count. Round-1 numbers stay in the report as the
+pre-revision baseline; a study that only shows the post-revision figure hides
+the cost of getting there. Until the ceiling is lifted, every Article 13(1)
+number in the report is an input to this study, and the report says so on the
+line where the number appears.
+
 ---
 
 ## Loop — ledger and report
@@ -473,9 +512,12 @@ vector so the pipeline and tests still run.
 
 ## Limitations
 
-**The annotation study has not run.** Every transparency number is an input to
-that study, not a finding. It is blocked on ethics approval, which is the
-project's longest pole.
+**The annotation study has run its pilot and the human ceiling is not met**
+(Fleiss κ = 0.07 across four raters on 30 items). Every transparency number is
+therefore an input to that study, not a finding. If a revised guideline cannot
+lift the ceiling, the result is that explanation adequacy under this criterion
+is not reliably annotatable — a negative finding about the criterion (S4),
+reported as such.
 
 **The conformal gate is not wired to the judge path.** It works on the gold
 pipeline. Calibrating it for the judge needs human labels, so it queues behind
@@ -486,10 +528,11 @@ sample. Until it does, "the method detects discrimination when discrimination is
 present" is demonstrated by the tests' injected-bias scorer but not by the live
 instrument. Re-sizing to ~75 pairs in the strong stratum is the fix.
 
-**Jury verdicts exist for one model.** The judge has run on all four; the jury
-has not. It is arithmetic over an existing log — minutes, no GPU — but until it
-runs, the four-model pooled figure above rests on the earlier analysis rather
-than on committed verdict files.
+**Two criteria were amended after results were known.** The Article 15
+tolerance (0.05 → 0.20) and the Article 10(2)(f) discordance floor for a PASS
+by equivalence. Both are dated in `docs/criteria_amendment_*.md`, both verdicts
+are printed side by side in the report, and the pre-registration claim does not
+extend to the affected findings.
 
 **Consistency and truthfulness are inactive.** Generators exist; no clause in the
 committed checklist activates them, and the truthfulness seed bank holds 20 items

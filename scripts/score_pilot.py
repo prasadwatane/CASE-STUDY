@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 """Score an annotation pilot round with any number of raters.
 
-    python scripts/score_pilot.py finance pilot_round1
-    python scripts/score_pilot.py finance pilot_round1 --labels adequate inadequate "cannot judge"
+    python scripts/score_pilot.py finance pilot --dir data/processed/annotation/pilot
 
-Reads every rater_*.csv in data/annotation/<domain>/<round>/, writes
+Reads every rater_*.csv in the directory (default data/annotation/<domain>/<round>/), writes
 agreement.json + agreement.md beside them, prints the markdown. Exits 2 if an
 undeclared label is found — declare it or fix the sheet; never score around it.
 """
@@ -25,11 +24,13 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("domain")
     ap.add_argument("round_name")
+    ap.add_argument("--dir", default=None,
+                    help="directory holding rater_*.csv (default data/annotation/<domain>/<round>)")
     ap.add_argument("--labels", nargs="+", default=list(DEFAULT_LABELS))
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
 
-    d = Path("data/annotation") / a.domain / a.round_name
+    d = Path(a.dir) if a.dir else Path("data/annotation") / a.domain / a.round_name
     files = sorted(d.glob("rater_*.csv"))
     if len(files) < 2:
         print(f"need >=2 rater_*.csv in {d}", file=sys.stderr)

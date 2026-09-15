@@ -1,0 +1,395 @@
+{
+  "raters": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "n_items": 30,
+  "labels": [
+    "adequate",
+    "cannot judge",
+    "inadequate"
+  ],
+  "pairwise": {
+    "A-B": {
+      "n": 30,
+      "percent_agreement": 0.6,
+      "expected_agreement": 0.5744444444444444,
+      "kappa": 0.06005221932114882,
+      "ci_low": -0.1724137931034481,
+      "ci_high": 0.33333333333333326,
+      "marginals": {
+        "a": {
+          "adequate": 23,
+          "inadequate": 6,
+          "cannot judge": 1
+        },
+        "b": {
+          "adequate": 21,
+          "inadequate": 5,
+          "cannot judge": 4
+        }
+      }
+    },
+    "A-C": {
+      "n": 30,
+      "percent_agreement": 0.8,
+      "expected_agreement": 0.6722222222222223,
+      "kappa": 0.3898305084745763,
+      "ci_low": -0.06060606060606048,
+      "ci_high": 0.761904761904762,
+      "marginals": {
+        "a": {
+          "adequate": 23,
+          "inadequate": 6,
+          "cannot judge": 1
+        },
+        "b": {
+          "adequate": 25,
+          "inadequate": 5
+        }
+      }
+    },
+    "A-D": {
+      "n": 30,
+      "percent_agreement": 0.7,
+      "expected_agreement": 0.6533333333333334,
+      "kappa": 0.13461538461538425,
+      "ci_low": -0.20437956204379587,
+      "ci_high": 0.5108695652173915,
+      "marginals": {
+        "a": {
+          "adequate": 23,
+          "inadequate": 6,
+          "cannot judge": 1
+        },
+        "b": {
+          "adequate": 24,
+          "inadequate": 6
+        }
+      }
+    },
+    "B-C": {
+      "n": 30,
+      "percent_agreement": 0.6,
+      "expected_agreement": 0.6111111111111112,
+      "kappa": -0.028571428571428758,
+      "ci_low": -0.20967741935483872,
+      "ci_high": 0.16666666666666652,
+      "marginals": {
+        "a": {
+          "adequate": 21,
+          "inadequate": 5,
+          "cannot judge": 4
+        },
+        "b": {
+          "adequate": 25,
+          "inadequate": 5
+        }
+      }
+    },
+    "B-D": {
+      "n": 30,
+      "percent_agreement": 0.5666666666666667,
+      "expected_agreement": 0.5933333333333333,
+      "kappa": -0.06557377049180314,
+      "ci_low": -0.2711864406779658,
+      "ci_high": 0.2307692307692307,
+      "marginals": {
+        "a": {
+          "adequate": 21,
+          "inadequate": 5,
+          "cannot judge": 4
+        },
+        "b": {
+          "adequate": 24,
+          "inadequate": 6
+        }
+      }
+    },
+    "C-D": {
+      "n": 30,
+      "percent_agreement": 0.7,
+      "expected_agreement": 0.7000000000000001,
+      "kappa": -3.700743415417189e-16,
+      "ci_low": -0.27450980392156876,
+      "ci_high": 0.3793103448275863,
+      "marginals": {
+        "a": {
+          "adequate": 25,
+          "inadequate": 5
+        },
+        "b": {
+          "adequate": 24,
+          "inadequate": 6
+        }
+      }
+    }
+  },
+  "fleiss": {
+    "n": 30,
+    "percent_agreement": 0.6611111111111111,
+    "expected_agreement": 0.6359722222222224,
+    "kappa": 0.06905761159862601,
+    "ci_low": null,
+    "ci_high": null,
+    "marginals": {
+      "all": {
+        "adequate": 93,
+        "inadequate": 22,
+        "cannot judge": 5
+      }
+    }
+  },
+  "unanimous": 11,
+  "disagreements": [
+    {
+      "item": "IT-06C7AB95B7",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "adequate",
+        "B": "inadequate",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-13E3317D8F",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "inadequate",
+        "B": "cannot judge",
+        "C": "inadequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-2100D1523F",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "inadequate",
+        "B": "adequate",
+        "C": "inadequate",
+        "D": "inadequate"
+      }
+    },
+    {
+      "item": "IT-2B1C9C5E91",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "cannot judge",
+        "B": "adequate",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-2D343C9C3B",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "adequate",
+        "B": "adequate",
+        "C": "inadequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-2F2083CA80",
+      "dimension": "transparency",
+      "criterion": "states what would have to change for a different outcome",
+      "votes": {
+        "A": "adequate",
+        "B": "adequate",
+        "C": "adequate",
+        "D": "inadequate"
+      }
+    },
+    {
+      "item": "IT-6714142770",
+      "dimension": "transparency",
+      "criterion": "states what would have to change for a different outcome",
+      "votes": {
+        "A": "adequate",
+        "B": "inadequate",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-6DB0991A67",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "inadequate",
+        "B": "adequate",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-7D58FB41B4",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "adequate",
+        "B": "adequate",
+        "C": "adequate",
+        "D": "inadequate"
+      }
+    },
+    {
+      "item": "IT-B6F742ECEF",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "adequate",
+        "B": "inadequate",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-BCFC6F40BD",
+      "dimension": "transparency",
+      "criterion": "states what would have to change for a different outcome",
+      "votes": {
+        "A": "inadequate",
+        "B": "adequate",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-D7F8314FC1",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "adequate",
+        "B": "cannot judge",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-D86C305B55",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "inadequate",
+        "B": "inadequate",
+        "C": "adequate",
+        "D": "inadequate"
+      }
+    },
+    {
+      "item": "IT-DC80A1173A",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "inadequate",
+        "B": "cannot judge",
+        "C": "inadequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-DC911E05FF",
+      "dimension": "transparency",
+      "criterion": "states what would have to change for a different outcome",
+      "votes": {
+        "A": "adequate",
+        "B": "inadequate",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-DF94B6211D",
+      "dimension": "transparency",
+      "criterion": "states what would have to change for a different outcome",
+      "votes": {
+        "A": "adequate",
+        "B": "cannot judge",
+        "C": "adequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-E266132E1D",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "adequate",
+        "B": "adequate",
+        "C": "inadequate",
+        "D": "adequate"
+      }
+    },
+    {
+      "item": "IT-ECB0941C13",
+      "dimension": "transparency",
+      "criterion": "states what would have to change for a different outcome",
+      "votes": {
+        "A": "adequate",
+        "B": "adequate",
+        "C": "adequate",
+        "D": "inadequate"
+      }
+    },
+    {
+      "item": "IT-F35B65EB32",
+      "dimension": "transparency",
+      "criterion": "states the decisive details and a confidence value",
+      "votes": {
+        "A": "adequate",
+        "B": "adequate",
+        "C": "adequate",
+        "D": "inadequate"
+      }
+    }
+  ],
+  "per_criterion": {
+    "states the decisive details and a confidence value": {
+      "n": 21,
+      "fleiss": {
+        "n": 21,
+        "percent_agreement": 0.6587301587301587,
+        "expected_agreement": 0.6057256235827665,
+        "kappa": 0.13443565780014363,
+        "ci_low": null,
+        "ci_high": null,
+        "marginals": {
+          "all": {
+            "adequate": 63,
+            "inadequate": 17,
+            "cannot judge": 4
+          }
+        }
+      }
+    },
+    "states what would have to change for a different outcome": {
+      "n": 9,
+      "fleiss": {
+        "n": 9,
+        "percent_agreement": 0.6666666666666666,
+        "expected_agreement": 0.7145061728395062,
+        "kappa": -0.16756756756756797,
+        "ci_low": null,
+        "ci_high": null,
+        "marginals": {
+          "all": {
+            "adequate": 30,
+            "inadequate": 5,
+            "cannot judge": 1
+          }
+        }
+      }
+    }
+  }
+}

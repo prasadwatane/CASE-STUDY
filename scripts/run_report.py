@@ -34,6 +34,7 @@ from config import (CHECKLIST_DIR, ROBUSTNESS_EQUIVALENCE_MARGIN,
                     TRANSPARENCY_ADEQUACY_FLOOR)
 from grail.jury.intervals import wilson
 from grail.ledger import Entry, Ledger, UntraceableFinding
+from grail.run.store import load
 
 
 def _verdict_for_rate(lo: float, hi: float, floor: float) -> str:
@@ -77,10 +78,20 @@ def verdict_for(finding: dict, clause_id: str) -> str:
         return "PARTIAL"
 
     if clause_id == "AIA:Art10(2)(f)":
-        eq = (finding.get("detail") or {}).get("equivalence") or {}
+        detail = finding.get("detail") or {}
+        eq = detail.get("equivalence") or {}
         lo, hi = finding.get("ci_low"), finding.get("ci_high")
         est = finding.get("estimate")
         if eq.get("verdict") == "equivalent":
+            # A PASS by equivalence rests on the interval, and the interval on
+            # the discordant pairs. Below the floor at which the exact test can
+            # reject at all, the profile-likelihood interval is asymptotic on a
+            # handful of events and the exact p-value disagrees with it (five
+            # pairs 5:0 gave CI [0.0005, 0.0038] yet p = 0.0625). An interval
+            # the exact test contradicts cannot carry a pass; it carries
+            # UNDETERMINED, with the reason on the line.
+            if detail.get("can_reject_at_all") is False:
+                return "UNDETERMINED"
             return "PASS"
         if (lo is not None and hi is not None and est is not None
                 and (lo > 0 or hi < 0) and abs(est) >= eq.get("margin", 0.010)):
@@ -167,6 +178,14 @@ def _note(finding: dict, caveats: str) -> str:
     repeated is a warning skimmed.
     """
     note = finding.get("note", "") or ""
+    detail = finding.get("detail") or {}
+    eq = detail.get("equivalence") or {}
+    if (eq.get("verdict") == "equivalent" and detail.get("can_reject_at_all") is False):
+        note = (note + " \u00b7 " if note else "") + (
+            "PASS WITHHELD: the equivalence interval sits inside the tolerance, "
+            "but it is asymptotic on fewer discordant pairs than the exact test "
+            "needs, and the exact test does not reject at this n; the verdict is "
+            "UNDETERMINED until more discordant pairs are observed")
     if finding.get("role") != "confirmatory" or not caveats:
         return note
     extra = [c.strip() for c in caveats.split(" · ")
@@ -245,6 +264,37 @@ def admit_jury(led: Ledger, path: str, checklist_sha: str) -> int:
     return admitted
 
 
+def _annotation_ceiling(domain: str) -> dict | None:
+    """The scored human-human ceiling, if the pilot has been scored.
+
+    Reads the multi-rater pilot first (data/annotation/<domain>/pilot_round*/
+    agreement.json, latest round), falling back to the two-rater report the
+    key-file flow writes. Returns None if neither exists: the report then says
+    nothing about the ceiling rather than guessing.
+    """
+    rounds = sorted(glob.glob(os.path.join("data", "annotation", domain,
+                                           "pilot_round*", "agreement.json"))
+                    + glob.glob(os.path.join("data", "processed", "annotation",
+                                             "pilot*", "agreement.json")))
+    if rounds:
+        rep = json.load(open(rounds[-1], encoding="utf-8"))
+        fl = rep.get("fleiss") or {}
+        # bootstrap CI is per pair; report the widest pair as the ceiling's CI
+        pairs = list((rep.get("pairwise") or {}).values())
+        lo = min((p["ci_low"] for p in pairs if p.get("ci_low") is not None), default=None)
+        hi = max((p["ci_high"] for p in pairs if p.get("ci_high") is not None), default=None)
+        return {"kappa": fl.get("kappa"), "ci": [lo, hi], "n": rep.get("n_items"),
+                "raters": len(rep.get("raters") or []), "threshold": 0.61,
+                "source": rounds[-1]}
+    legacy = os.path.join("data", "processed", "annotation", "pilot", "agreement_report.json")
+    if os.path.exists(legacy):
+        rep = json.load(open(legacy, encoding="utf-8"))
+        c = rep.get("ceiling") or {}
+        return {"kappa": c.get("kappa"), "ci": c.get("ci"), "n": rep.get("n_double_annotated"),
+                "raters": 2, "threshold": c.get("threshold", 0.61), "source": legacy}
+    return None
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("domain", nargs="?", default="finance")
@@ -259,6 +309,18 @@ def main() -> None:
     signed = json.load(open(os.path.join(CHECKLIST_DIR, f"{args.domain}_signed.json"),
                             encoding="utf-8"))
     checklist_sha = signed["signature"]["content_sha256"]
+    signed_utc = signed["signature"].get("signed_utc", "")
+
+    # When was the earliest response collected? The report needs it to decide
+    # whether it may claim its thresholds were fixed in advance. Cheap: the log
+    # is append-only, so the first record is the earliest.
+    first_response_utc = ""
+    try:
+        recs = load(os.path.join(run_dir, "responses.jsonl"))
+        stamps = [getattr(r, "created_utc", "") for r in recs]
+        first_response_utc = min(s for s in stamps if s) if any(stamps) else ""
+    except Exception:                                   # noqa: BLE001
+        pass
     items = signed.get("checklist", signed).get("items", [])
     cites = {i["clause_id"]: i["citation"] for i in items}
     texts = {i["clause_id"]: i["clause_text"] for i in items}
@@ -289,7 +351,12 @@ def main() -> None:
     md = render_markdown(led, domain=args.domain,
                          checklist_signer=signed["signature"].get("signer", ""),
                          checklist_sha256=checklist_sha,
-                         clause_citations=cites, clause_text=texts)
+                         clause_citations=cites, clause_text=texts,
+                         signed_utc=signed_utc,
+                         first_response_utc=first_response_utc,
+                         robustness_margins=(ROBUSTNESS_MARGIN_ORIGINAL,
+                                             ROBUSTNESS_EQUIVALENCE_MARGIN),
+                         annotation_ceiling=_annotation_ceiling(args.domain))
     out_path = args.out or os.path.join(run_dir, f"report_{args.domain}.md")
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write(md)

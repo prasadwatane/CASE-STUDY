@@ -48,3 +48,8 @@ run_all.sh          # superseded by scripts/run_models.sh
 models/
 *.safetensors
 *.bin
+
+# --- editor lock files and ledger snapshots ----------------------------------
+~$*
+data/processed/runs/*/ledger.jsonl.*.bak
+data/processed/runs/*/*.partial.jsonl

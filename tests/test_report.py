@@ -121,3 +121,33 @@ def test_a_broken_chain_is_reported_on_the_face_of_the_report(tmp_path):
     open(p, "w").write(raw.replace('"verdict": "FAIL"', '"verdict": "PASS"', 1))
     md = render_markdown(Ledger(p), domain="finance")
     assert "LEDGER INTEGRITY FAILURE" in md
+
+
+# --- the report may not assert its own pre-registration -----------------------
+def test_pre_registration_is_claimed_only_when_it_is_true(tmp_path):
+    """The claim that thresholds were fixed in advance is itself a claim.
+
+    It was hard-coded into the header and stayed there through a criterion
+    revision and a re-sign, so the report asserted pre-registration on a
+    checklist signed a month after the responses. A report that overclaims about
+    its own provenance is worse than one that overclaims about a model.
+    """
+    led = ledger_with(entry(), tmp_path=tmp_path)
+    before = render_markdown(led, domain="finance", checklist_signer="X",
+                             checklist_sha256="abc", signed_utc="2026-08-01T00:00:00+00:00",
+                             first_response_utc="2026-08-11T00:00:00+00:00")
+    assert "frozen **before any model response was collected**" in before
+
+    after = render_markdown(led, domain="finance", checklist_signer="X",
+                            checklist_sha256="abc", signed_utc="2026-09-15T00:00:00+00:00",
+                            first_response_utc="2026-08-11T00:00:00+00:00")
+    assert "signed AFTER responses were collected" in after
+    assert "frozen **before any model response was collected**" not in after
+
+
+def test_no_pre_registration_claim_without_the_dates(tmp_path):
+    """Silence, not an assertion, when the caller cannot substantiate it."""
+    md = render_markdown(ledger_with(entry(), tmp_path=tmp_path), domain="finance",
+                         checklist_signer="X", checklist_sha256="abc")
+    assert "frozen **before" not in md
+    assert "signed AFTER" not in md
