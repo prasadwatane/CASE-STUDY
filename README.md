@@ -81,7 +81,8 @@ INSPECT ────────────────────────
 
 LOOP ──────────────────────────────────────────────────────────── built
   LEDGER (append-only, evidence-typed) → REPORT (clause-traced)
-  GENERALISATION to insurance                        not started
+  GENERALISATION to insurance                        out of scope
+                                                     (structural tests only)
 ```
 
 Current scale:
@@ -487,6 +488,13 @@ legitimate; rewriting the jury per sub-sector is the design smell.**
 
 The credit probe set reproduces its pre-refactor content hash exactly, which is
 the evidence that moving the stimulus into data changed nothing.
+
+**Scope.** The methodology is applied end to end on one sub-sector, consumer
+credit (Annex III 5(b)). The insurance pack exists so the tests can assert that
+the generator, guard and sizing are sub-domain independent; no insurance corpus
+has been signed, no insurance probes have been run against a model, and no
+insurance finding is claimed. Running the frozen pipeline on a second sub-sector
+is future work, and the thesis says so rather than demonstrating it shallowly.
 
 ---
 
