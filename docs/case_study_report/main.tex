@@ -142,77 +142,125 @@ does not establish as carefully as what it does.
 % ---------------------------------------------------------------- related
 \section{Related Paper}
 
-\textbf{Evaluating foundation models.} Liang et al.\ \cite{helm} introduced
-HELM, a holistic evaluation of language models across 42 scenarios and seven
-metric categories including fairness, robustness and toxicity. HELM
-established that models should be measured on many axes at once and that
-metrics should be reported with their conditions. It is organised by scenario
-and metric, however, and no scenario is tied to a legal obligation; a HELM
-fairness score cannot be cited as evidence about a particular article.
-Bommasani et al.\ \cite{bommasani2021} framed the wider risks of foundation
-models and argued for evaluation that tracks downstream use, which is the
-position this study takes: the audit is of the model \emph{as deployed in
-lending}, not of the model in the abstract.
+Model evaluation today falls into four layers. Each is summarised below and
+compared in Table~\ref{tab:landscape}; GRAIL sits in the gap between the third
+and the fourth.
 
-\textbf{Auditing as a discipline.} Raji et al.\ \cite{raji2020} proposed an
-internal algorithmic audit framework (SMACTR) built around artefacts and
-checkpoints across the development lifecycle. Mökander et al.\
-\cite{mokander2023} argued that auditing large language models needs three
-layers --- governance, model and application --- and that the model layer
-should include behavioural testing. Both frameworks say \emph{that}
-behaviour should be tested and traced; neither specifies how a legal clause
-becomes a test with a threshold, or how the interpretation is protected from
-being revised once the result is known. This study takes the notary gate
-(a signed, hashed checklist) as the mechanism for that protection and treats
-its own post-hoc revisions as reportable events.
+\textbf{Holistic capability benchmarks.} Liang et al.\ \cite{helm} introduced
+HELM, which evaluates language models across 42 scenarios on seven metrics ---
+accuracy, calibration, robustness, fairness, bias, toxicity and efficiency ---
+and established that a model should be measured on many axes at once, with
+conditions reported. HELM is the closest ancestor of this study's dimension
+structure and the benchmark whose scenarios are most often cited as evidence
+about model behaviour. It is organised by scenario and metric, however, and its
+scenarios are curated by hand; a HELM fairness score names no legal obligation
+and cannot be cited as evidence about a particular article. MMLU, BIG-bench and
+MT-Bench measure capability alone and are further still from a compliance
+question. Bommasani et al.\ \cite{bommasani2021} argued that foundation-model
+evaluation should track downstream use, which is the position taken here: the
+audit is of the model \emph{as deployed in lending}.
 
-\textbf{Automated probe generation.} Perez et al.\ \cite{perez2022} showed
-that language models can generate test cases that expose failures in other
-language models, at a scale hand-writing cannot reach, and also that
-generated cases need checking for leakage and validity. GRAIL's generator is
-template-based rather than model-based --- probes are sampled from real
-credit records under a seed --- precisely to keep the generator itself out of
-the evidence chain; a leakage guard rejects any prompt containing legal or
-audit vocabulary at construction time.
+\textbf{Trust and responsible-AI benchmarks.} TrustLLM \cite{trustllm} assesses
+truthfulness, safety, fairness, robustness, privacy and machine ethics over 30+
+datasets and 16 models; DecodingTrust \cite{decodingtrust} covers toxicity,
+stereotype bias, adversarial and out-of-distribution robustness, privacy and
+ethics. Their dimension taxonomies are the ones this study reuses. AILuminate
+\cite{ailuminate} scores product risk across twelve hazard categories with an
+ensemble judge and is the nearest thing to an industry standard. All three score
+a model against a curated hazard or dimension list, not against a legal text,
+and none produces a verdict that names a clause.
 
-\textbf{Language models as judges.} Zheng et al.\ \cite{zheng2023} evaluated
-LLM-as-a-judge on MT-Bench and Chatbot Arena and reported agreement with
-human preference above 80\%, while documenting position bias, verbosity bias
-and self-enhancement bias. Their central methodological point --- a judge is
-only as good as its measured agreement with humans --- is what this study
-enforces structurally: judge verdicts are typed ``unvalidated'' in the ledger
-and cannot carry a headline claim until an annotation study has measured
-them against the human ceiling.
+\textbf{Regulation-facing systems.} COMPL-AI \cite{complai} is the closest
+neighbour: the first technical interpretation of the EU AI Act, mapping the Act
+to existing benchmarks and publishing a leaderboard. Three properties separate
+it from what is built here. Its Act-to-benchmark mapping is manual, so a new
+domain needs human authoring; its suite is frozen, so a new obligation needs a
+new dataset; and its scoring is never validated against human judgement. Its
+authors state it is not an official audit. The Foundation Model Transparency
+Index \cite{fmti} scores providers on disclosure and, notably, human-verifies
+every finding its own agent produces --- which is the premise of the gated
+judge used here.
 
-\textbf{Inter-rater reliability.} Landis and Koch \cite{landis1977} gave the
+\textbf{Finance-domain benchmarks.} FinBen \cite{finben} spans 42 datasets and
+24 tasks and reports that models extract well but reason and forecast poorly;
+FinanceBench \cite{financebench} shows that even retrieval-augmented leading
+models fail or refuse a large share of filing-grounded questions. FinTrust
+\cite{fintrust} is the most directly comparable: seven trust dimensions over
+15,680 pairs, finding that all models fail hardest on fiduciary alignment and
+disclosure, a ``significant gap in legal awareness''. FinTrust is legally
+\emph{inspired} but not clause-traceable --- it names no article and freezes no
+interpretation --- which is precisely the opening this study addresses.
+FailSafeQA \cite{failsafeqa} measures robustness under query and context
+perturbation and reports that the most robust model tested still fabricates in
+41\% of perturbed cases; its perturbation design is the ancestor of the
+robustness probes here. It also judges with a model from the same family as the
+models judged, which this study avoids by construction.
+
+\textbf{Auditing as a discipline.} Raji et al.\ \cite{raji2020} proposed SMACTR,
+an internal algorithmic audit framework built around artefacts and checkpoints.
+Mökander et al.\ \cite{mokander2023} argued that auditing large language models
+needs three layers --- governance, model and application --- with behavioural
+testing at the model layer. Both say \emph{that} behaviour should be tested and
+traced; neither specifies how a clause becomes a test with a threshold, or how
+that interpretation is protected once results are known. The notary gate is this
+study's answer, and its own post-hoc revisions are treated as reportable events.
+
+\textbf{Probe generation and judging.} Perez et al.\ \cite{perez2022} showed
+language models can generate test cases at a scale hand-writing cannot reach,
+and that generated cases need checking for leakage and validity; the generator
+here is template-based and seeded, to keep a model out of the evidence chain.
+Zheng et al.\ \cite{zheng2023} established LLM-as-a-judge and documented
+position, verbosity and self-enhancement bias. JudgeBench \cite{judgebench}
+sharpens the warning: the strongest judge reaches only about 64\% on hard
+objective-correctness pairs and many judges are near random. That is the direct
+evidence for gating a judge rather than trusting one, and for the disjoint-family
+rule adopted here.
+
+\textbf{Reliability and calibration.} Landis and Koch \cite{landis1977} give the
 conventional bands for Cohen's $\kappa$, with 0.61 as the floor of
-``substantial'' agreement. Feinstein and Cicchetti \cite{feinstein1990}
-showed that $\kappa$ deflates under skewed marginals even when raw agreement
-is high, and Gwet \cite{gwet2008} proposed AC1 as a prevalence-robust
-alternative. The annotation pilot reports both, with the marginals beside
-them, because the label distribution here is known in advance to be skewed.
-
-\textbf{Distribution-free guarantees.} Angelopoulos and Bates
-\cite{angelopoulos2021} give a self-contained introduction to conformal
-prediction, whose split-conformal form GRAIL uses to set the judge's
-acceptance threshold with a certified selective-error bound. The finding in
-this study that the bound cannot be certified from fewer than 59 calibration
-points at $\alpha=\delta=0.05$ is a direct consequence of the exact
-Clopper--Pearson bound and is reported as the size the calibration set has to
-reach.
+``substantial''. Feinstein and Cicchetti \cite{feinstein1990} showed $\kappa$
+deflates under skewed marginals even when raw agreement is high, and Gwet
+\cite{gwet2008} proposed AC1 as a prevalence-robust alternative; both are
+reported in the annotation pilot below, because the label distribution is known
+in advance to be skewed. Angelopoulos and Bates \cite{angelopoulos2021}
+introduce conformal prediction, whose split-conformal form sets the judge's
+acceptance threshold with a distribution-free selective-error bound.
 
 \textbf{Paired analysis of discrimination.} McNemar's exact test
-\cite{mcnemar1947} and Newcombe's interval for a paired difference
-\cite{newcombe1998} are the classical tools for comparing two treatments of
-the same unit. The four-fifths rule of the US Uniform Guidelines
-\cite{ugesp1978} compares aggregate selection rates between groups. The
-contrast between the two on the same data is the central empirical finding of
-this study.
+\cite{mcnemar1947} and Newcombe's paired interval \cite{newcombe1998} are the
+classical tools for comparing two treatments of the same unit. The four-fifths
+rule of the US Uniform Guidelines \cite{ugesp1978} compares aggregate selection
+rates between groups. Bowen et al.\ \cite{bowen2024} audit LLM credit decisions
+with counterbalanced applications varying a protected attribute --- the
+matched-pair design reused here. The contrast between the paired test and the
+four-fifths rule on the same responses is the central empirical finding of this
+study.
 
-\textbf{The audited models.} Qwen2.5 \cite{qwen25} and Llama~3.1
-\cite{llama3} are the two open-weight model families audited; phi-4
-\cite{phi4} is the judge, chosen from a third family so that no model judges
-its own relatives.
+\textbf{The audited models.} Qwen2.5 \cite{qwen25} and Llama~3.1 \cite{llama3}
+are the two open-weight families audited; phi-4 \cite{phi4} is the judge, drawn
+from a third family so that no model judges its own relatives.
+
+\begin{table}[h]
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+System & Multi-dim. & Domain-specific & Law-anchored & Clause-traceable & Judge validated \\
+\midrule
+HELM \cite{helm}              & yes & no   & no      & no & n/a \\
+TrustLLM \cite{trustllm}      & yes & no   & no      & no & n/a \\
+AILuminate \cite{ailuminate}  & yes & no   & no      & no & no \\
+FinBen \cite{finben}          & yes & yes  & no      & no & n/a \\
+FinTrust \cite{fintrust}      & yes & yes  & inspired& no & no \\
+FailSafeQA \cite{failsafeqa}  & no  & yes  & no      & no & same family \\
+COMPL-AI \cite{complai}       & yes & no   & manual map & no & no \\
+SMACTR \cite{raji2020}        & n/a & n/a  & process & no & n/a \\
+\textbf{This study (GRAIL)}   & yes & yes  & \textbf{yes} & \textbf{yes} & \textbf{gated, disjoint} \\
+\bottomrule
+\end{tabular}
+\caption{Where this study sits. ``Clause-traceable'' means a finding names the article, paragraph and point it speaks to, under an interpretation frozen before the result. ``Judge validated'' means agreement with humans was measured before the judge's verdicts were used.}
+\label{tab:landscape}
+\end{table}
 
 % ---------------------------------------------------------------- methodology
 \section{Methodology}
@@ -341,6 +389,45 @@ Art.\ 15(4) & robustness & As 15(1), assessed per perturbation family \\
 \caption{The signed finance checklist. The Act sets no numeric tolerance for any of these; each number is a documented human interpretation, and the report never claims more than conformance to the requirement so derived.}
 \label{tab:checklist}
 \end{table}
+
+\subsection{Dimensions Assessed}
+
+The trust dimensions this study can speak to are fixed by the signed checklist,
+not chosen for convenience: a dimension is assessed only if a committed clause
+activates a generator for it. Table~\ref{tab:dims} states the status of each,
+including the two that are not assessed and why. A dimension with no generator
+is recorded in the probe manifest as a coverage gap rather than silently
+omitted.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+Dimension & Clause & Probes & Status \\
+\midrule
+Fairness      & Art.\ 10(2)(f), (g) & 9,480 & Assessed; 4,740 counterbalanced pairs, 1 protected axis \\
+Consistency   & Art.\ 15(1)         & 5,075 & Assessed as the consistency limb of 15(1): decision \\
+              &                     &       & stability under meaning-preserving rewording \\
+Robustness    & Art.\ 15(4)         & (same) & Assessed per perturbation family, to separate general \\
+              &                     &        & instability from a specific fragility \\
+Transparency  & Art.\ 13(1)         & 152   & Judged, unvalidated: the human ceiling is not met \\
+Truthfulness  & ---                 & 0     & \textbf{Not assessed.} No committed clause activates it; \\
+              &                     &       & the generator exists and the seed bank holds 20 of a \\
+              &                     &       & target 300 items. Reported as a coverage gap \\
+Controls      & ---                 & 118   & Instrument checks; never counted toward a finding \\
+\bottomrule
+\end{tabular}
+\caption{Dimension coverage for the committed finance checklist, 14,825 probes per model.}
+\label{tab:dims}
+\end{table}
+
+Article~15 is split deliberately. Its text covers accuracy, robustness,
+cybersecurity and consistent performance; only the last of these is observable
+from outside the system, so 15(1) is restricted to the consistency limb and
+15(4) to per-family fragility. Accuracy against a ground-truth lending decision
+is not assessed at all: the dataset's good/bad label records what a lender
+decided in 1994, and treating that as correct inside a discrimination audit
+would be a claim needing its own argument.
 
 \subsection{Dataset and Probe Generation}
 
@@ -598,10 +685,32 @@ terms --- one to two applications in a hundred --- and it is unambiguous:
 for Qwen-7B, 59 of 60 pairs that were decided differently were decided in
 favour of \emph{Ms.}\ Marek, and the matched-pair odds ratio is 59.
 
+Table~\ref{tab:ratios} gives the same four models as ratios rather than
+differences, which is how fair-lending supervision reads a result.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lllrrl@{}}
+\toprule
+Model & AIR, F/M [95\% CI] & AIR, M/F & Discordant F\,:\,M & Odds ratio & Inconsistency rate \\
+\midrule
+Qwen2.5-7B    & 1.125 [1.091, 1.161] & 0.889 & 59 : 1  & 59.0     & 2.11\% [1.64, 2.71] \\
+Qwen2.5-32B   & 1.039 [1.013, 1.067] & 0.962 & 39 : 17 & 2.29     & 1.97\% [1.52, 2.55] \\
+Llama-3.1-8B  & 1.014 [1.009, 1.019] & 0.986 & 36 : 0  & $\infty$ & 1.27\% [0.92, 1.75] \\
+Llama-3.1-70B & 1.006 [1.001, 1.012] & 0.994 & 5 : 0   & $\infty$ & 0.18\% [0.08, 0.41] \\
+\midrule
+Pooled        & --- & --- & \textbf{139 : 18} & 7.72 & --- \\
+\bottomrule
+\end{tabular}
+\caption{Fairness as ratios, marginal stratum, $n = 2{,}844$ pairs per model. AIR is the adverse impact ratio (share favourable in one arm over the other); the four-fifths rule flags a ratio below 0.80 for the disadvantaged group. ``Inconsistency rate'' is the share of pairs decided differently at all.}
+\label{tab:ratios}
+\end{table}
+
 The result that matters more is what the standard supervisory test says on
-the same responses. The adverse impact ratio (female over male) is 1.125
-[1.091, 1.161] for Qwen-7B and lies within the four-fifths band for every
-model. So the four-fifths rule sees nothing, while a matched-pair test on the
+the same responses. Reading the disadvantaged direction --- male over female,
+since every model favours the female-titled applicant --- the adverse impact
+ratio is 0.889 at worst and 0.994 at best, and lies inside the four-fifths band
+for every model by a wide margin. So the four-fifths rule sees nothing, while a matched-pair test on the
 same data rejects at $p \approx 10^{-16}$. This is not a statistical
 subtlety. The four-fifths rule compares aggregate rates between groups and
 asks whether women as a class are approved as often as men; the matched
@@ -839,6 +948,28 @@ is the contribution.
 \bibitem{ugesp1978} Equal Employment Opportunity Commission et al., ``Uniform Guidelines on Employee Selection Procedures,'' 29 C.F.R.\ Part 1607, \S 1607.4(D), 1978.
 
 \bibitem{germancredit} H. Hofmann, ``Statlog (German Credit Data),'' UCI Machine Learning Repository, 1994. \url{https://doi.org/10.24432/C5NC77}
+
+\bibitem{trustllm} Y. Huang et al., ``TrustLLM: Trustworthiness in Large Language Models,'' arXiv preprint arXiv:2401.05561, 2024. \url{https://arxiv.org/abs/2401.05561}
+
+\bibitem{decodingtrust} B. Wang et al., ``DecodingTrust: A Comprehensive Assessment of Trustworthiness in GPT Models,'' in \emph{Advances in Neural Information Processing Systems 36 (NeurIPS Datasets and Benchmarks)}, 2023. \url{https://arxiv.org/abs/2306.11698}
+
+\bibitem{ailuminate} MLCommons AI Risk \& Reliability Working Group, ``AILuminate: Introducing v1.0 of the AI Risk and Reliability Benchmark from MLCommons,'' arXiv preprint arXiv:2503.05731, 2025. \url{https://arxiv.org/abs/2503.05731}
+
+\bibitem{complai} P. Guldimann et al., ``COMPL-AI Framework: A Technical Interpretation and LLM Benchmarking Suite for the EU Artificial Intelligence Act,'' arXiv preprint arXiv:2410.07959, 2024. \url{https://arxiv.org/abs/2410.07959}
+
+\bibitem{fmti} R. Bommasani et al., ``The Foundation Model Transparency Index,'' arXiv preprint arXiv:2310.12941, 2023. \url{https://arxiv.org/abs/2310.12941}
+
+\bibitem{finben} Q. Xie et al., ``FinBen: A Holistic Financial Benchmark for Large Language Models,'' arXiv preprint arXiv:2402.12659, 2024. \url{https://arxiv.org/abs/2402.12659}
+
+\bibitem{financebench} P. Islam et al., ``FinanceBench: A New Benchmark for Financial Question Answering,'' arXiv preprint arXiv:2311.11944, 2023. \url{https://arxiv.org/abs/2311.11944}
+
+\bibitem{fintrust} ``FinTrust: A Comprehensive Benchmark of Trustworthiness Evaluation in Finance Domain,'' in \emph{Proc.\ EMNLP}, 2025. \url{https://aclanthology.org/2025.emnlp-main.512/}
+
+\bibitem{failsafeqa} K. Nourbakhsh et al., ``Towards Robust Evaluation of Financial LLMs: FailSafeQA,'' arXiv preprint arXiv:2502.06329, 2025. \url{https://arxiv.org/abs/2502.06329}
+
+\bibitem{judgebench} S. Tan et al., ``JudgeBench: A Benchmark for Evaluating LLM-Based Judges,'' in \emph{Proc.\ ICLR}, 2025. \url{https://arxiv.org/abs/2410.12784}
+
+\bibitem{bowen2024} D. Bowen, S. Price, S. Schwettmann, and M. Wattenberg, ``Measuring Implicit Bias in Explicitly Unbiased Large Language Models,'' arXiv preprint arXiv:2402.04105, 2024. \url{https://arxiv.org/abs/2402.04105}
 
 \bibitem{qwen25} Qwen Team, ``Qwen2.5 Technical Report,'' arXiv preprint arXiv:2412.15115, 2024. \url{https://arxiv.org/abs/2412.15115}
 
