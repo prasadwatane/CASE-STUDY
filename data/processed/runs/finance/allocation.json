@@ -1,0 +1,273 @@
+{
+  "domain": "finance",
+  "seeds": 6,
+  "full_budget": 58220,
+  "requirements": [
+    {
+      "key": "Qwen2.5-32B-Instruct-AWQ|fairness|marginal",
+      "kind": "fairness",
+      "units": 2844,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Qwen2.5-32B-Instruct-AWQ|fairness|strong",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Qwen2.5-32B-Instruct-AWQ|fairness|weak",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Qwen2.5-32B-Instruct-AWQ|robustness|-",
+      "kind": "robustness",
+      "units": 725,
+      "cost_per_unit": 7
+    },
+    {
+      "key": "Qwen2.5-7B-Instruct|fairness|marginal",
+      "kind": "fairness",
+      "units": 2844,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Qwen2.5-7B-Instruct|fairness|strong",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Qwen2.5-7B-Instruct|fairness|weak",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Qwen2.5-7B-Instruct|robustness|-",
+      "kind": "robustness",
+      "units": 725,
+      "cost_per_unit": 7
+    },
+    {
+      "key": "Meta-Llama-3.1-70B-Instruct-AWQ-INT4|fairness|marginal",
+      "kind": "fairness",
+      "units": 2844,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Meta-Llama-3.1-70B-Instruct-AWQ-INT4|fairness|strong",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Meta-Llama-3.1-70B-Instruct-AWQ-INT4|fairness|weak",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Meta-Llama-3.1-70B-Instruct-AWQ-INT4|robustness|-",
+      "kind": "robustness",
+      "units": 725,
+      "cost_per_unit": 7
+    },
+    {
+      "key": "Llama-3.1-8B-Instruct|fairness|marginal",
+      "kind": "fairness",
+      "units": 2844,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Llama-3.1-8B-Instruct|fairness|strong",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Llama-3.1-8B-Instruct|fairness|weak",
+      "kind": "fairness",
+      "units": 948,
+      "cost_per_unit": 2
+    },
+    {
+      "key": "Llama-3.1-8B-Instruct|robustness|-",
+      "kind": "robustness",
+      "units": 725,
+      "cost_per_unit": 7
+    }
+  ],
+  "rows": [
+    {
+      "budget": 2911,
+      "policy": "static",
+      "coverage": 0.1354,
+      "coverage_min": 0.0625,
+      "coverage_max": 0.25,
+      "fidelity": 0.9167,
+      "contradictions_mean": 0.333,
+      "contradictions_max": 2,
+      "spent": 2896,
+      "requirements": 16
+    },
+    {
+      "budget": 2911,
+      "policy": "adaptive",
+      "coverage": 0.2396,
+      "coverage_min": 0.125,
+      "coverage_max": 0.375,
+      "fidelity": 0.6889,
+      "contradictions_mean": 1.167,
+      "contradictions_max": 2,
+      "spent": 2587,
+      "requirements": 16
+    },
+    {
+      "budget": 5822,
+      "policy": "static",
+      "coverage": 0.3125,
+      "coverage_min": 0.25,
+      "coverage_max": 0.5,
+      "fidelity": 0.8917,
+      "contradictions_mean": 0.667,
+      "contradictions_max": 2,
+      "spent": 5792,
+      "requirements": 16
+    },
+    {
+      "budget": 5822,
+      "policy": "adaptive",
+      "coverage": 0.375,
+      "coverage_min": 0.1875,
+      "coverage_max": 0.5625,
+      "fidelity": 0.8737,
+      "contradictions_mean": 1,
+      "contradictions_max": 2,
+      "spent": 5264,
+      "requirements": 16
+    },
+    {
+      "budget": 11644,
+      "policy": "static",
+      "coverage": 0.4375,
+      "coverage_min": 0.375,
+      "coverage_max": 0.5625,
+      "fidelity": 0.8628,
+      "contradictions_mean": 1,
+      "contradictions_max": 2,
+      "spent": 11628,
+      "requirements": 16
+    },
+    {
+      "budget": 11644,
+      "policy": "adaptive",
+      "coverage": 0.5833,
+      "coverage_min": 0.5,
+      "coverage_max": 0.6875,
+      "fidelity": 0.7422,
+      "contradictions_mean": 2.5,
+      "contradictions_max": 5,
+      "spent": 10605,
+      "requirements": 16
+    },
+    {
+      "budget": 17466,
+      "policy": "static",
+      "coverage": 0.5104,
+      "coverage_min": 0.4375,
+      "coverage_max": 0.625,
+      "fidelity": 0.7843,
+      "contradictions_mean": 1.833,
+      "contradictions_max": 3,
+      "spent": 17444,
+      "requirements": 16
+    },
+    {
+      "budget": 17466,
+      "policy": "adaptive",
+      "coverage": 0.625,
+      "coverage_min": 0.5625,
+      "coverage_max": 0.75,
+      "fidelity": 0.7537,
+      "contradictions_mean": 2.5,
+      "contradictions_max": 4,
+      "spent": 15892,
+      "requirements": 16
+    },
+    {
+      "budget": 29110,
+      "policy": "static",
+      "coverage": 0.5521,
+      "coverage_min": 0.4375,
+      "coverage_max": 0.6875,
+      "fidelity": 0.8434,
+      "contradictions_mean": 1.5,
+      "contradictions_max": 3,
+      "spent": 29096,
+      "requirements": 16
+    },
+    {
+      "budget": 29110,
+      "policy": "adaptive",
+      "coverage": 0.6667,
+      "coverage_min": 0.5625,
+      "coverage_max": 0.6875,
+      "fidelity": 0.7542,
+      "contradictions_mean": 2.667,
+      "contradictions_max": 3,
+      "spent": 25780,
+      "requirements": 16
+    },
+    {
+      "budget": 43665,
+      "policy": "static",
+      "coverage": 0.4896,
+      "coverage_min": 0.4375,
+      "coverage_max": 0.5625,
+      "fidelity": 0.919,
+      "contradictions_mean": 0.667,
+      "contradictions_max": 1,
+      "spent": 43644,
+      "requirements": 16
+    },
+    {
+      "budget": 43665,
+      "policy": "adaptive",
+      "coverage": 0.6562,
+      "coverage_min": 0.625,
+      "coverage_max": 0.6875,
+      "fidelity": 0.7636,
+      "contradictions_mean": 2.5,
+      "contradictions_max": 3,
+      "spent": 29174,
+      "requirements": 16
+    },
+    {
+      "budget": 58220,
+      "policy": "static",
+      "coverage": 0.5,
+      "coverage_min": 0.5,
+      "coverage_max": 0.5,
+      "fidelity": 1.0,
+      "contradictions_mean": 0,
+      "contradictions_max": 0,
+      "spent": 58220,
+      "requirements": 16
+    },
+    {
+      "budget": 58220,
+      "policy": "adaptive",
+      "coverage": 0.6458,
+      "coverage_min": 0.5625,
+      "coverage_max": 0.6875,
+      "fidelity": 0.7785,
+      "contradictions_mean": 2.333,
+      "contradictions_max": 3,
+      "spent": 29989,
+      "requirements": 16
+    }
+  ]
+}

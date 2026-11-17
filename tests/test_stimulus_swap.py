@@ -23,7 +23,7 @@ from config import STIMULUS_DIR, STIMULUS_PACK, STRATUM_PLAN
 from grail.ground.checklist import Checklist, ChecklistItem
 from grail.ground.notary import save_signed, sign
 from grail.probe.generate import generate_probeset
-from grail.probe.schema import digits, leakage_terms
+from grail.probe.schema import assert_no_leakage, digits, leakage_terms
 from grail.probe.templates import load_pack, render, sample_case
 
 PACKS = sorted(STIMULUS_PACK.values())
@@ -69,7 +69,14 @@ def test_pack_renders_without_legal_vocabulary(name):
         slots = sample_case(pack, 1, "d", 0, stratum)
         for lang in pack["render"]:
             prompt = render(pack, slots, lang=lang)
-            assert leakage_terms(prompt) == [], f"{name}/{lang}: {leakage_terms(prompt)}"
+            # quoted third-party documents (a record pack's CV and job ad) are
+            # held to the construct-cue list; everything else to the full list
+            quoted = [slots[k] for k in slots.get("_quoted", [])]
+            assert_no_leakage(prompt, where=f"{name}/{lang}", quoted=quoted)
+            authored = prompt
+            for q in quoted:
+                authored = authored.replace(q, "")
+            assert leakage_terms(authored) == [], f"{name}/{lang}: {leakage_terms(authored)}"
 
 
 @pytest.mark.parametrize("name", PACKS)
@@ -78,6 +85,10 @@ def test_numbers_render_without_thousands_separators(name):
     pack = load_pack(name, STIMULUS_DIR)
     slots = sample_case(pack, 1, "d", 0, sorted(pack["strata"])[0])
     prompt = render(pack, slots)
+    # Quoted documents keep their own number formatting ("$4,200"); GRAIL never
+    # formats their numbers, and the digit-multiset check still runs on them.
+    for k in slots.get("_quoted", []):
+        prompt = prompt.replace(slots[k], "")
     assert "," not in prompt.replace(", ", ""), "a thousands separator crept in"
 
 
@@ -96,7 +107,7 @@ def test_every_declared_field_reaches_the_prompt(name):
     """A field sampled but never rendered is dead weight and probably a typo."""
     pack = load_pack(name, STIMULUS_DIR)
     template = pack["render"]["en"]["fields"]
-    for field in pack["fields"]:
+    for field in pack.get("fields", []):
         composed = any(f"{{{field['name']}}}" in t for t in pack["compose"].values())
         assert f"{{{field['name']}}}" in template or composed, (
             f"{name}: field '{field['name']}' is sampled but never rendered")

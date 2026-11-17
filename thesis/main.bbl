@@ -1,0 +1,152 @@
+\begin{thebibliography}{}
+
+\bibitem[Angelopoulos and Bates, 2021]{angelopoulos}
+Angelopoulos, A.~N. and Bates, S. (2021).
+\newblock A gentle introduction to conformal prediction and distribution-free
+  uncertainty quantification.
+\newblock arXiv:2107.07511.
+
+\bibitem[Angelopoulos et~al., 2021]{learntest}
+Angelopoulos, A.~N., Bates, S., Cand{\`e}s, E.~J., Jordan, M.~I., and Lei, L.
+  (2021).
+\newblock Learn then test: Calibrating predictive algorithms to achieve risk
+  control.
+\newblock arXiv:2110.01052.
+
+\bibitem[Angelopoulos et~al., 2023]{ppi}
+Angelopoulos, A.~N., Bates, S., Fannjiang, C., Jordan, M.~I., and Zrnic, T.
+  (2023).
+\newblock Prediction-powered inference.
+\newblock {\em Science}, 382(6671):669--674.
+
+\bibitem[Bommasani et~al., 2023]{fmti}
+Bommasani, R. et~al. (2023).
+\newblock The foundation model transparency index.
+\newblock arXiv:2310.12941.
+
+\bibitem[Bowen et~al., 2024]{bowen}
+Bowen, D., Price, S., Schwettmann, S., and Wattenberg, M. (2024).
+\newblock Measuring implicit bias in explicitly unbiased large language models.
+\newblock arXiv:2402.04105.
+
+\bibitem[Dorner et~al., 2024]{dorner}
+Dorner, F.~E., Nastl, V.~Y., and Hardt, M. (2024).
+\newblock Limits to scalable evaluation at the frontier: Llm as judge won't
+  beat twice the data.
+\newblock arXiv:2410.13341.
+
+\bibitem[{EEOC and others}, 1978]{eeoc}
+{EEOC and others} (1978).
+\newblock Uniform guidelines on employee selection procedures, 29 c.f.r. part
+  1607, 1607.4(d).
+
+\bibitem[{European Parliament and Council}, 2024]{euaiact2024}
+{European Parliament and Council} (2024).
+\newblock Regulation (eu) 2024/1689 (artificial intelligence act).
+\newblock OJ L.
+\newblock 12 July 2024.
+
+\bibitem[{European Parliament and Council}, 2026]{omnibus}
+{European Parliament and Council} (2026).
+\newblock Regulation (eu) 2026/1744 amending regulation (eu) 2024/1689 (digital
+  omnibus on ai).
+\newblock OJ L.
+\newblock in force 27 July 2026.
+
+\bibitem[Feinstein and Cicchetti, 1990]{feinstein}
+Feinstein, A.~R. and Cicchetti, D.~V. (1990).
+\newblock High agreement but low kappa i: The problems of two paradoxes.
+\newblock {\em Journal of Clinical Epidemiology}, 43(6):543--549.
+
+\bibitem[Geifman and El-Yaniv, 2017]{geifman}
+Geifman, Y. and El-Yaniv, R. (2017).
+\newblock Selective classification for deep neural networks.
+\newblock In {\em NeurIPS}, volume~30.
+
+\bibitem[Gu et~al., 2024]{gusurvey}
+Gu, J. et~al. (2024).
+\newblock A survey on llm-as-a-judge.
+\newblock arXiv:2411.15594.
+
+\bibitem[Guldimann et~al., 2024]{complai}
+Guldimann, P. et~al. (2024).
+\newblock Compl-ai framework: A technical interpretation and llm benchmarking
+  suite for the eu ai act.
+\newblock arXiv:2410.07959.
+
+\bibitem[Gwet, 2008]{gwet}
+Gwet, K.~L. (2008).
+\newblock Computing inter-rater reliability and its variance in the presence of
+  high agreement.
+\newblock {\em British Journal of Mathematical and Statistical Psychology},
+  61(1):29--48.
+
+\bibitem[Howard et~al., 2021]{howard}
+Howard, S.~R., Ramdas, A., McAuliffe, J., and Sekhon, J. (2021).
+\newblock Time-uniform, nonparametric, nonasymptotic confidence sequences.
+\newblock {\em Annals of Statistics}, 49(2):1055--1080.
+
+\bibitem[Huang et~al., 2024]{trustllm}
+Huang, Y. et~al. (2024).
+\newblock Trustllm: Trustworthiness in large language models.
+\newblock {\em arXiv:2401.05561}.
+
+\bibitem[Lan and DeMets, 1983]{landemets}
+Lan, K. K.~G. and DeMets, D.~L. (1983).
+\newblock Discrete sequential boundaries for clinical trials.
+\newblock {\em Biometrika}, 70(3):659--663.
+
+\bibitem[Landis and Koch, 1977]{landiskoch}
+Landis, J.~R. and Koch, G.~G. (1977).
+\newblock The measurement of observer agreement for categorical data.
+\newblock {\em Biometrics}, 33(1):159--174.
+
+\bibitem[Liang et~al., 2022]{helm}
+Liang, P. et~al. (2022).
+\newblock Holistic evaluation of language models.
+\newblock arXiv:2211.09110.
+
+\bibitem[McNemar, 1947]{mcnemar}
+McNemar, Q. (1947).
+\newblock Note on the sampling error of the difference between correlated
+  proportions or percentages.
+\newblock {\em Psychometrika}, 12(2):153--157.
+
+\bibitem[{MLCommons AI Risk and Reliability Working Group}, 2025]{ailuminate}
+{MLCommons AI Risk and Reliability Working Group} (2025).
+\newblock Ailuminate: v1.0 of the ai risk and reliability benchmark.
+\newblock arXiv:2503.05731.
+
+\bibitem[M{\"o}kander et~al., 2023]{mokander}
+M{\"o}kander, J., Schuett, J., Kirk, H.~R., and Floridi, L. (2023).
+\newblock Auditing large language models: a three-layered approach.
+\newblock {\em AI and Ethics}.
+
+\bibitem[Raji et~al., 2020]{smactr}
+Raji, I.~D. et~al. (2020).
+\newblock Closing the ai accountability gap: Defining an end-to-end framework
+  for internal algorithmic auditing.
+\newblock In {\em ACM FAccT}, pages 33--44.
+
+\bibitem[Tamkin et~al., 2023]{tamkin}
+Tamkin, A. et~al. (2023).
+\newblock Evaluating and mitigating discrimination in language model decisions.
+\newblock arXiv:2312.03689.
+
+\bibitem[Tan et~al., 2025]{judgebench}
+Tan, S. et~al. (2025).
+\newblock Judgebench: A benchmark for evaluating llm-based judges.
+\newblock In {\em ICLR}.
+
+\bibitem[Wang et~al., 2023]{decodingtrust}
+Wang, B. et~al. (2023).
+\newblock Decodingtrust: A comprehensive assessment of trustworthiness in gpt
+  models.
+\newblock In {\em NeurIPS Datasets and Benchmarks}.
+
+\bibitem[Zheng et~al., 2023]{zheng}
+Zheng, L. et~al. (2023).
+\newblock Judging llm-as-a-judge with mt-bench and chatbot arena.
+\newblock In {\em NeurIPS}, volume~36.
+
+\end{thebibliography}

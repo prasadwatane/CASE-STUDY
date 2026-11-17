@@ -28,7 +28,7 @@ from grail.ingest.loaders import load_source_text, clean_oj_text
 from grail.ingest.linker import link_units
 from grail.index.hybrid_index import HybridIndex
 
-GOLD_PATH = os.path.join(ROOT, "data", "eval", "e1_gold.jsonl")
+GOLD_PATH = os.path.join(ROOT, "data", "eval", os.environ.get("GRAIL_GOLD", "e1_gold.jsonl"))
 KS = (1, 3, 5, 10)
 
 

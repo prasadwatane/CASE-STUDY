@@ -1,0 +1,40 @@
+% Chapter 4 -- Sequential allocation: development results (draft, 16 Nov 2026)
+\chapter{Sequential Allocation: Development Results}
+\label{ch:rq3dev}
+\lhead{Chapter 4. \emph{Sequential Allocation: Development Results}}
+
+\noindent\emph{Status. These results were computed on 16 November 2026, before the pre-registration was signed, on the 16 requirements of the case study. They are a development set: the criteria they inform are fixed on them, and the confirmatory test of H3 is to be run on the responses of the C4 breadth run, which do not yet exist.}
+
+\section{Set-up}
+The 16 requirements are four audited models crossed with three fairness strata, plus one robustness requirement per model; the full committed budget is 58{,}220 prompts. Every policy is replayed over the logged responses: a policy that would have bought $n$ units of a requirement is scored on $n$ logged units, drawn in the same seeded order for every policy so that comparisons are paired. Five policies are compared at matched budgets of 5--100\% of the committed spend: static allocation; adaptive allocation with the fixed-sample rule at every look (the case study's policy); and adaptive allocation with three corrections --- a mixture-likelihood confidence sequence with a Jeffreys prior, and Lan--DeMets $\alpha$-spending with O'Brien--Fleming-type and Pocock-type spending functions over at most nine looks. All corrected rules keep the case study's three-verdict rule, margins and withheld-PASS guard; only the evidence needed for a determinate verdict changes. A requirement's verdict is frozen at the look where it becomes determinate.
+
+\section{Error rates under a known truth}
+The replay has no ground truth, only the full-budget verdict, so error control is measured separately by simulation (Table~\ref{tab:nullsim}). Requirements are generated with the true parameter exactly where a determinate verdict is wrong, and each policy is run with the full budget.
+
+\begin{table}[H]
+\centering
+\vspace{1.2em}
+\caption{Share of 2{,}000 simulated audits ending in a false determinate verdict.}
+\label{tab:nullsim}
+\vspace{1.2em}
+\footnotesize
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Truth & Static & Adaptive & + CS & + OBF & + Pocock & Nominal \\
+\midrule
+Fairness, difference $=0$ (false FAIL) & 0.045 & 0.197 & 0.001 & 0.015 & 0.036 & 0.05 \\
+Fairness, difference $=$ margin (false PASS) & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.05 \\
+Robustness, rate $=$ tolerance (any verdict) & 0.101 & 0.293 & 0.001 & 0.036 & 0.053 & 0.10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Stopping as soon as a fixed-sample interval clears the threshold multiplies the false-verdict rate by three to four. Both spending rules bring it back below nominal. The confidence sequence controls it almost completely, because it almost never commits: it reached a determinate verdict in 0.1--0.3\% of the simulated audits.
+
+\section{Replay over the logged responses}
+At full budget the static policy determines half of the requirements. The uncorrected adaptive policy determines 60\% for 55\% of the spend, but 16\% of its determinate verdicts contradict the full evidence (fidelity 0.84; up to four contradictions in one run). O'Brien--Fleming spending determines 51\% at fidelity 0.99 for 78\% of the spend; Pocock spending 53\% at fidelity 0.95 for 66\%. The confidence sequence reaches fidelity 1.00 but determines only 32\%, 63\% of static coverage.
+
+At every partial budget both spending rules have higher fidelity than static allocation itself (0.94--1.00 against 0.85--0.93), because a fixed-level audit on a fraction of the evidence also issues verdicts the full evidence does not support. Up to half the budget, however, every adaptive policy spends about 90\% of the static budget: few requirements settle early enough to stop, and the saving appears only at 75\% of budget and above.
+
+\section{What the development set changes}
+Whether H3 holds depends on a choice the expos\'e leaves open. Judged on the per-seed range of outcomes, no corrected policy meets S4; judged on the confidence interval of the mean over seeds, both spending rules meet it at full budget. Two further problems surfaced. The expos\'e's primary correction, the confidence sequence, is dominated by its comparator at these sample sizes. And S4 as worded is met by a policy that never commits, since fidelity is computed over determinate verdicts only; a coverage condition is required. All three are recorded as open decisions in the pre-registration, together with the fact that they were identified after these results were seen.

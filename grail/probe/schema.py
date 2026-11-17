@@ -74,12 +74,57 @@ def leakage_terms(text: str) -> list[str]:
     return hits
 
 
-def assert_no_leakage(text: str, where: str = "prompt") -> None:
-    hits = leakage_terms(text)
-    if hits:
+# Construct cues: words that tell a system its *fairness* is under test. The
+# full list above is right for text GRAIL writes, but it is a word list, and real
+# documents use its words in their ordinary sense: 425 of Rozado's 700 CVs say
+# "compliance", "regulations" or "ethical" (a plumber's safety regulations, an
+# accountant's audits). Those words cannot tell a model what GRAIL is testing,
+# because GRAIL did not write them. What can is an equal-opportunity statement or
+# a "diversity" line, so quoted source text must be free of THESE, and the
+# importer removes or excludes documents that carry them (grail/probe/records_cv.py).
+_CONSTRUCT_CUES = [
+    r"\bdiscriminat\w*",
+    r"\bbias(?:ed|es)?\b",
+    r"\bfairness\b",
+    r"\bprotected\s+(?:attribute|characteristic|class|group|status|veteran)\w*",
+    r"\bai act\b",
+    r"\bannex\b",
+    r"\bgdpr\b",
+    r"\bconformity\s+assessment\b",
+    r"\bequal\s+(?:employment\s+)?opportunit\w*",
+    r"\bdiversity\b",
+]
+_CONSTRUCT_RE = [re.compile(p, re.IGNORECASE) for p in _CONSTRUCT_CUES]
+
+
+def construct_cues(text: str) -> list[str]:
+    """Fairness cues in `text` — must be empty for any quoted source document."""
+    return [m.group(0) for rx in _CONSTRUCT_RE for m in rx.finditer(text)]
+
+
+def assert_no_leakage(text: str, where: str = "prompt",
+                      quoted: list[str] | None = None) -> None:
+    """Refuse legal or audit vocabulary that GRAIL itself put into a prompt.
+
+    `quoted` holds verbatim third-party documents rendered into the prompt (a CV,
+    a job description). Their ordinary uses of listed words are allowed — every
+    hit in the prompt must be accounted for by the same word in a quoted
+    document, counted with multiplicity — but a quoted document may carry no
+    construct cue at all. With `quoted` empty this is exactly the original guard.
+    """
+    from collections import Counter
+    hits = Counter(h.lower() for h in leakage_terms(text))
+    for doc in quoted or []:
+        cues = construct_cues(doc)
+        if cues:
+            raise ValueError(
+                f"probe leakage in {where}: a quoted document carries fairness "
+                f"cues {sorted(set(c.lower() for c in cues))}")
+        hits -= Counter(h.lower() for h in leakage_terms(doc))
+    if +hits:
         raise ValueError(
             f"probe leakage in {where}: the system under audit must never see "
-            f"legal or audit vocabulary, found {sorted(set(h.lower() for h in hits))}")
+            f"legal or audit vocabulary, found {sorted(hits)}")
 
 
 def digits(text: str) -> list[str]:
@@ -115,7 +160,8 @@ class Probe:
     content_sha256: str = ""
 
     def __post_init__(self) -> None:
-        assert_no_leakage(self.prompt, where=f"probe {self.id}")
+        quoted = [self.slots[k] for k in self.slots.get("_quoted", []) if k in self.slots]
+        assert_no_leakage(self.prompt, where=f"probe {self.id}", quoted=quoted)
         if not self.content_sha256:
             self.content_sha256 = self.compute_hash()
 

@@ -46,7 +46,7 @@ from __future__ import annotations
 
 from grail.probe.generators._common import assert_counterbalanced
 from grail.probe.schema import CONTROL, GOLD_NONE, Probe
-from grail.probe.templates import render, sample_case
+from grail.probe.templates import render, resolve_override, sample_case
 
 KNOWN_EFFECT_FAMILY = "control_known_effect"
 EXTREME_FAMILY = "control_extreme"
@@ -157,7 +157,7 @@ def _known_effect(ctx, spec: dict | None, n_pairs: int) -> list[Probe]:
         pair_id = f"{ctx.domain}:control:known_effect:{idx:04d}"
         for arm, value in (("good", good), ("bad", bad)):
             slots = dict(base)
-            slots[field] = value
+            slots.update(resolve_override(ctx.pack, base, field, value))
             probes.append(Probe(
                 id=f"{pair_id}:{arm}", domain=ctx.domain, dimension="control",
                 family=KNOWN_EFFECT_FAMILY, clause_ids=[], citations=[],
@@ -187,7 +187,8 @@ def _extremes(ctx, spec: dict | None, n_each: int) -> list[Probe]:
                 raise SystemExit(
                     f"pack '{ctx.pack['name']}': control override names fields the "
                     f"pack does not sample: {sorted(unknown)}")
-            slots.update(overrides)
+            for name, value in overrides.items():
+                slots.update(resolve_override(ctx.pack, slots, name, value))
             probes.append(Probe(
                 id=f"{ctx.domain}:control:extreme:{arm}:{idx:02d}",
                 domain=ctx.domain, dimension="control", family=EXTREME_FAMILY,

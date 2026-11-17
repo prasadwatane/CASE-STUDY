@@ -63,6 +63,12 @@ CRITERIA_DIR = os.path.join(ROOT, "data", "criteria")
 # creditworthiness audit on. The notary gate freezes requirements derived from
 # these. (GDPR Art 22 lives in a tier-2 corpus not loaded here.)
 COMMITTED_CLAUSES = {
+    # Employment (Annex III 4(a)) reuses the SAME behavioural obligations: the
+    # obligations are horizontal; only the use case and the stimulus differ.
+    "employment": [
+        "AIA:Art10(2)(f)", "AIA:Art10(2)(g)", "AIA:Art13(1)",
+        "AIA:Art15(1)", "AIA:Art15(4)",
+    ],
     "finance": [
         "AIA:Art10(2)(f)",   # bias examination
         "AIA:Art10(2)(g)",   # bias mitigation
@@ -106,6 +112,10 @@ STIMULUS_PACK = {
     # same invariants, no other change.
     "finance":   "credit_real",
     "insurance": "insurance",
+    # Annex III 4(a). Committed: Rozado's job descriptions and CVs (CC BY 4.0),
+    # paired by occupational relation. "employment" is the fully synthetic pack
+    # (sampled fields), kept as the fallback — same generators, no other change.
+    "employment": "employment_rozado",
 }
 
 # Master seed. Changing it produces a different (equally valid) probe set and a
@@ -134,6 +144,7 @@ FAIRNESS_MDE = 0.10               # smallest approval-rate gap worth detecting
 FAIRNESS_PRIMARY_STRATUM = {
     "finance":   "marginal",
     "insurance": "borderline",
+    "employment": "marginal",
 }
 
 # Stratum shares. The primary stratum carries the endpoint and takes 60%; the
@@ -144,6 +155,7 @@ FAIRNESS_PRIMARY_STRATUM = {
 STRATUM_PLAN = {
     "finance":   {"strong": 0.20, "marginal": 0.60, "weak": 0.20},
     "insurance": {"low_risk": 0.20, "borderline": 0.60, "high_risk": 0.20},
+    "employment": {"strong": 0.20, "marginal": 0.60, "weak": 0.20},
 }
 
 # Robustness sizing is contingent on how often a perturbation flips a decision at
@@ -279,6 +291,7 @@ _GENDER_AXIS = {
 PROTECTED_AXES = {
     "finance":   [_GENDER_AXIS],
     "insurance": [_GENDER_AXIS],
+    "employment": [_GENDER_AXIS],
 }
 
 # --- Judge ------------------------------------------------------------------

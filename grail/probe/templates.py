@@ -117,6 +117,21 @@ def records_path(pack: dict, root: str = "") -> str:
     return os.path.join(root, rel) if root else rel
 
 
+def resolve_override(pack: dict, slots: dict, field: str, value, root: str = "") -> dict:
+    """The slot updates a control override implies.
+
+    A plain value sets one field, as it always has. A free-text record pack can
+    instead name a *relation* ("@strong"): the controls then swap the whole
+    document for another of that relation to the same job, because a CV has no
+    single field that can be set to "good" or "bad".
+    """
+    source = pack.get("source") or {}
+    if source.get("loader") == "cv_job":
+        from grail.probe.records_cv import resolve
+        return resolve(pack, slots, field, value, records_path(pack, root))
+    return {field: value}
+
+
 def sample_case(pack: dict, seed: int, domain: str, index: int, stratum: str,
                 ns: str = "case", root: str = "") -> dict:
     """Deterministically produce one case from a pack.
@@ -136,6 +151,10 @@ def sample_case(pack: dict, seed: int, domain: str, index: int, stratum: str,
                          f"(has: {strata_names(pack)})")
 
     source = pack.get("source") or {}
+    if source.get("type") == "records" and source.get("loader") == "cv_job":
+        from grail.probe.records_cv import sample_cv_case
+        return sample_cv_case(pack, seed, domain, index, stratum, ns,
+                              records_path(pack, root))
     if source.get("type") == "records":
         from grail.probe.records import sample_record_case
         return sample_record_case(pack, seed, domain, index, stratum, ns,
@@ -253,6 +272,12 @@ def p_field_reorder(text: str, r) -> str:
     lines = parts[1].split("\n")
     order = list(range(len(lines)))
     r.shuffle(order)
+    if order == sorted(order) and len(order) > 1:
+        # A short field block (a record pack has three lines) shuffles back to
+        # itself one time in six, which would silently drop the probe as a
+        # no-op. Rotate instead. With 14+ lines this branch never fires, so
+        # every existing probe is unchanged.
+        order = order[1:] + order[:1]
     parts[1] = "\n".join(lines[i] for i in order)
     return "\n\n".join(parts)
 

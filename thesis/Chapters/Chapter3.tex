@@ -1,0 +1,148 @@
+% Chapter 3 -- Methodology (working draft, 16 Nov 2026)
+\chapter{Methodology}
+\label{ch:method}
+\lhead{Chapter 3. \emph{Methodology}}
+
+\usetikzlibrary{arrows.meta}
+
+\noindent\emph{Draft status. Sections~\ref{sec:design}--\ref{sec:sizing} describe a design that is not yet countersigned. Four decisions are open and are marked \textbf{[open]}; no round-2 annotation has been collected and no judge has been scored against it. Simulation figures are design inputs, not results.}
+
+\section{Research design}
+\label{sec:design}
+The thesis follows Design Science Research: an artefact is built and its design claims are tested against criteria fixed in advance. The artefact is a procedure for deciding which verdicts of a clause-traced audit may be automated. It has four steps: (i) measure the human agreement ceiling on a dimension before any judge is scored; (ii) score the judge against that ceiling as a third rater; (iii) gate acceptance of judge verdicts with a distribution-free bound on selective error; (iv) correct the spending of any sequentially allocated audit budget. The procedure is instantiated on consumer creditworthiness (EU AI Act, Annex~III~5(b)), where the preceding case study supplies the corpus, the signed checklist, the probes and 61{,}259 logged responses from four open-weight models.
+
+Figure~\ref{fig:grail} shows the GRAIL loop. Components in blue exist and are reused unchanged; components in orange are built in this thesis.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw, rounded corners, align=center, minimum height=9mm, minimum width=24mm, inner sep=3pt, fill=blue!8},
+  new/.style={box, fill=orange!22},
+  lab/.style={font=\scriptsize\bfseries, text=gray},
+  >={Stealth[length=2mm]}]
+\node[lab] at (-2.1, 0)  {GROUND};
+\node[lab] at (-2.1,-2)  {REASON / ACT};
+\node[lab] at (-2.1,-4)  {INSPECT};
+\node[lab] at (-2.1,-6)  {LOOP};
+\node[box] (act)   at (0,0)  {EU AI Act\\(OJ L 2024/1689)};
+\node[box] (parse) at (3.4,0){Deterministic\\clause parser};
+\node[box] (index) at (6.8,0){Hybrid index\\bge-base + BM25};
+\node[box] (draft) at (10.2,0){Draft\\checklist};
+\node[box] (notary)at (13.6,0){Notary:\\sign \& freeze};
+\draw[->] (act)--(parse); \draw[->] (parse)--(index); \draw[->] (index)--(draft); \draw[->] (draft)--(notary);
+\node[new] (probe) at (13.6,-2){Probe generator\\(+ 2nd axis, C4)};
+\node[new] (alloc) at (10.2,-2){Allocation policy\\seq.\ valid (C3)};
+\node[box] (log)   at (6.8,-2){Response log\\(append-only)};
+\draw[->] (notary)--(probe); \draw[->] (probe)--(alloc); \draw[->] (alloc)--(log);
+\node[box] (jury)  at (3.4,-4){Jury\\(deterministic)};
+\node[new] (gate)  at (6.8,-4){Selective gate\\risk--coverage (C2)};
+\node[box] (judge) at (10.2,-4){Judge\\(pinned, $k{=}5$)};
+\node[new] (annot) at (13.6,-4){Annotation study\\ceiling first (C1)};
+\draw[->] (log)--(jury); \draw[->] (log)--(judge); \draw[->] (judge)--(gate); \draw[->] (annot)--(judge);
+\node[new] (map)   at (5.1,-6){Reliability map: per-dimension\\admissibility of automation};
+\node[box] (ledger)at (10.2,-6){Ledger $\to$\\clause-traced report};
+\draw[->] (jury)--(map); \draw[->] (gate)--(map); \draw[->] (map)--(ledger);
+\end{tikzpicture}}
+\caption[GRAIL architecture with thesis contributions]{GRAIL with the thesis contributions in orange. Blue components exist and are reused.}
+\label{fig:grail}
+\end{figure}
+
+\section{Scope}
+\label{sec:scope}
+Mandatory contributions are C1, C1b, C2, C3, C4 and C5; the thesis is assessed on these. C4b (mechanism probe) and C6 (second standards corpus) are optional and are cut, in that order, if the annotation study overruns. A second audited sub-sector, gold generation without a human, and changes to the retrieval stack are out of scope.
+
+\section{Human annotation methodology}
+\label{sec:annotation}
+
+\subsection{Round 1 and why it failed}
+In the case study four raters labelled 30 transparency items under guideline v1.0. Fleiss' $\kappa$ was 0.069; pairwise Cohen's $\kappa$ ranged from $-0.07$ to $0.39$, every interval spanning zero; the raters were unanimous on 11 of 30 items. By criterion, $\kappa$ was 0.13 for ``states the decisive details and a confidence value'' and $-0.17$ for ``states what would have to change for a different outcome''. Between the two primary raters, ten of twelve disagreements fell on two response formats the guideline had not ruled on: a bare list of field values with no stated direction, and a counterfactual list of changes. Raters agreed on what passes and not on what fails. The failure is therefore attributed to an under-specified instrument and not to the raters.
+
+\subsection{Guideline revision}
+Guideline v1.1 restates each criterion as an ordered list of yes/no checks, with every round-1 disagreement as a worked example. The draft currently contains two rule sets that give opposite verdicts on six of the twelve disputed items \textbf{[open]}; they are merged into one before freezing. Freezing means that both raters accept every rule, the file is hashed, and the hash is embedded in every exported sheet. Labels are never pooled across guideline versions; round-1 labels are kept only as the pre-revision baseline.
+
+\subsection{Raters, blinding and independence}
+Two raters label every item independently. They see the application, the model response and the frozen guideline; they do not see model identity, the judge's verdict or each other's labels. Sheets carry opaque tokens in a per-rater seeded order. The author neither labels nor arbitrates, because the judge prompt is the author's and a reference the author helped produce would not be independent of the system under test.
+
+\subsection{Calibration, pilot and main study}
+Before round~2 each rater scores twenty retired round-1 items under v1.1; a miss is resolved by clarifying a rule before freezing, never by coaching on the item. Round~2 is a pilot of 30 fresh items. The main study has 300 items, all double-rated, selected by stratified sampling over high-confidence judge items, borderline items, items the judge could not decide, and a random remainder. Item identity is the pair (probe, model).
+
+\subsection{Adjudication and storage}
+Disputed items go to a third-party arbiter in random order with both labels removed. The arbiter applies the frozen guideline and records the rule used; an item that cannot be decided under the rules is excluded from the reference and counted. The reference label $R^{*}$ is the agreed label where the raters agree and the arbiter's label otherwise. Original rater sheets are hashed at submission and never overwritten; the reference is regenerated by script. Agreement between humans and the non-inferiority test use the original sheets; the baseline comparison and the gate use $R^{*}$.
+
+\section{Agreement and judge validation (RQ1)}
+\label{sec:rq1}
+For two raters let $a$ and $d$ be the numbers of items both call adequate and both call inadequate, $b$ and $c$ the two kinds of disagreement, and $n=a+b+c+d$. With $p_A$, $p_B$ the raters' shares of \emph{adequate} and $\pi=(p_A+p_B)/2$:
+\begin{align}
+p_o &= \frac{a+d}{n}, &
+\kappa &= \frac{p_o-p_e}{1-p_e},\quad p_e=p_Ap_B+(1-p_A)(1-p_B), \\
+\mathrm{AC1} &= \frac{p_o-p_e'}{1-p_e'},\quad p_e'=2\pi(1-\pi), &
+\mathrm{PI} &= \frac{|a-d|}{n},\qquad \mathrm{BI}=\frac{|b-c|}{n}.
+\end{align}
+All five quantities and the marginals are reported together \citep{landiskoch,feinstein,gwet}. Intervals are percentile bootstrap intervals over items with 10{,}000 resamples.
+
+\paragraph{S1, the human ceiling.}\hspace{0.6em}Met when the two-sided 95\% lower bound of the primary statistic between raters $A$ and $B$ is at least 0.61. The primary statistic is $\kappa$ in the expos\'e and AC1 in the filed amendment \textbf{[open]}.
+
+\paragraph{S2, non-inferiority.}\hspace{0.6em}The judge $J$ is treated as a third rater:
+\begin{equation}
+D=\tfrac12\bigl[\kappa(J,A)+\kappa(J,B)\bigr]-\kappa(A,B),\qquad H_0: D\le-\delta,\quad \delta=0.10 .
+\end{equation}
+S2 is met when the one-sided 95\% lower bound of $D$ exceeds $-\delta$, not met when the upper bound is below $-\delta$, and undetermined otherwise. $R^{*}$ is not the reference here, because a label built from both raters is an easier target than either rater alone.
+
+\paragraph{S2b, a non-trivial judge.}\hspace{0.6em}With $Q$ a rule-based scorer built from the checklist conditions, $\Delta=\kappa(J,R^{*})-\kappa(Q,R^{*})$ must have a one-sided 95\% lower bound above zero on identical items. A majority-class scorer is reported alongside with precision, recall and $F_1$ on the \emph{inadequate} class.
+
+\paragraph{The margin.}\hspace{0.6em}$\delta=0.10$ is half a Landis--Koch band and about two standard errors of $\kappa$ between two humans at $n=300$ (simulated SD 0.044). It is not a strict standard: at 70\% prevalence and a ceiling of 0.70 a human errs on 7.1\% of items and a judge exactly on the margin on 12.6\%. A margin of 0.05 has power 0.35 at this budget and is reported only as a sensitivity analysis.
+
+\section{Selective automation (RQ2)}
+\label{sec:rq2}
+The judge emits a label $g(x)$ and a nonconformity score $s(x)$, the share of its $k=5$ runs that disagree with the majority label. Two sources of run-to-run variation are possible: sampling at a non-zero temperature, as in the case-study judge ($T=0.3$, under which 13\% of the 608 judged items have non-unanimous runs), or five pre-registered paraphrases of the prompt at $T=0$, which captures sensitivity to wording instead. Which one is primary is open \textbf{[open]}; the temperature-based score exists for every judged item but takes only four usable values. The gate accepts when $s(x)\le\tau$. Coverage and selective error are
+\begin{equation}
+\phi(\tau)=\Pr\bigl(s(x)\le\tau\bigr),\qquad
+R(\tau)=\Pr\bigl(g(x)\ne R^{*}(x)\mid s(x)\le\tau\bigr).
+\end{equation}
+With $n_\tau$ accepted calibration items of which $k_\tau$ are errors, the certified bound is the exact one-sided Clopper--Pearson limit $U(\tau)=B^{-1}(1-\delta;\,k_\tau+1,\,n_\tau-k_\tau)$, and the guarantee sought is $\Pr\bigl(R(\hat\tau)\le\alpha\bigr)\ge1-\delta$ with $\alpha=\delta=0.05$ \citep{geifman,angelopoulos}. Candidate thresholds are the 0.50, 0.55, \dots, 1.00 quantiles of $s$ on the unlabelled docket, fixed before any calibration label exists, and tested in that order by fixed-sequence testing \citep{learntest}. S3 is met when a threshold passes at coverage of at least 0.50.
+
+The bound needs 59 accepted items with no error, 93 with one, 124 with two and 153 with three. With 300 labelled items at 50\% coverage, S3 can therefore be met only if the judge errs on at most two of the accepted items.
+
+\paragraph{Assumptions.}\hspace{0.6em}(1) Calibration items and the items later gated are exchangeable: same docket, models, probe families, judge version and prompts. (2) The main study is stratified, and a stratified sample is not exchangeable with the docket; the bound is either computed per stratum and combined with docket weights, or computed on a simple-random calibration subset \textbf{[open]}. (3) Error is measured against $R^{*}$, which S1 must first show to be reliable. (4) The score, the paraphrases and the threshold grid are fixed before labels exist, and calibration items are not used for prompt tuning. (5) The guarantee is marginal over the calibration draw, not per item, model or subgroup. (6) A certified selective error describes the measuring instrument; it does not establish legal conformity with the EU AI Act.
+
+\section{Sequential allocation (RQ3)}
+\label{sec:rq3}
+There are $R=16$ requirements (four models, three fairness strata and robustness each). A policy at budget $B$ buys $n_r$ units of requirement $r$ at unit cost $c_r$ and returns a verdict $v_r$ that is determinate or undetermined; $v_r^{*}$ is the verdict from all committed units. Then
+\begin{align}
+\text{cost} &= \sum_r c_r n_r, &
+\text{coverage} &= \frac{\#\{r: v_r\ \text{determinate}\}}{R},\\
+\text{fidelity} &= \frac{\#\{r: v_r\ \text{determinate},\ v_r=v_r^{*}\}}{\#\{r: v_r\ \text{determinate}\}}, &
+\text{contradictions} &= \#\{r: v_r\ \text{determinate},\ v_r\ne v_r^{*}\}.
+\end{align}
+A determinate verdict where the reference is undetermined counts against fidelity, since it was reached on a subset the full evidence does not support. The reference is the static policy at full budget, so static fidelity is 1 there by construction. In the case-study replay the uncorrected adaptive policy raised coverage from 0.50 to 0.65 and cut spend from 58{,}220 to 29{,}989 prompts while fidelity fell to 0.78. The corrected policy stops a requirement only when a time-uniform confidence sequence \citep{howard} on the paired difference excludes the threshold, with an $\alpha$-spending boundary \citep{landemets} as comparator. S4 is met when the corrected policy keeps at least 90\% of static fidelity at no more than 80\% of static cost.
+
+\section{Sizing}
+\label{sec:sizing}
+Table~\ref{tab:power} gives simulated probabilities of meeting S1 and S2. Raters and judge make independent, symmetric errors, which is the optimistic case; the figures are floors on the required sample.
+
+\begin{table}[H]
+\centering
+\vspace{1.2em}
+\caption{Simulated probability of meeting S1 and S2 (70\% prevalence, 1{,}500 studies, 1{,}000 resamples).}
+\label{tab:power}
+\vspace{1.2em}
+\footnotesize
+\begin{tabular}{@{}llccccc@{}}
+\toprule
+True ceiling $\kappa$ & $n$ & S1 ($\kappa$) & S1 (AC1) & S2, judge $=$ human & S2, judge 30\% better & S2 at margin \\
+\midrule
+0.70 & 120 & 0.24 & 0.68 & 0.48 & 0.75 & 0.06 \\
+0.70 & 300 & 0.49 & 0.96 & 0.79 & 0.98 & 0.07 \\
+0.70 & 500 & 0.73 & 1.00 & 0.93 & 1.00 & 0.06 \\
+0.75 & 300 & 0.87 & 1.00 & 0.85 & 0.99 & 0.07 \\
+0.80 & 300 & 0.99 & 1.00 & 0.88 & 0.98 & 0.06 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three points follow. Under the $\kappa$ criterion S1 has about even odds at 300 items if the true ceiling is 0.70, so the guideline must reach roughly 0.75 (raw agreement near 0.89) for the study to be adequately powered. On a skewed docket AC1 $\ge 0.61$ is a lower bar than $\kappa\ge0.61$; the two coincide at 50\% prevalence. And the percentile-bootstrap test of S2 has a simulated type-I error of 0.06--0.07 against a nominal 0.05 \textbf{[open]}.
+
+\section{Pre-registration}
+The hypotheses, thresholds, guideline and this protocol are hashed with SHA-256 and countersigned by the supervisors before any round-2 label exists. Later changes are filed as dated amendments that state what was known at the time.

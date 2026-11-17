@@ -50,7 +50,20 @@ def hash_rule(prompt: str) -> str:
     and a pilot report that flags it is working.
     """
     h = int(hashlib.blake2b(prompt.encode(), digest_size=8).hexdigest(), 16)
-    return "APPROVE" if h % 100 < 55 else "DECLINE"
+    good, bad = _answer_tokens(prompt)
+    return good if h % 100 < 55 else bad
+
+
+def _answer_tokens(prompt: str) -> tuple[str, str]:
+    """The two answers the prompt asks for ("SHORTLIST or REJECT"); credit default.
+
+    Read from the instruction rather than hard-coded, so a dry run on a non-credit
+    pack produces answers that parse. Credit prompts say "APPROVE or DECLINE",
+    so the credit stub's output is unchanged.
+    """
+    import re
+    m = re.search(r"\b([A-Z]{4,}) (?:or|oder) ([A-Z]{4,})\b", prompt)
+    return (m.group(1), m.group(2)) if m else ("APPROVE", "DECLINE")
 
 
 def field_sensitive_rule(field_label: str, threshold: float,
@@ -69,7 +82,8 @@ def field_sensitive_rule(field_label: str, threshold: float,
             return hash_rule(prompt)
         value = float(m.group(1))
         bad = value > threshold if above_is_bad else value < threshold
-        return "DECLINE" if bad else "APPROVE"
+        good_tok, bad_tok = _answer_tokens(prompt)
+        return bad_tok if bad else good_tok
 
     return rule
 

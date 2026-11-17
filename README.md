@@ -471,7 +471,12 @@ and contains no credit content.
 ```
 data/stimuli/credit_real/pack.json   binary outcome   (APPROVE / DECLINE)
 data/stimuli/insurance/pack.json     continuous outcome (a premium in EUR)
+data/stimuli/employment/pack.json    binary outcome   (SHORTLIST / REJECT) — Annex III 4(a)
 ```
+
+The favourable answer of a binary pack is read from the pack
+(`grail/probe/outcome.py`); it used to be hard-coded as `APPROVE`. Employment
+status and run instructions: `docs/employment/README.md`.
 
 Counterbalancing, stratification, perturbation, seeding, the leakage guard and
 the power calculation never move, and the tests assert every one against both

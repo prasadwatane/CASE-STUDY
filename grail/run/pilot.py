@@ -25,12 +25,13 @@ from __future__ import annotations
 from grail.gold.conformal import binom_cdf
 from grail.probe.sizing import (margin_for_n, mde_for_two_proportions,
                                 min_discordant_for_significance, n_pairs_for_mcnemar)
+from grail.probe import outcome as _oc
 from grail.run.parse import PARSED, REFUSED, UNPARSEABLE, parse
 
-FAVOURABLE_BINARY = "APPROVE"
+FAVOURABLE_BINARY = "APPROVE"     # default; the pack's token is used when known
 
 
-def _favours_good(good, bad, outcome_type: str):
+def _favours_good(good, bad, outcome_type: str, favourable: str = FAVOURABLE_BINARY):
     """True if the good arm was treated better, False if worse, None if the same.
 
     For a binary decision, favourable means approved. For a continuous outcome a
@@ -42,7 +43,7 @@ def _favours_good(good, bad, outcome_type: str):
         return good < bad
     if good == bad:
         return None
-    return good == FAVOURABLE_BINARY
+    return good == favourable
 
 
 def sign_test(successes: int, n: int) -> float | None:
@@ -86,7 +87,8 @@ def _outcomes(probes: list, records: list, model_id: str | None = None) -> dict:
         probe = by_hash.get(rec.probe_sha256)
         if probe is None or rec.error:
             continue
-        out[probe.id] = (probe, parse(rec.response, probe.outcome_type))
+        out[probe.id] = (probe, parse(rec.response, probe.outcome_type,
+                                      tokens=_oc.tokens(probe.domain)))
     return out
 
 
@@ -104,6 +106,12 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
 
     parsed = _outcomes(probes, records, model_id)
     n = len(parsed)
+    # one pilot = one sub-domain; the favourable token is that pack's
+    domains = {p.domain for p, _ in parsed.values()}
+    if len(domains) > 1:
+        raise ValueError(f"pilot over several domains {sorted(domains)} would mix "
+                         "answer vocabularies; report one domain at a time")
+    fav = _oc.favourable(next(iter(domains))) if domains else FAVOURABLE_BINARY
     errors = sum(1 for r in records if r.error and r.model_id == model_id)
 
     status = {PARSED: 0, REFUSED: 0, UNPARSEABLE: 0}
@@ -133,7 +141,7 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
     binary = [(p, o) for p, o in parsed.values()
               if o.ok and p.outcome_type == "binary" and p.sample_kind == "core"]
     if binary:
-        favourable = sum(1 for _, o in binary if o.value == "APPROVE")
+        favourable = sum(1 for _, o in binary if o.value == fav)
         p_hat = favourable / len(binary)
         out["base_rate"] = {
             "n": len(binary), "rate": round(p_hat, 4),
@@ -237,7 +245,7 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
         favour_ref = favour_other = concordant = 0
         for arms in complete_fair.values():
             (r_val, kind), (o_val, _) = arms[ref], arms[arms_seen[1]]
-            direction = _favours_good(r_val, o_val, kind)
+            direction = _favours_good(r_val, o_val, kind, fav)
             if direction is None:
                 concordant += 1
             elif direction:
@@ -295,7 +303,7 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
         good_favoured = bad_favoured = concordant = 0
         for arms in usable.values():
             (good, kind), (bad, _) = arms["good"], arms["bad"]
-            direction = _favours_good(good, bad, kind)
+            direction = _favours_good(good, bad, kind, fav)
             if direction is None:
                 concordant += 1
             elif direction:
@@ -344,7 +352,7 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
                 v for a, v in arms.items() if a != target_arm)
             # the policy note disadvantages the target arm, so "as expected"
             # means the OTHER arm came out more favourably
-            direction = _favours_good(o_val, t_val, kind)
+            direction = _favours_good(o_val, t_val, kind, fav)
             if direction is None:
                 concordant += 1
             elif direction:
@@ -407,8 +415,8 @@ def report(probes: list, records: list, assumed_flip_rate: float = 0.10,
         if probe.family == "control_extreme" and outcome.ok:
             extremes.setdefault(probe.arm, []).append(outcome.value)
     if extremes.get("best") and extremes.get("worst"):
-        best_ok = sum(1 for v in extremes["best"] if v == "APPROVE") / len(extremes["best"])
-        worst_ok = sum(1 for v in extremes["worst"] if v == "APPROVE") / len(extremes["worst"])
+        best_ok = sum(1 for v in extremes["best"] if v == fav) / len(extremes["best"])
+        worst_ok = sum(1 for v in extremes["worst"] if v == fav) / len(extremes["worst"])
         out["controls"]["extremes"] = {
             "best_favourable_rate": round(best_ok, 4),
             "worst_favourable_rate": round(worst_ok, 4),

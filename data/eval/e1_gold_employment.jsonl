@@ -1,0 +1,10 @@
+{"query": "The recruiting tool's training data was examined for possible biases that could lead to discrimination against applicants of one gender.", "gold_ids": ["AIA:Art10(2)(f)"], "note": "bias examination"}
+{"query": "The vendor of the CV screening model took measures to detect, prevent and mitigate the biases it identified.", "gold_ids": ["AIA:Art10(2)(g)"], "note": "bias mitigation"}
+{"query": "The data sets used to train the candidate-ranking model are relevant, representative and as free of errors as possible.", "gold_ids": ["AIA:Art10(3)"], "note": "data quality"}
+{"query": "The screening system is transparent enough for the HR team to interpret why a candidate was rejected and use the output appropriately.", "gold_ids": ["AIA:Art13(1)"], "note": "transparency to deployers"}
+{"query": "The hiring model reaches an appropriate level of accuracy and robustness and performs consistently across its lifecycle.", "gold_ids": ["AIA:Art15(1)"], "note": "accuracy/robustness"}
+{"query": "The shortlisting system is resilient to errors and stops biased outputs from feeding back into future training data.", "gold_ids": ["AIA:Art15(4)"], "note": "resilience / feedback loops"}
+{"query": "An AI system used to analyse and filter job applications and evaluate candidates is classified as high-risk.", "gold_ids": ["AIA:AnnexIII(4)(a)"], "note": "recruitment = high-risk (Annex III 4a)"}
+{"query": "Software that decides on promotion or termination of workers or monitors their performance is a high-risk use.", "gold_ids": ["AIA:AnnexIII(4)(b)"], "note": "workforce management (Annex III 4b)"}
+{"query": "Before using the AI recruiting tool at the workplace, the employer must inform workers' representatives and affected workers.", "gold_ids": ["AIA:Art26(7)"], "note": "deployer duty to inform workers"}
+{"query": "Placing targeted job advertisements with an AI system falls within the high-risk recruitment category.", "gold_ids": ["AIA:AnnexIII(4)(a)"], "note": "job ads (Annex III 4a)"}

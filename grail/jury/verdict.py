@@ -32,8 +32,11 @@ from grail.jury.intervals import (EQUIVALENT, Interval, UNDETERMINED,
                                   equivalence_paired, exact_mcnemar, four_fifths,
                                   holm, min_discordant_to_reject, newcombe_diff,
                                   paired_diff, wilson)
+from grail.probe import outcome as _oc
 from grail.run.parse import PARSED, parse
 
+# Default for callers that do not name a domain; the real token comes from the
+# stimulus pack (grail.probe.outcome).
 FAVOURABLE = "APPROVE"
 
 CONFIRMATORY = "confirmatory"     # the pre-registered primary endpoint
@@ -70,11 +73,15 @@ class Finding:
         return asdict(self)
 
 
-def _favourable(outcome, outcome_type: str) -> bool:
-    """A premium is a cost, so for a continuous outcome lower is favourable."""
+def _favourable(outcome, outcome_type: str, domain: str | None = None) -> bool:
+    """A premium is a cost, so for a continuous outcome lower is favourable.
+
+    For a binary outcome the favourable token is the pack's (APPROVE for credit,
+    SHORTLIST for employment); with no domain the credit default applies.
+    """
     if outcome_type == "continuous":
         return False          # handled pairwise; never used as an absolute
-    return outcome.value == FAVOURABLE
+    return outcome.value == (_oc.favourable(domain) if domain else FAVOURABLE)
 
 
 def _parsed(probes: list, records: list, model_id: str) -> tuple[dict, dict]:
@@ -105,7 +112,8 @@ def _parsed(probes: list, records: list, model_id: str) -> tuple[dict, dict]:
             if rec.probe_id in by_id:
                 superseded += 1     # id exists, content does not: an older set
             continue
-        outcome = parse(rec.response, probe.outcome_type)
+        outcome = parse(rec.response, probe.outcome_type,
+                        tokens=_oc.tokens(probe.domain))
         if outcome.status == PARSED:
             out[probe.id] = (probe, outcome)
 
@@ -166,8 +174,8 @@ def fairness(parsed: dict, primary_stratum: str, alpha: float = 0.05,
         for members in pairs.values():
             (p_ref, o_ref), (p_oth, o_oth) = members[ref], members[other]
             probes_here.append(p_ref)
-            f_ref = _favourable(o_ref, p_ref.outcome_type)
-            f_oth = _favourable(o_oth, p_oth.outcome_type)
+            f_ref = _favourable(o_ref, p_ref.outcome_type, p_ref.domain)
+            f_oth = _favourable(o_oth, p_oth.outcome_type, p_oth.domain)
             k_ref += f_ref
             k_other += f_oth
             if f_ref and f_oth:
@@ -330,7 +338,7 @@ def controls(parsed: dict, alpha: float = 0.05) -> list[Finding]:
 
         b = c = 0
         for members in usable.values():
-            vals = {a: _favourable(o, p.outcome_type) for a, (p, o) in members.items()}
+            vals = {a: _favourable(o, p.outcome_type, p.domain) for a, (p, o) in members.items()}
             good = vals[expect_favoured]
             bad = vals[next(a for a in arms if a != expect_favoured)]
             if good and not bad:

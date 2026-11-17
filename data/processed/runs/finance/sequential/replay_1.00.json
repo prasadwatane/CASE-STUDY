@@ -1,0 +1,255 @@
+[
+ {
+  "budget": 58220,
+  "policy": "static",
+  "coverage": {
+   "mean": 0.5,
+   "lo": 0.5,
+   "hi": 0.5
+  },
+  "fidelity": {
+   "mean": 1.0,
+   "lo": 1.0,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 0,
+   "lo": 0,
+   "hi": 0
+  },
+  "contradictions_max": 0,
+  "spent": {
+   "mean": 58220,
+   "lo": 58220,
+   "hi": 58220
+  }
+ },
+ {
+  "budget": 58220,
+  "policy": "adaptive",
+  "coverage": {
+   "mean": 0.6016,
+   "lo": 0.5,
+   "hi": 0.6875
+  },
+  "fidelity": {
+   "mean": 0.8373,
+   "lo": 0.6667,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 1.65,
+   "lo": 0,
+   "hi": 3
+  },
+  "contradictions_max": 4,
+  "spent": {
+   "mean": 32248.35,
+   "lo": 25952,
+   "hi": 38526
+  },
+  "fidelity_ratio_vs_static": {
+   "mean": 0.8373,
+   "lo": 0.6667,
+   "hi": 1.0
+  },
+  "spend_ratio_vs_static": {
+   "mean": 0.5539,
+   "lo": 0.4458,
+   "hi": 0.6617
+  },
+  "coverage_diff_vs_static": {
+   "mean": 0.1016,
+   "lo": 0.0,
+   "hi": 0.1875
+  },
+  "S4": "undetermined",
+  "fidelity_ratio_mean_ci": {
+   "mean": 0.8373,
+   "lo": 0.8107,
+   "hi": 0.8654
+  },
+  "spend_ratio_mean_ci": {
+   "mean": 0.5539,
+   "lo": 0.5376,
+   "hi": 0.5702
+  },
+  "S4_mean_ci": "not met",
+  "coverage_ratio_vs_static": {
+   "mean": 1.2031,
+   "lo": 1.1625,
+   "hi": 1.2406
+  }
+ },
+ {
+  "budget": 58220,
+  "policy": "adaptive_cs",
+  "coverage": {
+   "mean": 0.3156,
+   "lo": 0.3125,
+   "hi": 0.375
+  },
+  "fidelity": {
+   "mean": 0.9958,
+   "lo": 0.8333,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 0.025,
+   "lo": 0,
+   "hi": 0
+  },
+  "contradictions_max": 1,
+  "spent": {
+   "mean": 46388.125,
+   "lo": 42605,
+   "hi": 48034
+  },
+  "fidelity_ratio_vs_static": {
+   "mean": 0.9958,
+   "lo": 0.8333,
+   "hi": 1.0
+  },
+  "spend_ratio_vs_static": {
+   "mean": 0.7968,
+   "lo": 0.7318,
+   "hi": 0.825
+  },
+  "coverage_diff_vs_static": {
+   "mean": -0.1844,
+   "lo": -0.1875,
+   "hi": -0.125
+  },
+  "S4": "undetermined",
+  "fidelity_ratio_mean_ci": {
+   "mean": 0.9958,
+   "lo": 0.9875,
+   "hi": 1.0
+  },
+  "spend_ratio_mean_ci": {
+   "mean": 0.7968,
+   "lo": 0.7903,
+   "hi": 0.8026
+  },
+  "S4_mean_ci": "undetermined",
+  "coverage_ratio_vs_static": {
+   "mean": 0.6312,
+   "lo": 0.625,
+   "hi": 0.6406
+  }
+ },
+ {
+  "budget": 58220,
+  "policy": "adaptive_obf",
+  "coverage": {
+   "mean": 0.5078,
+   "lo": 0.5,
+   "hi": 0.5625
+  },
+  "fidelity": {
+   "mean": 0.9861,
+   "lo": 0.8889,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 0.125,
+   "lo": 0,
+   "hi": 1
+  },
+  "contradictions_max": 1,
+  "spent": {
+   "mean": 45185.95,
+   "lo": 41641,
+   "hi": 47380
+  },
+  "fidelity_ratio_vs_static": {
+   "mean": 0.9861,
+   "lo": 0.8889,
+   "hi": 1.0
+  },
+  "spend_ratio_vs_static": {
+   "mean": 0.7761,
+   "lo": 0.7152,
+   "hi": 0.8138
+  },
+  "coverage_diff_vs_static": {
+   "mean": 0.0078,
+   "lo": 0.0,
+   "hi": 0.0625
+  },
+  "S4": "undetermined",
+  "fidelity_ratio_mean_ci": {
+   "mean": 0.9861,
+   "lo": 0.975,
+   "hi": 0.9972
+  },
+  "spend_ratio_mean_ci": {
+   "mean": 0.7761,
+   "lo": 0.769,
+   "hi": 0.7831
+  },
+  "S4_mean_ci": "met",
+  "coverage_ratio_vs_static": {
+   "mean": 1.0156,
+   "lo": 1.0031,
+   "hi": 1.0281
+  }
+ },
+ {
+  "budget": 58220,
+  "policy": "adaptive_pocock",
+  "coverage": {
+   "mean": 0.5281,
+   "lo": 0.5,
+   "hi": 0.5625
+  },
+  "fidelity": {
+   "mean": 0.9474,
+   "lo": 0.8,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 0.475,
+   "lo": 0,
+   "hi": 1
+  },
+  "contradictions_max": 2,
+  "spent": {
+   "mean": 38466.725,
+   "lo": 33032,
+   "hi": 43684
+  },
+  "fidelity_ratio_vs_static": {
+   "mean": 0.9474,
+   "lo": 0.8,
+   "hi": 1.0
+  },
+  "spend_ratio_vs_static": {
+   "mean": 0.6607,
+   "lo": 0.5674,
+   "hi": 0.7503
+  },
+  "coverage_diff_vs_static": {
+   "mean": 0.0281,
+   "lo": 0.0,
+   "hi": 0.0625
+  },
+  "S4": "undetermined",
+  "fidelity_ratio_mean_ci": {
+   "mean": 0.9474,
+   "lo": 0.9285,
+   "hi": 0.9663
+  },
+  "spend_ratio_mean_ci": {
+   "mean": 0.6607,
+   "lo": 0.6454,
+   "hi": 0.6762
+  },
+  "S4_mean_ci": "met",
+  "coverage_ratio_vs_static": {
+   "mean": 1.0562,
+   "lo": 1.0344,
+   "hi": 1.0781
+  }
+ }
+]

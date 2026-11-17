@@ -1,0 +1,119 @@
+{
+ "n_items": 608,
+ "n_judge_undecided": 17,
+ "judge_vs_rule": {
+  "n": 591,
+  "raw": 0.8849,
+  "kappa": 0.610059963905222,
+  "kappa_ci": [
+   0.5232909860859044,
+   0.6931958541431716
+  ],
+  "ac1": 0.8369397186573129,
+  "ac1_ci": [
+   0.7966899502863255,
+   0.8753068436791215
+  ],
+  "confusion": {
+   "adequate": {
+    "adequate": 451,
+    "inadequate": 45
+   },
+   "inadequate": {
+    "adequate": 23,
+    "inadequate": 72
+   }
+  },
+  "marginals": {
+   "rater_a": {
+    "adequate": 496,
+    "inadequate": 95
+   },
+   "rater_b": {
+    "adequate": 474,
+    "inadequate": 117
+   }
+  }
+ },
+ "by_model": {
+  "Llama-3.1-8B-Instruct": {
+   "n": 142,
+   "judge_adequate": 0.711,
+   "rule_adequate": 0.761,
+   "raw": 0.8944,
+   "kappa": 0.7290765708471127,
+   "ac1": 0.8272015576197626
+  },
+  "Meta-Llama-3.1-70B-Instruct-AWQ-INT4": {
+   "n": 145,
+   "judge_adequate": 0.848,
+   "rule_adequate": 0.828,
+   "raw": 0.9793,
+   "kappa": 0.9238845144356954,
+   "ac1": 0.9715955467041039
+  },
+  "Qwen2.5-32B-Instruct-AWQ": {
+   "n": 152,
+   "judge_adequate": 0.954,
+   "rule_adequate": 0.914,
+   "raw": 0.9342,
+   "kappa": 0.46815955213436,
+   "ac1": 0.9249901302803001
+  },
+  "Qwen2.5-7B-Instruct": {
+   "n": 152,
+   "judge_adequate": 0.836,
+   "rule_adequate": 0.704,
+   "raw": 0.7368,
+   "kappa": 0.2753277711561382,
+   "ac1": 0.5923293549684859
+  }
+ },
+ "self_agreement_values": {
+  "0.0": 3,
+  "0.4": 5,
+  "0.5": 1,
+  "0.6": 27,
+  "0.67": 1,
+  "0.75": 1,
+  "0.8": 42,
+  "1.0": 528
+ },
+ "split_conditions": {
+  "states_direction": 80
+ },
+ "judge_rule_agreement_when_unanimous": 0.913,
+ "n_unanimous": 528,
+ "judge_rule_agreement_when_split": 0.651,
+ "n_split": 63,
+ "gate_grid": [
+  {
+   "tau": 0.0,
+   "docket_coverage": 0.8684,
+   "accepted_of_300_if_srs": 261,
+   "max_errors_certifiable": 7,
+   "max_error_rate": 0.0268
+  },
+  {
+   "tau": 0.2,
+   "docket_coverage": 0.9375,
+   "accepted_of_300_if_srs": 281,
+   "max_errors_certifiable": 7,
+   "max_error_rate": 0.0249
+  },
+  {
+   "tau": 0.4,
+   "docket_coverage": 0.9852,
+   "accepted_of_300_if_srs": 296,
+   "max_errors_certifiable": 8,
+   "max_error_rate": 0.027
+  },
+  {
+   "tau": 1.0,
+   "docket_coverage": 1.0,
+   "accepted_of_300_if_srs": 300,
+   "max_errors_certifiable": 8,
+   "max_error_rate": 0.0267
+  }
+ ]
+}

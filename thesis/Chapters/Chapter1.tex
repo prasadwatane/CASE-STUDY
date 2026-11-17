@@ -1,0 +1,49 @@
+% Chapter 1 -- Introduction
+\chapter{Introduction}
+\label{ch:introduction}
+\lhead{Chapter 1. \emph{Introduction}}
+
+\section{Motivation}
+Regulation (EU) 2024/1689 \citep{euaiact2024} makes AI systems that assess the creditworthiness of natural persons high-risk. Its obligations for such stand-alone high-risk systems were to apply from 2~August 2026; Regulation (EU) 2026/1744, the Digital Omnibus on AI, in force since 27~July 2026, postpones them to 2~December 2027 \citep{omnibus}. The stated reason for the postponement is that the standards and support measures providers need in order to demonstrate conformity were not in place --- which is to say that the problem this thesis addresses is the one the legislator has just acknowledged. A bank deploying a foundation model in a lending workflow still needs, by that date, evidence about the model's behaviour that a supervisor will accept. The evidence available today comes in two kinds that do not meet. Benchmarks such as HELM \citep{helm} measure behaviour at scale but are organised by task, so a fairness score names no article, no interpretation and no tolerance. Audit frameworks such as SMACTR \citep{smactr} and the three-layered model of M\"okander et al.\ \citep{mokander} are organised by obligation but stop at process, asking whether documentation exists rather than what the system does when asked to decide a loan.
+
+The preceding case study closed that gap for one domain and, in doing so, exposed a second one. Building the pipeline was tractable; knowing which of its verdicts to believe was not. Quantitative obligations were scored by deterministic arithmetic and are as trustworthy as the arithmetic. Qualitative obligations --- whether an explanation is adequate under Article~13(1) --- were scored by a language model whose agreement with human auditors was never established, because four human annotators following the frozen guideline agreed at chance (Fleiss $\kappa = 0.07$). And when the audit budget was spent adaptively rather than proportionally, coverage rose by up to 17~percentage points and cost halved, while the share of verdicts that survived contact with the full evidence fell from 100\% to 78\%.
+
+These are not three separate shortfalls. They are three views of one boundary: the line past which a machine's verdict can no longer stand in for a human's. Nobody has drawn that line for regulatory auditing, and without it an automated audit is either trusted too much or not used at all.
+
+Nothing in that boundary is specific to credit. A medical-triage model audited against a different instrument raises the same question in the same form: which of its obligations can be scored by machine, at what certified error, and what is lost by stopping early. What credit supplies is a domain where the question can be measured, because the preceding case study already built the corpus, the probes and the 61{,}259 logged responses. The thesis is therefore organised as a procedure plus one worked instance, and is explicit throughout about which of its results are the procedure and which are the instance.
+
+\section{Challenges and Problem Statement}
+Three specific problems stand between the existing state of the art and an automated audit whose verdicts can be relied upon.
+
+\paragraph{P1 --- Automated verdicts carry no measured reliability.}\hspace{0.6em}COMPL-AI \citep{complai}, the closest technical bridge between the AI Act and executable benchmarks, maps the Act to existing suites manually and never validates its scoring against human judgement. LLM-as-a-judge research documents position, verbosity and self-preference bias, and JudgeBench \citep{judgebench} reports that the strongest judge reaches only about 64\% on hard objective-correctness pairs. Judges are nevertheless validated once, offline, and never per audit dimension. \emph{Consequence:} a user of an automated audit cannot tell which verdicts to trust.
+
+\paragraph{P2 --- The human reference is assumed rather than measured.}\hspace{0.6em}Validating a judge presupposes a reliable human standard. The case study's pilot shows that this cannot be assumed: raw agreement of 60--80\% coexisted with chance-level $\kappa$, because the label distribution was skewed and the criterion admitted three defensible readings. A judge measured against an unestablished ceiling produces a number that means nothing. \emph{Consequence:} reported judge--human agreement may be uninterpretable, in either direction.
+
+\paragraph{P3 --- Sequential allocation invalidates the verdicts it accelerates.}\hspace{0.6em}Static allocation spends identical budget on settled and unsettled requirements. Adaptive allocation fixes that and introduces optional stopping, which is the classical mechanism by which a sequential procedure manufactures determinations it has not earned --- as the case study's replay demonstrates. No audit framework treats budget allocation as a sequential-inference problem with a spending correction. \emph{Consequence:} an audit is either wasteful, or fast and unsound.
+
+\section{Contributions and Research Questions}
+\paragraph{Main research question.}\hspace{0.6em}\emph{Where, across Responsible-AI dimensions, can an automated verdict replace a human one in a clause-traced regulatory audit, at what certified error rate, and at what cost in verdict validity?}
+
+It decomposes into three answerable sub-questions, each with a testable hypothesis. The confirmatory dimension for RQ1 and RQ2 is fixed in advance as transparency (adequacy of explanation under Article~13(1)), the one dimension the case study scored by judge; any further judge-scored dimension is secondary and is reported descriptively, without a confirmatory claim.
+
+\begin{itemize}
+\item \textbf{RQ1 (reliability).} What is the human--human agreement ceiling for the transparency dimension, and how closely does a gated language-model judge approach it relative to trivial alternatives? \textbf{H1:} after a decidability-oriented guideline revision, the human ceiling clears $\kappa \geq 0.61$ (lower bootstrap bound) on the primary dimension; the judge, treated as a third rater, is non-inferior to a human rater at a margin of $0.10$; and the judge is superior to a rule-based scorer built directly from the checklist's adequacy conditions.
+\item \textbf{RQ2 (certification).} Given a measured ceiling, what selective error can a calibrated gate guarantee, at what coverage, per dimension? \textbf{H2:} on the primary dimension the gate attains selective error $\leq 5\%$ at coverage $\geq 50\%$, with a distribution-free bound.
+\item \textbf{RQ3 (sequential cost).} Can an adaptive allocation policy with a sequentially valid stopping rule retain its cost saving while restoring verdict fidelity to the level of a pre-registered static allocation? \textbf{H3:} the corrected policy achieves $\geq 90\%$ of the static policy's verdict fidelity while spending at most 80\% of the static budget.
+\end{itemize}
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item[\textbf{C1}] A domain-independent procedure for establishing the automation boundary: ceiling before judge, judge against ceiling, certified gate, corrected sequential spending --- stated so that it can be executed on any dimension, instrument and domain, with the decision rules and statistics each step requires.
+\item[\textbf{C1b}] The filled-in reliability map produced by running that procedure on consumer credit: per dimension, the measured human ceiling, the judge's agreement against it, and the resulting admissibility verdict.
+\item[\textbf{C2}] A certified selective-automation gate wired to the judge path, reporting risk--coverage curves with distribution-free bounds and the calibration-set size each guarantee requires.
+\item[\textbf{C3}] A sequentially valid audit-allocation procedure, with an empirical comparison against both static and uncorrected-adaptive allocation on cost, coverage and verdict fidelity.
+\item[\textbf{C4}] Extended empirical evidence on clause-traced behavioural auditing: a second protected axis and a commercially served model, establishing whether the case study's fairness finding is axis- and family-specific.
+\item[\textbf{C5}] An open-source reference implementation and reproducible, clause-traced audit reports, extending the existing repository.
+\end{itemize}
+
+\noindent\emph{Conditional contributions} --- delivered if the annotation study does not overrun (Section~\ref{sec:scope}); the thesis is complete without them and is to be assessed on C1--C5.
+\begin{itemize}
+\item[\textbf{C4b}] A mechanism probe for the observed direction of the fairness effect: whether it tracks the title token itself, a name-only cue, or an explicit statement of gender. This converts a replicated effect into an investigated one and bounds what the title-swap construct measures.
+\item[\textbf{C6}] Evidence that the grounding stage is corpus-independent: a second standards corpus parsed and reduced to a signed draft checklist with no code change, reported as unit counts and one signature --- the generality claim made with evidence rather than asserted.
+\end{itemize}
