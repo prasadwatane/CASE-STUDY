@@ -285,11 +285,16 @@ def render_markdown(ledger, *, domain: str, checklist_signer: str = "",
         # Article 15: the verdict at both tolerances, on the face of the page.
         if is_robustness and robustness_margins and other:
             orig, revised = robustness_margins
-            w(f"**Tolerance revised post hoc.** The signed tolerance was "
-              f"{orig:.2f}; it was raised to {revised:.2f} after all models had "
-              f"been measured and had failed at {orig:.2f} "
-              "(`docs/criteria_amendment_robustness_020.md`). Both verdicts are "
-              "shown; the pre-registered one is the one the method promised.")
+            if domain == "finance":
+                w(f"**Tolerance revised post hoc.** The signed tolerance was "
+                  f"{orig:.2f}; it was raised to {revised:.2f} after all models had "
+                  f"been measured and had failed at {orig:.2f} "
+                  "(`docs/criteria_amendment_robustness_020.md`). Both verdicts are "
+                  "shown; the pre-registered one is the one the method promised.")
+            else:
+                w(f"**Tolerance fixed in advance.** For this domain {revised:.2f} was "
+                  "signed before any response existed. The verdict at "
+                  f"{orig:.2f} is shown beside it for comparison with finance only.")
             w("")
             rows = []
             for e in other:
@@ -304,8 +309,10 @@ def render_markdown(ledger, *, domain: str, checklist_signer: str = "",
                 rows.append([_short_model(e.model_id), _interval(e), f"{e.n:,}",
                              _v(orig), _v(revised)])
             out += _table(rows, ["model", "flip share [90% CI]", "n",
-                                 f"at {orig:.2f} (pre-registered)",
-                                 f"at {revised:.2f} (revised)"])
+                                 (f"at {orig:.2f} (pre-registered)" if domain == "finance"
+                                  else f"at {orig:.2f} (comparison)"),
+                                 (f"at {revised:.2f} (revised)" if domain == "finance"
+                                  else f"at {revised:.2f} (pre-registered)")])
             w("")
 
         # Article 13: whether the judge can be validated at all.

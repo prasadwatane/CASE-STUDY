@@ -1,0 +1,10 @@
+{"query": "The life insurer's pricing model was examined for possible biases in its data that could lead to discrimination against applicants of one sex.", "gold_ids": ["AIA:Art10(2)(f)"], "note": "bias examination"}
+{"query": "The provider of the premium-setting model took measures to detect, prevent and mitigate the biases it found.", "gold_ids": ["AIA:Art10(2)(g)"], "note": "bias mitigation"}
+{"query": "The data used to train the underwriting model are relevant, representative and as free of errors as possible.", "gold_ids": ["AIA:Art10(3)"], "note": "data quality"}
+{"query": "The pricing system is transparent enough for the underwriter to interpret why a premium was quoted and to use the output appropriately.", "gold_ids": ["AIA:Art13(1)"], "note": "transparency to deployers"}
+{"query": "The premium model reaches an appropriate level of accuracy and robustness and quotes consistently throughout its lifecycle.", "gold_ids": ["AIA:Art15(1)"], "note": "accuracy/robustness"}
+{"query": "The rating engine is resilient to errors and inconsistencies and prevents biased quotes from feeding back into later training.", "gold_ids": ["AIA:Art15(4)"], "note": "resilience / feedback loops"}
+{"query": "An AI system used to assess risk and set prices for individuals applying for life or health insurance is high-risk.", "gold_ids": ["AIA:AnnexIII(5)(c)"], "note": "life and health insurance = high-risk (Annex III 5c)"}
+{"query": "Before an insurer deploys an AI system to price life and health insurance, it must assess the impact on fundamental rights.", "gold_ids": ["AIA:Art27(1)"], "note": "fundamental rights impact assessment (deployers of 5(b)/(c))"}
+{"query": "A person whose insurance premium was set on the basis of a high-risk AI system's output can ask for a clear explanation of its role in the decision.", "gold_ids": ["AIA:Art86(1)"], "note": "right to explanation"}
+{"query": "The insurer must keep the automatically generated logs of the pricing system and monitor it on the basis of the instructions for use.", "gold_ids": ["AIA:Art26(5)", "AIA:Art26(6)"], "note": "deployer monitoring and logs"}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.10.21)  16 NOV 2026 23:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.10.21)  18 NOV 2026 15:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1028,7 +1028,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 126
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<./Images/SRH_Logo.png, id=195, 330.23375pt x 99.37125pt>
+<./Images/SRH_Logo.png, id=307, 330.23375pt x 99.37125pt>
 File: ./Images/SRH_Logo.png Graphic file (type png)
 <use ./Images/SRH_Logo.png>
 Package pdftex.def Info: ./Images/SRH_Logo.png  used on input line 140.
@@ -1154,10 +1154,27 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 [5
 
-]) (./Chapters/Chapter3.tex [6]
+] [6] [7] [8]) (./Chapters/ChapterData.tex [9]
 Chapter 3.
 ------------------------------------------------------------------------------
- 3 Methodology
+ 3 Data Collection and Field Selection
+------------------------------------------------------------------------------
+[10
+
+] [11]
+Overfull \hbox (39.6033pt too wide) in paragraph at lines 63--74
+ [][] 
+ []
+
+[12]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 91.
+
+) (./Chapters/Chapter3.tex [13]
+Chapter 4.
+------------------------------------------------------------------------------
+ 4 Methodology
 ------------------------------------------------------------------------------
 
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.meta.
@@ -1167,9 +1184,9 @@ File: pgflibraryarrows.meta.code.tex 2021/05/15 v3.1.9a (3.1.9a)
 \pgfarrowlength=\dimen330
 \pgfarrowwidth=\dimen331
 \pgfarrowlinewidth=\dimen332
-) [7
+) [14
 
-] [8]
+] [15]
 
 Package hyperref Warning: Difference (3) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 85.
@@ -1178,37 +1195,57 @@ Package hyperref Warning: Difference (3) between bookmark levels is greater
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 87.
 
-[9]
+[16]
 
 Package hyperref Warning: Difference (3) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 108.
 
-[10]) (./Chapters/Chapter4.tex [11] [12]
-Chapter 4.
+[17] [18]) (./Chapters/Chapter4.tex [19]
+Chapter 5.
 ------------------------------------------------------------------------------
- 4 Sequential Allocation: Development Results
+ 5 Sequential Allocation: Development Results
 ------------------------------------------------------------------------------
-[13
+[20
 
-]) [14]
+]) (./Chapters/Chapter5.tex [21]
+Chapter 6.
+------------------------------------------------------------------------------
+ 6 Generalisation to a Second Sector: Life Insurance Pricing
+------------------------------------------------------------------------------
+[22
+
+]
+Overfull \hbox (231.0125pt too wide) in paragraph at lines 27--41
+ [][] 
+ []
+
+
+Package hyperref Warning: Difference (3) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 47.
+
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 49.
+
+[23]) [24]
 ------------------------------------------------------------------------------
  Bibliography
 ------------------------------------------------------------------------------
-(./main.bbl [15
+(./main.bbl [25
 
 
-]) [16] (./main.aux)
+] [26]) [27] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: C91740860855C2E392DEC125FC8A4A94;9203.
+(rerunfilecheck)             Checksum: E858CCE7AD1F4F82C9274F73506523F8;14601.
  ) 
 Here is how much of TeX's memory you used:
- 27317 strings out of 480247
- 498775 string characters out of 5896150
- 944051 words of memory out of 5000000
- 44625 multiletter control sequences out of 15000+600000
- 481775 words of font info for 73 fonts, out of 8000000 for 9000
+ 27458 strings out of 480247
+ 500763 string characters out of 5896150
+ 969051 words of memory out of 5000000
+ 44705 multiletter control sequences out of 15000+600000
+ 482463 words of font info for 76 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 84i,12n,80p,1307b,896s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 84i,11n,80p,1307b,896s stack positions out of 5000i,500n,10000p,200000b,80000s
  </sessions/friendly-fervent-dijkstra/.texlive2021/texmf-var/fonts/pk/ljfour/
 jknappen/ec/tcrm1095.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
@@ -1226,11 +1263,14 @@ ts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type
 s/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 msy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></u
-sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam7.pfb>
-Output written on main.pdf (26 pages, 418444 bytes).
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/symbols/msam7.pfb>
+Output written on main.pdf (37 pages, 503114 bytes).
 PDF statistics:
- 624 PDF objects out of 1000 (max. 8388607)
- 551 compressed objects within 6 object streams
- 116 named destinations out of 1000 (max. 500000)
- 386 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 971 PDF objects out of 1000 (max. 8388607)
+ 878 compressed objects within 9 object streams
+ 168 named destinations out of 1000 (max. 500000)
+ 610 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -120,7 +120,7 @@ def _axis_planted(ctx, spec: dict | None, n_pairs: int) -> list[Probe]:
 
     for idx in range(n_pairs):
         base = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
-                           ns=f"controls/axis_planted/{axis['name']}")
+                           ns=f"controls/axis_planted/{axis['name']}", ordinal=idx)
         pair_id = f"{ctx.domain}:control:axis_planted:{axis['name']}:{idx:04d}"
 
         rendered = []
@@ -153,7 +153,7 @@ def _known_effect(ctx, spec: dict | None, n_pairs: int) -> list[Probe]:
 
     for idx in range(n_pairs):
         base = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
-                           ns="controls/known_effect")
+                           ns="controls/known_effect", ordinal=idx)
         pair_id = f"{ctx.domain}:control:known_effect:{idx:04d}"
         for arm, value in (("good", good), ("bad", bad)):
             slots = dict(base)
@@ -181,7 +181,7 @@ def _extremes(ctx, spec: dict | None, n_each: int) -> list[Probe]:
             continue
         for idx in range(n_each):
             slots = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
-                                ns=f"controls/extreme/{arm}")
+                                ns=f"controls/extreme/{arm}", ordinal=idx)
             unknown = set(overrides) - set(slots)
             if unknown:
                 raise SystemExit(

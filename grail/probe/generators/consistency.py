@@ -13,7 +13,7 @@ and the stimulus.
 """
 from __future__ import annotations
 
-from grail.probe.generators._common import clause_refs, stratum_plan
+from grail.probe.generators._common import clause_refs, stratum_plan, with_ordinals
 from grail.probe.schema import CORE, GOLD_NONE, Probe, digits
 from grail.probe.templates import (instruction, n_paraphrases, render,
                                    sample_case)
@@ -28,9 +28,9 @@ def generate(ctx, items: list) -> list[Probe]:
     probes: list[Probe] = []
 
     plan = stratum_plan(n_base, ctx.strata)
-    for idx, stratum in enumerate(plan):
+    for idx, stratum, k in with_ordinals(plan):
         slots = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
-                            ns="consistency")
+                            ns="consistency", ordinal=k)
         pair_id = f"{ctx.domain}:consistency:{idx:04d}"
         base_id = f"{pair_id}:en0"
 

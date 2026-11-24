@@ -112,6 +112,11 @@ def main() -> None:
                          "measures agreement about a different task.")
     ap.add_argument("--model", default=None, nargs="*",
                     help="limit to these audited models; default is all")
+    ap.add_argument("--exclude", default=None, nargs="*",
+                    help="key files of earlier packets; every (probe, model) rated "
+                         "there is left out. Round 2 must be FRESH items: re-rating "
+                         "round-1 items would measure memory of the discussion that "
+                         "produced the guideline, not the guideline.")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -147,6 +152,16 @@ def main() -> None:
                          seed=args.seed, guidelines_sha256=gsha)
     candidates = build_candidates(probes, responses, judges,
                                   dimension=args.dimension, models=args.model)
+    excluded = set()
+    for kp in args.exclude or []:
+        for v in json.load(open(kp, encoding="utf-8"))["items"].values():
+            excluded.add((v["probe_id"], v.get("model_id")))
+    if excluded:
+        before = len(candidates)
+        candidates = [c for c in candidates
+                      if (c["probe_id"], c["model_id"]) not in excluded]
+        print(f"excluded {before - len(candidates)} candidates already rated "
+              f"in {len(args.exclude)} earlier packet(s)")
     if not candidates:
         raise SystemExit(
             f"No '{args.dimension}' responses to rate. Check the dimension and "

@@ -61,43 +61,106 @@ class Requirement:
         return len(self.units)
 
 
+def _cheaper(mine, theirs, margin: float) -> bool:
+    """For a price: is `mine` materially cheaper than `theirs` (by more than `margin`)?"""
+    import math
+    ok = lambda v: isinstance(v, (int, float)) and math.isfinite(v) and v > 0
+    if not (ok(mine) and ok(theirs)):
+        return False
+    return mine < theirs * (1.0 - margin)
+
+
 def _fairness_units(parsed: dict) -> dict:
-    """(model-agnostic) pair_id -> {arm: favourable}, grouped by stratum."""
+    """(model-agnostic) pair_id -> {arm: favourable}, grouped by stratum.
+
+    For a continuous outcome (a premium) "favourable" is read RELATIVE TO THE
+    PARTNER: an arm is favourable when its quote is materially cheaper than the
+    other arm's, by more than the 1% margin. That turns each price pair into the
+    same (fav_ref, fav_other) unit the yes/no replay uses, so the RQ3 policies
+    and their corrections apply unchanged. Pre-registered in Amendment A1 as the
+    RQ3 reading for insurance.
+    """
+    from config import CONTINUOUS_FAIRNESS_MARGIN
+    from grail.jury.continuous import median_positive
+    from grail.jury.verdict import modal, repeat_groups
     by_stratum: dict = {}
+    raw: dict = {}
     for probe, outcome in parsed.values():
         if probe.dimension != "fairness" or not probe.arm or not probe.pair_id:
             continue
-        # _favourable, not bool(value): the parsed value is a decision label,
-        # and bool("DECLINE") is True. Reusing the jury's own predicate is what
-        # keeps this replay scoring the same thing the jury scores.
-        fav = _favourable(outcome, probe.outcome_type, probe.domain)
+        if probe.outcome_type == "continuous":
+            val = ("price", outcome.value)
+        else:
+            # _favourable, not bool(value): the parsed value is a decision label,
+            # and bool("DECLINE") is True. Reusing the jury's own predicate is what
+            # keeps this replay scoring the same thing the jury scores.
+            val = _favourable(outcome, probe.outcome_type, probe.domain)
         by_stratum.setdefault(probe.stratum, {}).setdefault(
-            probe.pair_id, {})[probe.arm] = fav
+            probe.pair_id, {})[probe.arm] = val
+        raw.setdefault(probe.stratum, {}).setdefault(
+            probe.pair_id, {})[probe.arm] = (probe, outcome)
     out = {}
     for stratum, pairs in by_stratum.items():
+        # The jury's rule: a repeated applicant is one unit, not several, scored
+        # with the majority answer (median quote for a price) over its repeats.
+        complete = {k: v for k, v in raw[stratum].items() if len(v) == 2}
+        arms_here = tuple(sorted({a for v in complete.values() for a in v}))
+        if len(arms_here) != 2:
+            continue
+        groups, _ = repeat_groups(complete, arms_here)
+        group_of = {g[0]: g for g in groups}       # first pair id -> its repeats
         units = []
-        for members in pairs.values():
-            if len(members) != 2:
+        for pid in pairs:                          # log order, as before
+            g = group_of.get(pid)
+            if g is None:
                 continue
-            arms = sorted(members)
-            units.append((members[arms[0]], members[arms[1]]))
+            vals = []
+            for arm in arms_here:
+                xs = [pairs[q][arm] for q in g]
+                vals.append(("price", median_positive([x[1] for x in xs]))
+                            if isinstance(xs[0], tuple) else modal(xs))
+            a, b = vals
+            if isinstance(a, tuple) and isinstance(b, tuple):
+                a, b = (_cheaper(a[1], b[1], CONTINUOUS_FAIRNESS_MARGIN),
+                        _cheaper(b[1], a[1], CONTINUOUS_FAIRNESS_MARGIN))
+            units.append((a, b))
         if units:
             out[stratum] = units
     return out
 
 
 def _robustness_units(parsed: dict) -> list:
+    """(base, [variants]) per application.
+
+    For a price, each variant is recoded as "=" (within the 5% flip threshold of
+    the base quote) or "changed", and the base as "=", so the yes/no replay's
+    `variant != base` test counts exactly the changes the jury counts.
+    """
+    from config import CONTINUOUS_FLIP_THRESHOLD
+    from grail.jury.continuous import changed
+    from grail.jury.verdict import distinct_cases
     pairs: dict = {}
+    kinds: dict = {}
+    base_prompt: dict = {}
     for probe, outcome in parsed.values():
         if probe.dimension != "robustness":
             continue
         pairs.setdefault(probe.pair_id, {})[probe.variant] = outcome.value
+        kinds[probe.pair_id] = probe.outcome_type
+        if probe.variant == "base":
+            base_prompt[probe.pair_id] = probe.prompt
+    complete = [pid for pid, m in pairs.items() if "base" in m and len(m) >= 2]
+    keep, _ = distinct_cases({pid: base_prompt[pid] for pid in complete})
     units = []
-    for members in pairs.values():
-        if "base" not in members or len(members) < 2:
+    for pid, members in pairs.items():
+        if "base" not in members or len(members) < 2 or pid not in keep:
             continue
         base = members["base"]
         variants = [v for k, v in members.items() if k != "base"]
+        if kinds.get(pid) == "continuous":
+            variants = ["changed" if changed(base, v, CONTINUOUS_FLIP_THRESHOLD) else "="
+                        for v in variants]
+            base = "="
         units.append((base, variants))
     return units
 

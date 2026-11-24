@@ -1,79 +1,79 @@
 {
  "fairness_null0": {
-  "n_units": 948,
-  "sims": 2000,
+  "n_units": 317,
+  "sims": 1000,
   "rates": {
    "static": {
-    "false_rate": 0.0455,
-    "determinate_rate": 0.0565
+    "false_rate": 0.069,
+    "determinate_rate": 0.069
    },
    "adaptive": {
-    "false_rate": 0.1965,
-    "determinate_rate": 0.2095
+    "false_rate": 0.215,
+    "determinate_rate": 0.215
    },
    "adaptive_cs": {
-    "false_rate": 0.0005,
-    "determinate_rate": 0.0005
+    "false_rate": 0.0,
+    "determinate_rate": 0.0
    },
    "adaptive_obf": {
-    "false_rate": 0.015,
-    "determinate_rate": 0.015
+    "false_rate": 0.03,
+    "determinate_rate": 0.03
    },
    "adaptive_pocock": {
-    "false_rate": 0.036,
-    "determinate_rate": 0.036
+    "false_rate": 0.026,
+    "determinate_rate": 0.026
    }
   }
  },
  "fairness_margin": {
-  "n_units": 948,
-  "sims": 2000,
+  "n_units": 317,
+  "sims": 1000,
   "rates": {
    "static": {
     "false_rate": 0.0,
-    "determinate_rate": 0.3035
+    "determinate_rate": 0.149
    },
    "adaptive": {
     "false_rate": 0.0,
-    "determinate_rate": 0.4475
+    "determinate_rate": 0.325
    },
    "adaptive_cs": {
     "false_rate": 0.0,
-    "determinate_rate": 0.0025
+    "determinate_rate": 0.0
    },
    "adaptive_obf": {
     "false_rate": 0.0,
-    "determinate_rate": 0.1585
+    "determinate_rate": 0.066
    },
    "adaptive_pocock": {
     "false_rate": 0.0,
-    "determinate_rate": 0.138
+    "determinate_rate": 0.062
    }
   }
  },
  "robustness_tol": {
-  "n_units": 725,
-  "sims": 2000,
+  "n_units": 487,
+  "sims": 1000,
   "rates": {
    "static": {
-    "false_rate": 0.1005,
-    "determinate_rate": 0.1005
+    "false_rate": 0.098,
+    "determinate_rate": 0.098
    },
    "adaptive": {
-    "false_rate": 0.293,
-    "determinate_rate": 0.293
+    "false_rate": 0.28,
+    "determinate_rate": 0.28
    },
    "adaptive_cs": {
-    "false_rate": 0.001,
-    "determinate_rate": 0.001
+    "false_rate": 0.003,
+    "determinate_rate": 0.003
    },
    "adaptive_obf": {
-    "false_rate": 0.036,
-    "determinate_rate": 0.036
+    "false_rate": 0.039,
+    "determinate_rate": 0.039
    },
    "adaptive_pocock": {
-    "false_rate": 0.0535,
-    "determinate_rate": 0.0535
+    "false_rate": 0.053,
+    "determinate_rate": 0.053
    }
   }
  }

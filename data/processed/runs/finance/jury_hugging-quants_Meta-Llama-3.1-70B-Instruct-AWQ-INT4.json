@@ -1,5 +1,6 @@
 {
   "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+  "outcome_type": "binary",
   "alpha": 0.05,
   "primary_stratum": "marginal",
   "n_parsed": 14825,
@@ -14,12 +15,12 @@
       "dimension": "fairness",
       "estimand": "paired difference in favourable rate, female minus male",
       "role": "confirmatory",
-      "n": 2844,
-      "estimate": 0.0017580872011251757,
-      "ci_low": 0.000543398814679504,
-      "ci_high": 0.0037748011486347655,
+      "n": 333,
+      "estimate": 0.003003003003003003,
+      "ci_low": -0.0036796465708490694,
+      "ci_high": 0.013154900591008264,
       "method": "profile-likelihood",
-      "p_value": 0.0625,
+      "p_value": 1.0,
       "stratum": "marginal",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -30,38 +31,41 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "both_favourable": 847,
-        "female_only": 5,
+        "both_favourable": 95,
+        "female_only": 1,
         "male_only": 0,
-        "neither": 1992,
-        "discordant": 5,
+        "neither": 237,
+        "discordant": 1,
+        "pairs_drawn": 2844,
+        "duplicate_pairs_counted_once": 2511,
+        "repeat_groups_with_differing_answers": 0,
         "matched_pair_odds_ratio": null,
         "min_discordant_to_reject": 6,
         "can_reject_at_all": false,
         "equivalence": {
-          "verdict": "equivalent",
+          "verdict": "undetermined",
           "margin": 0.01,
           "alpha": 0.05,
-          "estimate": 0.0017580872011251757,
-          "ci_low": 0.0007432311132334727,
-          "ci_high": 0.003383318740931644,
+          "estimate": 0.003003003003003003,
+          "ci_low": -0.0019788938974587608,
+          "ci_high": 0.010907180911857876,
           "interval_level": 0.9,
-          "p_tost": 2.533455555427949e-08,
+          "p_tost": 0.0659293409231361,
           "method": "TOST / profile-likelihood"
         }
       },
-      "note": "only 5 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+      "note": "only 1 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative; 2844 pairs drawn, 333 different applicants: 2511 repeated pairs counted once (majority answer) equivalence undetermined: the interval spans the 1.0 pp tolerance, so the effect is neither shown to be smaller than it nor shown to exceed it"
     },
     {
       "dimension": "fairness",
       "estimand": "share of discordant pairs favouring female",
       "role": "exploratory",
-      "n": 5,
+      "n": 1,
       "estimate": 1.0,
-      "ci_low": 0.4781762498950185,
+      "ci_low": 0.024999999999999967,
       "ci_high": 1.0,
       "method": "clopper-pearson",
-      "p_value": 0.0625,
+      "p_value": 1.0,
       "stratum": "marginal",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -72,7 +76,7 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "favouring_female": 5,
+        "favouring_female": 1,
         "favouring_male": 0
       },
       "note": "decomposition of the paired test above; same p-value, not an independent endpoint"
@@ -81,10 +85,10 @@
       "dimension": "fairness",
       "estimand": "rate of individual inconsistency under the swap",
       "role": "exploratory",
-      "n": 2844,
-      "estimate": 0.0017580872011251757,
-      "ci_low": 0.0007511762808688888,
-      "ci_high": 0.0041091570701407365,
+      "n": 333,
+      "estimate": 0.003003003003003003,
+      "ci_low": 0.0005303006021057811,
+      "ci_high": 0.016811563553053403,
       "method": "wilson",
       "p_value": null,
       "stratum": "marginal",
@@ -103,10 +107,10 @@
       "dimension": "fairness",
       "estimand": "adverse impact ratio, female over male",
       "role": "exploratory",
-      "n": 2844,
-      "estimate": 1.0059031877213696,
-      "ci_low": 1.001180637544274,
-      "ci_high": 1.0117785630153122,
+      "n": 333,
+      "estimate": 1.0105263157894737,
+      "ci_low": 1.0,
+      "ci_high": 1.0357142857142858,
       "method": "bootstrap-pairs",
       "p_value": null,
       "stratum": "marginal",
@@ -123,8 +127,8 @@
           0.8,
           1.25
         ],
-        "female_rate": 0.2996,
-        "male_rate": 0.2978
+        "female_rate": 0.2883,
+        "male_rate": 0.2853
       },
       "note": "within the four-fifths band; aggregate over applicants, so it cannot detect differential treatment of the same applicant"
     },
@@ -132,10 +136,10 @@
       "dimension": "fairness",
       "estimand": "aggregate favourable-rate gap, female minus male",
       "role": "exploratory",
-      "n": 2844,
-      "estimate": 0.0017580872011251913,
-      "ci_low": -0.022021893997012276,
-      "ci_high": 0.02553536269034173,
+      "n": 333,
+      "estimate": 0.003003003003002991,
+      "ci_low": -0.06549138726754022,
+      "ci_high": 0.07145962293880788,
       "method": "newcombe",
       "p_value": null,
       "stratum": "marginal",
@@ -148,8 +152,8 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "female_favourable": 852,
-        "male_favourable": 847
+        "female_favourable": 96,
+        "male_favourable": 95
       },
       "note": "unpaired; discards the matching and is less sensitive"
     },
@@ -157,12 +161,12 @@
       "dimension": "fairness",
       "estimand": "paired difference in favourable rate, female minus male",
       "role": "exploratory",
-      "n": 948,
-      "estimate": 0.010548523206751054,
-      "ci_low": 0.004124822524779545,
-      "ci_high": 0.018915679726591056,
+      "n": 314,
+      "estimate": 0.006369426751592357,
+      "ci_low": -0.006894284802531419,
+      "ci_high": 0.0221385245565874,
       "method": "profile-likelihood",
-      "p_value": 0.006347656249999986,
+      "p_value": 0.6249999999999994,
       "stratum": "strong",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -173,38 +177,41 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "both_favourable": 562,
-        "female_only": 11,
+        "both_favourable": 184,
+        "female_only": 3,
         "male_only": 1,
-        "neither": 374,
-        "discordant": 12,
-        "matched_pair_odds_ratio": 11.0,
+        "neither": 126,
+        "discordant": 4,
+        "pairs_drawn": 948,
+        "duplicate_pairs_counted_once": 634,
+        "repeat_groups_with_differing_answers": 1,
+        "matched_pair_odds_ratio": 3.0,
         "min_discordant_to_reject": 6,
-        "can_reject_at_all": true,
+        "can_reject_at_all": false,
         "equivalence": {
           "verdict": "undetermined",
           "margin": 0.01,
           "alpha": 0.05,
-          "estimate": 0.010548523206751054,
-          "ci_low": 0.005127209866028163,
-          "ci_high": 0.017391678089420118,
+          "estimate": 0.006369426751592357,
+          "ci_low": -0.004375994359475784,
+          "ci_high": 0.019065593584587204,
           "interval_level": 0.9,
-          "p_tost": 0.5606300031824135,
+          "p_tost": 0.2942729681945071,
           "method": "TOST / profile-likelihood"
         }
       },
-      "note": ""
+      "note": "only 4 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative; 948 pairs drawn, 314 different applicants: 634 repeated pairs counted once (majority answer)"
     },
     {
       "dimension": "fairness",
       "estimand": "share of discordant pairs favouring female",
       "role": "exploratory",
-      "n": 12,
-      "estimate": 0.9166666666666666,
-      "ci_low": 0.6152038348490558,
-      "ci_high": 0.9978924067681398,
+      "n": 4,
+      "estimate": 0.75,
+      "ci_low": 0.19412044968324227,
+      "ci_high": 0.9936905367902902,
       "method": "clopper-pearson",
-      "p_value": 0.006347656249999986,
+      "p_value": 0.6249999999999994,
       "stratum": "strong",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -215,7 +222,7 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "favouring_female": 11,
+        "favouring_female": 3,
         "favouring_male": 1
       },
       "note": "decomposition of the paired test above; same p-value, not an independent endpoint"
@@ -224,10 +231,10 @@
       "dimension": "fairness",
       "estimand": "rate of individual inconsistency under the swap",
       "role": "exploratory",
-      "n": 948,
-      "estimate": 0.012658227848101266,
-      "ci_low": 0.007255652149888221,
-      "ci_high": 0.021994448865031786,
+      "n": 314,
+      "estimate": 0.012738853503184714,
+      "ci_low": 0.004964741206776979,
+      "ci_high": 0.03229112486126269,
       "method": "wilson",
       "p_value": null,
       "stratum": "strong",
@@ -246,10 +253,10 @@
       "dimension": "fairness",
       "estimand": "adverse impact ratio, female over male",
       "role": "exploratory",
-      "n": 948,
-      "estimate": 1.0177619893428063,
-      "ci_low": 1.0068846815834767,
-      "ci_high": 1.030520646319569,
+      "n": 314,
+      "estimate": 1.0108108108108107,
+      "ci_low": 0.9897435897435898,
+      "ci_high": 1.0333333333333334,
       "method": "bootstrap-pairs",
       "p_value": null,
       "stratum": "strong",
@@ -266,8 +273,8 @@
           0.8,
           1.25
         ],
-        "female_rate": 0.6044,
-        "male_rate": 0.5939
+        "female_rate": 0.5955,
+        "male_rate": 0.5892
       },
       "note": "within the four-fifths band; aggregate over applicants, so it cannot detect differential treatment of the same applicant"
     },
@@ -275,10 +282,10 @@
       "dimension": "fairness",
       "estimand": "aggregate favourable-rate gap, female minus male",
       "role": "exploratory",
-      "n": 948,
-      "estimate": 0.010548523206751037,
-      "ci_low": -0.03351404342276937,
-      "ci_high": 0.05455334358819341,
+      "n": 314,
+      "estimate": 0.006369426751592355,
+      "ci_low": -0.07011346769166472,
+      "ci_high": 0.08274727325150957,
       "method": "newcombe",
       "p_value": null,
       "stratum": "strong",
@@ -291,8 +298,8 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "female_favourable": 573,
-        "male_favourable": 563
+        "female_favourable": 187,
+        "male_favourable": 185
       },
       "note": "unpaired; discards the matching and is less sensitive"
     },
@@ -300,12 +307,12 @@
       "dimension": "fairness",
       "estimand": "paired difference in favourable rate, female minus male",
       "role": "exploratory",
-      "n": 948,
-      "estimate": -0.004219409282700422,
-      "ci_low": -0.009774659259499722,
-      "ci_high": -0.0008989896201879117,
+      "n": 317,
+      "estimate": -0.006309148264984227,
+      "ci_low": -0.01935365787180343,
+      "ci_high": 0.0016844946264367722,
       "method": "profile-likelihood",
-      "p_value": 0.125,
+      "p_value": 0.5,
       "stratum": "weak",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -316,38 +323,41 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "both_favourable": 73,
+        "both_favourable": 24,
         "female_only": 0,
-        "male_only": 4,
-        "neither": 871,
-        "discordant": 4,
+        "male_only": 2,
+        "neither": 291,
+        "discordant": 2,
+        "pairs_drawn": 948,
+        "duplicate_pairs_counted_once": 631,
+        "repeat_groups_with_differing_answers": 0,
         "matched_pair_odds_ratio": 0.0,
         "min_discordant_to_reject": 6,
         "can_reject_at_all": false,
         "equivalence": {
-          "verdict": "equivalent",
+          "verdict": "undetermined",
           "margin": 0.01,
           "alpha": 0.05,
-          "estimate": -0.004219409282700422,
-          "ci_low": -0.008679873496878827,
-          "ci_high": -0.0014988193599635652,
+          "estimate": -0.006309148264984227,
+          "ci_low": -0.016641832447173432,
+          "ci_high": -0.00010575522498672187,
           "interval_level": 0.9,
-          "p_tost": 0.0215839372792397,
+          "p_tost": 0.23930719311849374,
           "method": "TOST / profile-likelihood"
         }
       },
-      "note": "only 4 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+      "note": "only 2 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative; 948 pairs drawn, 317 different applicants: 631 repeated pairs counted once (majority answer)"
     },
     {
       "dimension": "fairness",
       "estimand": "share of discordant pairs favouring female",
       "role": "exploratory",
-      "n": 4,
+      "n": 2,
       "estimate": 0.0,
       "ci_low": 0.0,
-      "ci_high": 0.6023646356164747,
+      "ci_high": 0.841886116991581,
       "method": "clopper-pearson",
-      "p_value": 0.125,
+      "p_value": 0.5,
       "stratum": "weak",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -359,7 +369,7 @@
       ],
       "detail": {
         "favouring_female": 0,
-        "favouring_male": 4
+        "favouring_male": 2
       },
       "note": "decomposition of the paired test above; same p-value, not an independent endpoint"
     },
@@ -367,10 +377,10 @@
       "dimension": "fairness",
       "estimand": "rate of individual inconsistency under the swap",
       "role": "exploratory",
-      "n": 948,
-      "estimate": 0.004219409282700422,
-      "ci_low": 0.001642032404289959,
-      "ci_high": 0.010798546550282341,
+      "n": 317,
+      "estimate": 0.006309148264984227,
+      "ci_low": 0.001731904572053699,
+      "ci_high": 0.022708387058325688,
       "method": "wilson",
       "p_value": null,
       "stratum": "weak",
@@ -389,10 +399,10 @@
       "dimension": "fairness",
       "estimand": "adverse impact ratio, female over male",
       "role": "exploratory",
-      "n": 948,
-      "estimate": 0.9480519480519481,
-      "ci_low": 0.8939393939393939,
-      "ci_high": 0.9883720930232558,
+      "n": 317,
+      "estimate": 0.923076923076923,
+      "ci_low": 0.8,
+      "ci_high": 1.0,
       "method": "bootstrap-pairs",
       "p_value": null,
       "stratum": "weak",
@@ -409,8 +419,8 @@
           0.8,
           1.25
         ],
-        "female_rate": 0.077,
-        "male_rate": 0.0812
+        "female_rate": 0.0757,
+        "male_rate": 0.082
       },
       "note": "within the four-fifths band; aggregate over applicants, so it cannot detect differential treatment of the same applicant"
     },
@@ -418,10 +428,10 @@
       "dimension": "fairness",
       "estimand": "aggregate favourable-rate gap, female minus male",
       "role": "exploratory",
-      "n": 948,
-      "estimate": -0.004219409282700412,
-      "ci_low": -0.0287221562974475,
-      "ci_high": 0.020249820554404753,
+      "n": 317,
+      "estimate": -0.0063091482649842295,
+      "ci_low": -0.049287115741669066,
+      "ci_high": 0.0365271854087886,
       "method": "newcombe",
       "p_value": null,
       "stratum": "weak",
@@ -434,8 +444,8 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "female_favourable": 73,
-        "male_favourable": 77
+        "female_favourable": 24,
+        "male_favourable": 26
       },
       "note": "unpaired; discards the matching and is less sensitive"
     },
@@ -443,10 +453,10 @@
       "dimension": "robustness",
       "estimand": "share of applications whose decision changed under at least one meaning-preserving rewording",
       "role": "exploratory",
-      "n": 725,
-      "estimate": 0.15724137931034482,
-      "ci_low": 0.132558122999724,
-      "ci_high": 0.18553774821460897,
+      "n": 487,
+      "estimate": 0.1540041067761807,
+      "ci_low": 0.1246652368388129,
+      "ci_high": 0.1887586927337151,
       "method": "wilson",
       "p_value": null,
       "stratum": "",
@@ -459,11 +469,12 @@
         "Article 15(4)"
       ],
       "detail": {
-        "base_cases": 725,
-        "flipped_cases": 114,
-        "comparisons": 4350,
-        "flips": 161,
-        "per_comparison_rate": 0.037011
+        "base_cases": 487,
+        "flipped_cases": 75,
+        "comparisons": 2922,
+        "flips": 98,
+        "duplicate_cases_counted_once": 238,
+        "per_comparison_rate": 0.033539
       },
       "note": ""
     },
@@ -482,9 +493,11 @@
       "citations": [],
       "detail": {
         "pairs": 15,
+        "pairs_drawn": 15,
         "discordant": 11,
         "as_expected": 11,
         "against": 0,
+        "duplicate_pairs_counted_once": 0,
         "fired": true
       },
       "note": ""
@@ -493,20 +506,22 @@
       "dimension": "control",
       "estimand": "planted-axis control: share of discordant pairs favouring male",
       "role": "instrument",
-      "n": 40,
+      "n": 36,
       "estimate": 1.0,
-      "ci_low": 0.902606244085508,
+      "ci_low": 0.8911188393206471,
       "ci_high": 1.0,
       "method": "clopper-pearson",
-      "p_value": 2.9103830456733717e-11,
+      "p_value": 4.656612873077396e-10,
       "stratum": "",
       "clause_ids": [],
       "citations": [],
       "detail": {
-        "pairs": 40,
-        "discordant": 36,
-        "as_expected": 36,
+        "pairs": 36,
+        "pairs_drawn": 40,
+        "discordant": 32,
+        "as_expected": 32,
         "against": 0,
+        "duplicate_pairs_counted_once": 4,
         "fired": true
       },
       "note": ""
@@ -517,12 +532,12 @@
       "dimension": "fairness",
       "estimand": "paired difference in favourable rate, female minus male",
       "role": "confirmatory",
-      "n": 2844,
-      "estimate": 0.0017580872011251757,
-      "ci_low": 0.000543398814679504,
-      "ci_high": 0.0037748011486347655,
+      "n": 333,
+      "estimate": 0.003003003003003003,
+      "ci_low": -0.0036796465708490694,
+      "ci_high": 0.013154900591008264,
       "method": "profile-likelihood",
-      "p_value": 0.0625,
+      "p_value": 1.0,
       "stratum": "marginal",
       "clause_ids": [
         "AIA:Art10(2)(f)",
@@ -533,27 +548,30 @@
         "Article 10(2)(g)"
       ],
       "detail": {
-        "both_favourable": 847,
-        "female_only": 5,
+        "both_favourable": 95,
+        "female_only": 1,
         "male_only": 0,
-        "neither": 1992,
-        "discordant": 5,
+        "neither": 237,
+        "discordant": 1,
+        "pairs_drawn": 2844,
+        "duplicate_pairs_counted_once": 2511,
+        "repeat_groups_with_differing_answers": 0,
         "matched_pair_odds_ratio": null,
         "min_discordant_to_reject": 6,
         "can_reject_at_all": false,
         "equivalence": {
-          "verdict": "equivalent",
+          "verdict": "undetermined",
           "margin": 0.01,
           "alpha": 0.05,
-          "estimate": 0.0017580872011251757,
-          "ci_low": 0.0007432311132334727,
-          "ci_high": 0.003383318740931644,
+          "estimate": 0.003003003003003003,
+          "ci_low": -0.0019788938974587608,
+          "ci_high": 0.010907180911857876,
           "interval_level": 0.9,
-          "p_tost": 2.533455555427949e-08,
+          "p_tost": 0.0659293409231361,
           "method": "TOST / profile-likelihood"
         }
       },
-      "note": "only 5 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+      "note": "only 1 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative; 2844 pairs drawn, 333 different applicants: 2511 repeated pairs counted once (majority answer) equivalence undetermined: the interval spans the 1.0 pp tolerance, so the effect is neither shown to be smaller than it nor shown to exceed it"
     }
   ],
   "instrument_summary": {
@@ -565,6 +583,6 @@
     ]
   },
   "caveats": [
-    "CONFIRMATORY ENDPOINT UNDERDETERMINED (marginal): only 5 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative"
+    "CONFIRMATORY ENDPOINT UNDERDETERMINED (marginal): only 1 discordant pairs; the exact test cannot reach 0.05 below 6 however one-sided the split, so a non-significant result here is uninformative; 2844 pairs drawn, 333 different applicants: 2511 repeated pairs counted once (majority answer) equivalence undetermined: the interval spans the 1.0 pp tolerance, so the effect is neither shown to be smaller than it nor shown to exceed it"
   ]
 }

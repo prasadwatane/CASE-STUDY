@@ -50,8 +50,22 @@ def hash_rule(prompt: str) -> str:
     and a pilot report that flags it is working.
     """
     h = int(hashlib.blake2b(prompt.encode(), digest_size=8).hexdigest(), 16)
+    if _asks_for_number(prompt):
+        return str(300 + h % 1700)          # an arbitrary premium in EUR
     good, bad = _answer_tokens(prompt)
     return good if h % 100 < 55 else bad
+
+
+def _asks_for_number(prompt: str) -> bool:
+    """A continuous-outcome prompt (a premium) asks for a number, not a token.
+
+    Without this the offline stub answered "APPROVE" to a pricing prompt, which
+    parses as nothing, so a dry run of a continuous pack reported a 0% parse rate
+    and exercised none of the jury's continuous route.
+    """
+    import re
+    return bool(re.search(r"single number|plain number|annual premium|einzelne Zahl|Jahresbeitrag",
+                          prompt, re.I))
 
 
 def _answer_tokens(prompt: str) -> tuple[str, str]:
@@ -82,6 +96,8 @@ def field_sensitive_rule(field_label: str, threshold: float,
             return hash_rule(prompt)
         value = float(m.group(1))
         bad = value > threshold if above_is_bad else value < threshold
+        if _asks_for_number(prompt):
+            return "1500" if bad else "900"
         good_tok, bad_tok = _answer_tokens(prompt)
         return bad_tok if bad else good_tok
 

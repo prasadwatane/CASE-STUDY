@@ -1,0 +1,80 @@
+{
+ "fairness_null0": {
+  "n_units": 948,
+  "sims": 2000,
+  "rates": {
+   "static": {
+    "false_rate": 0.0455,
+    "determinate_rate": 0.0565
+   },
+   "adaptive": {
+    "false_rate": 0.1965,
+    "determinate_rate": 0.2095
+   },
+   "adaptive_cs": {
+    "false_rate": 0.0005,
+    "determinate_rate": 0.0005
+   },
+   "adaptive_obf": {
+    "false_rate": 0.015,
+    "determinate_rate": 0.015
+   },
+   "adaptive_pocock": {
+    "false_rate": 0.036,
+    "determinate_rate": 0.036
+   }
+  }
+ },
+ "fairness_margin": {
+  "n_units": 948,
+  "sims": 2000,
+  "rates": {
+   "static": {
+    "false_rate": 0.0,
+    "determinate_rate": 0.3035
+   },
+   "adaptive": {
+    "false_rate": 0.0,
+    "determinate_rate": 0.4475
+   },
+   "adaptive_cs": {
+    "false_rate": 0.0,
+    "determinate_rate": 0.0025
+   },
+   "adaptive_obf": {
+    "false_rate": 0.0,
+    "determinate_rate": 0.1585
+   },
+   "adaptive_pocock": {
+    "false_rate": 0.0,
+    "determinate_rate": 0.138
+   }
+  }
+ },
+ "robustness_tol": {
+  "n_units": 725,
+  "sims": 2000,
+  "rates": {
+   "static": {
+    "false_rate": 0.1005,
+    "determinate_rate": 0.1005
+   },
+   "adaptive": {
+    "false_rate": 0.293,
+    "determinate_rate": 0.293
+   },
+   "adaptive_cs": {
+    "false_rate": 0.001,
+    "determinate_rate": 0.001
+   },
+   "adaptive_obf": {
+    "false_rate": 0.036,
+    "determinate_rate": 0.036
+   },
+   "adaptive_pocock": {
+    "false_rate": 0.0535,
+    "determinate_rate": 0.0535
+   }
+  }
+ }
+}

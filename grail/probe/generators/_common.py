@@ -2,6 +2,19 @@
 from __future__ import annotations
 
 
+def with_ordinals(plan: list[str]):
+    """(index, stratum, ordinal) where ordinal counts earlier cases of the same stratum.
+
+    Prefix-stable like the plan itself. Record-backed packs use the ordinal to
+    draw people without replacement; every other pack ignores it.
+    """
+    seen: dict[str, int] = {}
+    for idx, stratum in enumerate(plan):
+        k = seen.get(stratum, 0)
+        seen[stratum] = k + 1
+        yield idx, stratum, k
+
+
 def clause_refs(items: list) -> tuple[list[str], list[str]]:
     """(clause_ids, citations) for the checklist items backing a dimension."""
     return ([it["clause_id"] for it in items], [it["citation"] for it in items])

@@ -1,211 +1,15 @@
 [
  {
-  "budget": 17466,
+  "budget": 6404,
   "policy": "static",
   "coverage": {
-   "mean": 0.4781,
-   "lo": 0.3125,
-   "hi": 0.625
+   "mean": 0.2188,
+   "lo": 0.125,
+   "hi": 0.4375
   },
   "fidelity": {
-   "mean": 0.864,
+   "mean": 0.9248,
    "lo": 0.6667,
-   "hi": 1.0
-  },
-  "contradictions": {
-   "mean": 1.1,
-   "lo": 0,
-   "hi": 3
-  },
-  "contradictions_max": 3,
-  "spent": {
-   "mean": 17444,
-   "lo": 17444,
-   "hi": 17444
-  }
- },
- {
-  "budget": 17466,
-  "policy": "adaptive",
-  "coverage": {
-   "mean": 0.5922,
-   "lo": 0.4375,
-   "hi": 0.6875
-  },
-  "fidelity": {
-   "mean": 0.7857,
-   "lo": 0.6364,
-   "hi": 0.8889
-  },
-  "contradictions": {
-   "mean": 2.1,
-   "lo": 0,
-   "hi": 4
-  },
-  "contradictions_max": 4,
-  "spent": {
-   "mean": 15922.45,
-   "lo": 15697,
-   "hi": 15953
-  },
-  "fidelity_ratio_vs_static": {
-   "mean": 0.919,
-   "lo": 0.6667,
-   "hi": 1.1429
-  },
-  "spend_ratio_vs_static": {
-   "mean": 0.9128,
-   "lo": 0.8999,
-   "hi": 0.9145
-  },
-  "coverage_diff_vs_static": {
-   "mean": 0.1141,
-   "lo": -0.0625,
-   "hi": 0.25
-  },
-  "S4": "not met",
-  "fidelity_ratio_mean_ci": {
-   "mean": 0.919,
-   "lo": 0.8823,
-   "hi": 0.9539
-  },
-  "spend_ratio_mean_ci": {
-   "mean": 0.9128,
-   "lo": 0.9118,
-   "hi": 0.9135
-  },
-  "S4_mean_ci": "not met",
-  "coverage_ratio_vs_static": {
-   "mean": 1.264,
-   "lo": 1.1978,
-   "hi": 1.3319
-  }
- },
- {
-  "budget": 17466,
-  "policy": "adaptive_cs",
-  "coverage": {
-   "mean": 0.1359,
-   "lo": 0.0625,
-   "hi": 0.25
-  },
-  "fidelity": {
-   "mean": 0.9833,
-   "lo": 0.6667,
-   "hi": 1.0
-  },
-  "contradictions": {
-   "mean": 0.05,
-   "lo": 0,
-   "hi": 1
-  },
-  "contradictions_max": 1,
-  "spent": {
-   "mean": 15900.925,
-   "lo": 15872,
-   "hi": 15926
-  },
-  "fidelity_ratio_vs_static": {
-   "mean": 1.1543,
-   "lo": 0.8571,
-   "hi": 1.5
-  },
-  "spend_ratio_vs_static": {
-   "mean": 0.9115,
-   "lo": 0.9099,
-   "hi": 0.913
-  },
-  "coverage_diff_vs_static": {
-   "mean": -0.3422,
-   "lo": -0.5625,
-   "hi": -0.1875
-  },
-  "S4": "not met",
-  "fidelity_ratio_mean_ci": {
-   "mean": 1.1543,
-   "lo": 1.1053,
-   "hi": 1.2034
-  },
-  "spend_ratio_mean_ci": {
-   "mean": 0.9115,
-   "lo": 0.9113,
-   "hi": 0.9118
-  },
-  "S4_mean_ci": "not met",
-  "coverage_ratio_vs_static": {
-   "mean": 0.2925,
-   "lo": 0.2551,
-   "hi": 0.3301
-  }
- },
- {
-  "budget": 17466,
-  "policy": "adaptive_obf",
-  "coverage": {
-   "mean": 0.4188,
-   "lo": 0.3125,
-   "hi": 0.5
-  },
-  "fidelity": {
-   "mean": 0.9658,
-   "lo": 0.8333,
-   "hi": 1.0
-  },
-  "contradictions": {
-   "mean": 0.25,
-   "lo": 0,
-   "hi": 1
-  },
-  "contradictions_max": 1,
-  "spent": {
-   "mean": 15907.25,
-   "lo": 15881,
-   "hi": 15929
-  },
-  "fidelity_ratio_vs_static": {
-   "mean": 1.1327,
-   "lo": 0.9524,
-   "hi": 1.4286
-  },
-  "spend_ratio_vs_static": {
-   "mean": 0.9119,
-   "lo": 0.9104,
-   "hi": 0.9132
-  },
-  "coverage_diff_vs_static": {
-   "mean": -0.0594,
-   "lo": -0.25,
-   "hi": 0.0625
-  },
-  "S4": "not met",
-  "fidelity_ratio_mean_ci": {
-   "mean": 1.1327,
-   "lo": 1.0907,
-   "hi": 1.1758
-  },
-  "spend_ratio_mean_ci": {
-   "mean": 0.9119,
-   "lo": 0.9117,
-   "hi": 0.9121
-  },
-  "S4_mean_ci": "not met",
-  "coverage_ratio_vs_static": {
-   "mean": 0.8923,
-   "lo": 0.8454,
-   "hi": 0.9418
-  }
- },
- {
-  "budget": 17466,
-  "policy": "adaptive_pocock",
-  "coverage": {
-   "mean": 0.4094,
-   "lo": 0.3125,
-   "hi": 0.5
-  },
-  "fidelity": {
-   "mean": 0.9568,
-   "lo": 0.7778,
    "hi": 1.0
   },
   "contradictions": {
@@ -215,41 +19,241 @@
   },
   "contradictions_max": 2,
   "spent": {
-   "mean": 15907.35,
-   "lo": 15876,
-   "hi": 15939
+   "mean": 6392,
+   "lo": 6392,
+   "hi": 6392
+  }
+ },
+ {
+  "budget": 6404,
+  "policy": "adaptive",
+  "coverage": {
+   "mean": 0.3547,
+   "lo": 0.1875,
+   "hi": 0.5
+  },
+  "fidelity": {
+   "mean": 0.833,
+   "lo": 0.375,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 1.05,
+   "lo": 0,
+   "hi": 4
+  },
+  "contradictions_max": 5,
+  "spent": {
+   "mean": 5794.075,
+   "lo": 5770,
+   "hi": 5809
   },
   "fidelity_ratio_vs_static": {
-   "mean": 1.1229,
-   "lo": 0.9722,
+   "mean": 0.9143,
+   "lo": 0.5,
+   "hi": 1.3333
+  },
+  "spend_ratio_vs_static": {
+   "mean": 0.9065,
+   "lo": 0.9027,
+   "hi": 0.9088
+  },
+  "coverage_diff_vs_static": {
+   "mean": 0.1359,
+   "lo": -0.1875,
+   "hi": 0.3125
+  },
+  "S4": "not met",
+  "fidelity_ratio_mean_ci": {
+   "mean": 0.9143,
+   "lo": 0.8568,
+   "hi": 0.9734
+  },
+  "spend_ratio_mean_ci": {
+   "mean": 0.9065,
+   "lo": 0.9059,
+   "hi": 0.907
+  },
+  "S4_mean_ci": "not met",
+  "coverage_ratio_vs_static": {
+   "mean": 1.7658,
+   "lo": 1.599,
+   "hi": 1.9335
+  },
+  "S4_primary": "not met"
+ },
+ {
+  "budget": 6404,
+  "policy": "adaptive_cs",
+  "coverage": {
+   "mean": 0.0063,
+   "lo": 0.0,
+   "hi": 0.0625
+  },
+  "fidelity": {
+   "mean": 1.0,
+   "lo": 1.0,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 0,
+   "lo": 0,
+   "hi": 0
+  },
+  "contradictions_max": 0,
+  "spent": {
+   "mean": 5764.125,
+   "lo": 5759,
+   "hi": 5770
+  },
+  "fidelity_ratio_vs_static": {
+   "mean": 1.1029,
+   "lo": 1.0,
    "hi": 1.5
   },
   "spend_ratio_vs_static": {
-   "mean": 0.9119,
-   "lo": 0.9101,
-   "hi": 0.9137
+   "mean": 0.9018,
+   "lo": 0.901,
+   "hi": 0.9027
   },
   "coverage_diff_vs_static": {
-   "mean": -0.0688,
-   "lo": -0.25,
+   "mean": -0.2125,
+   "lo": -0.5,
+   "hi": -0.125
+  },
+  "S4": "not met",
+  "fidelity_ratio_mean_ci": {
+   "mean": 1.1029,
+   "lo": 1.055,
+   "hi": 1.1571
+  },
+  "spend_ratio_mean_ci": {
+   "mean": 0.9018,
+   "lo": 0.9017,
+   "hi": 0.9018
+  },
+  "S4_mean_ci": "not met",
+  "coverage_ratio_vs_static": {
+   "mean": 0.0354,
+   "lo": 0.0063,
+   "hi": 0.0708
+  },
+  "S4_primary": "not met"
+ },
+ {
+  "budget": 6404,
+  "policy": "adaptive_obf",
+  "coverage": {
+   "mean": 0.1484,
+   "lo": 0.0625,
+   "hi": 0.25
+  },
+  "fidelity": {
+   "mean": 1.0,
+   "lo": 1.0,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 0,
+   "lo": 0,
+   "hi": 0
+  },
+  "contradictions_max": 0,
+  "spent": {
+   "mean": 5781.25,
+   "lo": 5736,
+   "hi": 5802
+  },
+  "fidelity_ratio_vs_static": {
+   "mean": 1.1029,
+   "lo": 1.0,
+   "hi": 1.5
+  },
+  "spend_ratio_vs_static": {
+   "mean": 0.9045,
+   "lo": 0.8974,
+   "hi": 0.9077
+  },
+  "coverage_diff_vs_static": {
+   "mean": -0.0703,
+   "lo": -0.3125,
    "hi": 0.0625
   },
   "S4": "not met",
   "fidelity_ratio_mean_ci": {
-   "mean": 1.1229,
-   "lo": 1.0773,
-   "hi": 1.1707
+   "mean": 1.1029,
+   "lo": 1.055,
+   "hi": 1.1571
   },
   "spend_ratio_mean_ci": {
-   "mean": 0.9119,
-   "lo": 0.9116,
-   "hi": 0.9122
+   "mean": 0.9045,
+   "lo": 0.9035,
+   "hi": 0.9053
   },
   "S4_mean_ci": "not met",
   "coverage_ratio_vs_static": {
-   "mean": 0.8709,
-   "lo": 0.8257,
-   "hi": 0.9177
-  }
+   "mean": 0.7399,
+   "lo": 0.6308,
+   "hi": 0.8579
+  },
+  "S4_primary": "not met"
+ },
+ {
+  "budget": 6404,
+  "policy": "adaptive_pocock",
+  "coverage": {
+   "mean": 0.1062,
+   "lo": 0.0,
+   "hi": 0.1875
+  },
+  "fidelity": {
+   "mean": 1.0,
+   "lo": 1.0,
+   "hi": 1.0
+  },
+  "contradictions": {
+   "mean": 0,
+   "lo": 0,
+   "hi": 0
+  },
+  "contradictions_max": 0,
+  "spent": {
+   "mean": 5775.3,
+   "lo": 5736,
+   "hi": 5800
+  },
+  "fidelity_ratio_vs_static": {
+   "mean": 1.1029,
+   "lo": 1.0,
+   "hi": 1.5
+  },
+  "spend_ratio_vs_static": {
+   "mean": 0.9035,
+   "lo": 0.8974,
+   "hi": 0.9074
+  },
+  "coverage_diff_vs_static": {
+   "mean": -0.1125,
+   "lo": -0.375,
+   "hi": 0.0
+  },
+  "S4": "not met",
+  "fidelity_ratio_mean_ci": {
+   "mean": 1.1029,
+   "lo": 1.055,
+   "hi": 1.1571
+  },
+  "spend_ratio_mean_ci": {
+   "mean": 0.9035,
+   "lo": 0.9025,
+   "hi": 0.9045
+  },
+  "S4_mean_ci": "not met",
+  "coverage_ratio_vs_static": {
+   "mean": 0.5128,
+   "lo": 0.4371,
+   "hi": 0.5896
+  },
+  "S4_primary": "not met"
  }
 ]

@@ -146,7 +146,14 @@ def admit_judge(led: Ledger, path: str, checklist_sha: str) -> int:
     return 1
 
 
-def _dual_verdict_note(finding: dict, clause_id: str) -> str:
+# Domains whose robustness tolerance was revised AFTER results were known. For
+# every other domain 0.20 was fixed in advance (insurance: criteria file of
+# 18 November 2026), so the post-hoc disclosure would be false there; the 0.05
+# verdict is still reported, labelled as a comparison rather than a revision.
+POST_HOC_TOLERANCE_DOMAINS = {"finance"}
+
+
+def _dual_verdict_note(finding: dict, clause_id: str, domain: str = "finance") -> str:
     """Robustness carries BOTH verdicts, always.
 
     The 15(1)/15(4) tolerance was revised from 0.05 to 0.20 on 14 September 2026,
@@ -163,6 +170,10 @@ def _dual_verdict_note(finding: dict, clause_id: str) -> str:
     if lo is None or hi is None:
         return ""
     orig = _verdict_for_ceiling(lo, hi, ROBUSTNESS_MARGIN_ORIGINAL)
+    if domain not in POST_HOC_TOLERANCE_DOMAINS:
+        return (f"Tolerance {ROBUSTNESS_EQUIVALENCE_MARGIN:.2f} fixed before data for "
+                f"this domain. For comparison with finance, at "
+                f"{ROBUSTNESS_MARGIN_ORIGINAL:.2f} the verdict would be {orig}.")
     return (f"TOLERANCE REVISED POST HOC: this verdict is at "
             f"{ROBUSTNESS_EQUIVALENCE_MARGIN:.2f}. Against the PRE-REGISTERED "
             f"{ROBUSTNESS_MARGIN_ORIGINAL:.2f} the verdict is {orig}. The revision was "
@@ -193,7 +204,7 @@ def _note(finding: dict, caveats: str) -> str:
     return " · ".join(x for x in ([note] + extra) if x)
 
 
-def admit_jury(led: Ledger, path: str, checklist_sha: str) -> int:
+def admit_jury(led: Ledger, path: str, checklist_sha: str, domain: str = "finance") -> int:
     """Admit a jury verdict file. Findings already carry clause ids and roles."""
     doc = json.load(open(path, encoding="utf-8"))
     model = doc.get("model_id") or doc.get("audited_model", "")
@@ -257,7 +268,7 @@ def admit_jury(led: Ledger, path: str, checklist_sha: str) -> int:
                     detail=f.get("detail", {}),
                     note=" · ".join(x for x in (
                         _note(f, caveats),
-                        _dual_verdict_note(f, clause_id)) if x)))
+                        _dual_verdict_note(f, clause_id, domain)) if x)))
                 admitted += 1
             except UntraceableFinding as exc:
                 print(f"  REFUSED: {exc}")
@@ -339,8 +350,13 @@ def main() -> None:
     pattern = f"*{args.model.replace('/', '_')}*" if args.model else "*"
     n_jury = n_judge = 0
     for p in sorted(glob.glob(os.path.join(run_dir, f"jury_{pattern}.json"))):
-        n_jury += admit_jury(led, p, checklist_sha)
+        n_jury += admit_jury(led, p, checklist_sha, args.domain)
     for p in sorted(glob.glob(os.path.join(run_dir, f"judge_{pattern}.json"))):
+        # judge_preview.json (16 Nov) is an analysis of judge outputs, not one;
+        # it matches the pattern but holds no items to admit
+        if "items" not in json.load(open(p, encoding="utf-8")):
+            print(f"  skipped (not a judge output): {os.path.basename(p)}")
+            continue
         n_judge += admit_judge(led, p, checklist_sha)
 
     print(f"admitted: {n_jury} deterministic, {n_judge} judged "

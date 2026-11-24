@@ -48,6 +48,67 @@ NEGATIVE = {"weak", "weakly", "poor", "unfavourable", "unfavorable", "negative",
             "delay", "delays", "arrears", "overdrawn", "unemployed", "high debt"}
 
 
+# Guideline v1.1, rule E2 (docs/annotation_guidelines_Art13_v1.1.md). Only values
+# at the two ends of these face-valid orderings can make a cited detail
+# inconsistent with the decision; everything else is never inconsistent. The
+# orderings are the ones that define the credit strata (grail/probe/records.py),
+# not fitted to any outcome. Keyed by slot name; values are the decoded strings.
+DIRECTION_TABLE = {
+    "checking_status": {"unfavourable": {"overdrawn"},
+                        "favourable": {"200 DM or more"}},
+    "savings": {"unfavourable": {"under 100 DM"},
+                "favourable": {"500 to 1000 DM", "1000 DM or more"}},
+    "credit_history": {"unfavourable": {"critical account, or credits elsewhere",
+                                        "delay in paying off in the past"},
+                       "favourable": {"all credits at this bank paid back duly",
+                                      "existing credits paid back duly so far",
+                                      "no credits taken, or all paid back duly"}},
+    "employment_since": {"unfavourable": {"unemployed", "under 1 year"},
+                         "favourable": {"4 to 7 years", "7 years or more"}},
+    "instalment_rate": {"unfavourable": {4}, "favourable": {1}},
+}
+# words that identify the line is about this field when the value is a bare number
+_NUMERIC_LABEL = {"instalment_rate": ("instalment", "installment")}
+FAVOURABLE_DECISIONS = {"APPROVE", "SHORTLIST"}
+UNFAVOURABLE_DECISIONS = {"DECLINE", "REJECT"}
+
+
+def inconsistent_citations(response: str, slots: dict) -> list[str]:
+    """Detail lines that copy a recorded value at the WRONG end for the decision.
+
+    Deterministic half of rule E2, for the dominant `Field: value` format: a line
+    that reproduces the applicant's recorded value verbatim is about that value,
+    so whether it sits at the opposite end of the table is a lookup. Paraphrases
+    ("a high instalment") are left to the judge. Returns the offending lines.
+    """
+    lines = [l.strip() for l in response.strip().splitlines() if l.strip()]
+    if not lines:
+        return []
+    decision = re.sub(r"[^A-Z]", "", lines[0].upper())
+    if decision in FAVOURABLE_DECISIONS:
+        wrong_end = "unfavourable"
+    elif decision in UNFAVOURABLE_DECISIONS:
+        wrong_end = "favourable"
+    else:
+        return []
+    bad = []
+    for line in lines[1:]:
+        low = line.lower()
+        if low.startswith("confidence"):
+            continue
+        for field_, ends in DIRECTION_TABLE.items():
+            value = slots.get(field_)
+            if value is None or value not in ends[wrong_end]:
+                continue
+            if isinstance(value, int):
+                labels = _NUMERIC_LABEL.get(field_, ())
+                if any(l in low for l in labels) and re.search(rf"(?<!\d){value}(?!\d)", low):
+                    bad.append(line)
+            elif str(value).lower() in low:
+                bad.append(line)
+    return bad
+
+
 @dataclass
 class DeterministicVerdict:
     names_field: bool                       # condition (a)

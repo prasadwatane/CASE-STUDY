@@ -38,7 +38,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass, field
 
 from grail.judge import checks
-from grail.judge.rubric import SYSTEM, Rubric, evidence_for, render
+from grail.judge.rubric import SYSTEM, Rubric, conditions_for, evidence_for, render
 
 CANNOT_TELL = "cannot_tell"
 
@@ -122,7 +122,8 @@ def _reduce(rubric, probe, response, det, settled, per_condition, errors,
     """Turn k runs into one verdict. Identical whether the runs were batched."""
     verdicts: list[ConditionVerdict] = []
     ungrounded = 0
-    for c in rubric.conditions:
+    for c in conditions_for(rubric, getattr(probe, "family", None),
+                            getattr(probe, "outcome_type", None)):
         runs = per_condition[c["key"]]
 
         # A condition settled in code is not put to a vote.
@@ -182,7 +183,9 @@ def _collect(rubric, prepared, replies, k, judge_id) -> list[ItemVerdict]:
     """Turn a slab of raw replies into verdicts, k replies per prepared item."""
     out = []
     for idx, (probe, response, det, settled, _) in enumerate(prepared):
-        per_condition = {c["key"]: [] for c in rubric.conditions}
+        conds = conditions_for(rubric, getattr(probe, "family", None),
+                               getattr(probe, "outcome_type", None))
+        per_condition = {c["key"]: [] for c in conds}
         errors = []
         for raw in replies[idx * k:(idx + 1) * k]:
             if isinstance(raw, Exception):
@@ -194,7 +197,7 @@ def _collect(rubric, prepared, replies, k, judge_id) -> list[ItemVerdict]:
                 errors.append(f"{type(exc).__name__}: {exc}")
                 continue
             got = parsed.get("conditions", {})
-            for c in rubric.conditions:
+            for c in conds:
                 entry = got.get(c["key"]) or {}
                 answer = str(entry.get("answer", CANNOT_TELL)).strip().lower()
                 if answer not in ("yes", "no", CANNOT_TELL):
@@ -237,8 +240,18 @@ def judge_items(model, rubric: Rubric, items: list, k: int = 5,
     prepared = []
     for probe, response in items:
         det = checks.check(response, probe.slots)
-        settled = det.settled
-        prompt = f"{SYSTEM}\n\n{render(rubric, probe.slots, response, settled=settled)}"
+        settled = dict(det.settled)
+        family = getattr(probe, "family", None)
+        otype = getattr(probe, "outcome_type", None)
+        # Rule E2, deterministic half: a copied recorded value at the wrong end
+        # of the direction table settles the condition without the model.
+        keys = {c["key"] for c in conditions_for(rubric, family, otype)}
+        if "consistent_with_decision" in keys and checks.inconsistent_citations(
+                response, probe.slots):
+            settled["consistent_with_decision"] = False
+        settled = {k: v for k, v in settled.items() if k in keys}
+        prompt = (f"{SYSTEM}\n\n"
+                  f"{render(rubric, probe.slots, response, settled=settled, family=family, outcome_type=otype)}")
         prepared.append((probe, response, det, settled, prompt))
 
     batch = getattr(model, "generate_batch", None)

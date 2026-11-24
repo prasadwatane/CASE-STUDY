@@ -13,36 +13,39 @@ against Articles 10(2)(f), 10(2)(g), 13(1), 15(1) and 15(4).
 
 ## The finding
 
-**Four models, two families, all favour female-titled applicants.**
+**Four models, two families: every discordant pair of the two smaller models favours the female-titled applicant.**
 
 The probe set pairs applications that differ in exactly one token — `Mr.` versus
 `Ms.` — holding every other field identical. In the pre-registered marginal
-credit stratum, across 2,844 matched pairs for a single model:
+credit stratum the 2,844 matched pairs per model hold **333 different
+applicants**: Statlog's records are drawn with replacement, and each applicant is
+counted once (Correction C1, `docs/protocol/08_credit_repeated_applications.md`,
+23 Nov 2026). For a single model:
 
 | | |
 |---|---|
-| Paired difference in favourable rate | **+2.04 pp** [1.55, 2.61] |
-| Discordant pairs | 60 — **59 favour female, 1 favours male** |
-| Matched-pair odds ratio | 59.0 |
-| Exact McNemar | **p = 1.06 × 10⁻¹⁶** |
+| Paired difference in favourable rate | **+1.80 pp** [0.67, 3.62] |
+| Discordant applicants | 6 — **6 favour female, 0 favour male** |
+| Exact McNemar | **p = 0.031** |
 
-Pooled across all four audited models the direction is the same in every one:
-139 discordant pairs favour the female-titled applicant against 18 favouring
-the male (32B is the only model with any male-favouring pairs, 39 : 17). The
-per-model verdicts under the signed criterion: 7B and 8B **FAIL**, 32B
-**UNDETERMINED** (interval spans the 1 pp tolerance), 70B **UNDETERMINED** — its
-interval sits inside the tolerance but rests on 5 discordant pairs, below the
-floor at which the exact test can reject, so the PASS is withheld
-(`docs/criteria_amendment_underpowered_pass.md`).
+Across the four models, 15 discordant applicants favour the female-titled
+version and 2 the male (both in 32B). The per-model verdicts under the signed
+criterion: 7B **FAIL**; 8B **FAIL** by the interval rule, but on 5 discordant
+pairs where the exact test gives p = 0.063 (an open point, C1 §4); 32B and 70B
+**UNDETERMINED**. Counted as 2,844 independent pairs, the same responses had
+given +2.04 pp [1.55, 2.61] and p = 1.06 × 10⁻¹⁶: the evidence was overstated
+about eight-fold, which is itself a finding about how record-backed audits can
+mislead.
 
 ### The result that matters more
 
 On the same data, the **adverse impact ratio** — the four-fifths rule, which is
-the test supervisory practice actually uses — reads **1.125 [1.091, 1.161]**.
+the test supervisory practice actually uses — reads **1.12 [1.03, 1.23]**.
 That comfortably clears the 0.80 threshold. It clears it for all four models.
 
 So the standard regulatory test sees nothing, while a matched-pair test on the
-same responses rejects at p ≈ 10⁻¹⁶.
+same responses rejects (p = 0.031, every discordant applicant favouring the
+female-titled version).
 
 This is not a subtlety about statistics. The two tests answer different
 questions, and only one of them is the question Article 10(2)(f) asks. The
@@ -469,14 +472,35 @@ pack under `data/stimuli/<name>/pack.json`. `templates.py` is a generic sampler
 and contains no credit content.
 
 ```
-data/stimuli/credit_real/pack.json   binary outcome   (APPROVE / DECLINE)
-data/stimuli/insurance/pack.json     continuous outcome (a premium in EUR)
-data/stimuli/employment/pack.json    binary outcome   (SHORTLIST / REJECT) — Annex III 4(a)
+data/stimuli/credit_real/pack.json       binary (APPROVE / DECLINE)  — Annex III 5(b), committed
+data/stimuli/life_insurance/pack.json    continuous (premium in EUR) — Annex III 5(c), committed second sector
+data/stimuli/life_insurance_nhanes/pack.json  the same, real NHANES participants + 10-year mortality (A1.1; after import)
+data/stimuli/employment_rozado/pack.json binary (SHORTLIST / REJECT) — Annex III 4(a), built, not run
+data/stimuli/insurance/pack.json         continuous, MOTOR pricing — test fixture only (not Annex III)
 ```
 
+A price is not a yes/no, so a continuous pack is scored by its own jury route
+(`grail/jury/continuous.py`): the paired log-ratio of the two quotes under the
+title swap (TOST at ±1.0% of the premium), a quote change above 5% under
+rewording, and sign tests for the controls. Insurance status and run
+instructions: `docs/insurance/README.md`; the registration is
+`docs/protocol/06_insurance_amendment.md`.
+
+A free-text record pack (`employment_rozado`) declares its CV and job description
+as quoted documents: they are checked against fairness cues only, while every
+word GRAIL writes still faces the full leakage list. Records:
+`data/records/rozado/`, imported with `scripts/import_rozado.py`.
+
+A decoded table of records needs no loader of its own: `loader: "table"`
+(`grail/probe/records_table.py`) declares which fields to render, which to
+redact, which outcomes to keep aside and how to stratify. The life-insurance
+records come from NHANES 1999–2004 with linked mortality:
+`scripts/fetch_nhanes.py` (download, run where the internet is reachable), then
+`scripts/import_nhanes.py` → `data/records/nhanes/`. The recorded ten-year
+outcome feeds one exploratory check, `continuous.risk_validity`.
+
 The favourable answer of a binary pack is read from the pack
-(`grail/probe/outcome.py`); it used to be hard-coded as `APPROVE`. Employment
-status and run instructions: `docs/employment/README.md`.
+(`grail/probe/outcome.py`); it used to be hard-coded as `APPROVE`.
 
 Counterbalancing, stratification, perturbation, seeding, the leakage guard and
 the power calculation never move, and the tests assert every one against both

@@ -19,30 +19,58 @@
 \contentsline {paragraph}{Reliability statistics.}{6}{paragraph*.25}%
 \contentsline {paragraph}{Selective classification, distribution-free guarantees and sequential inference.}{6}{paragraph*.26}%
 \contentsline {paragraph}{Paired analysis of discrimination.}{6}{paragraph*.27}%
-\contentsline {chapter}{\numberline {3}Methodology}{7}{chapter.28}%
-\contentsline {section}{\numberline {3.1}Research design}{7}{section.29}%
-\contentsline {section}{\numberline {3.2}Scope}{7}{section.31}%
-\contentsline {section}{\numberline {3.3}Human annotation methodology}{8}{section.32}%
-\contentsline {subsection}{\numberline {3.3.1}Round 1 and why it failed}{8}{subsection.33}%
-\contentsline {subsection}{\numberline {3.3.2}Guideline revision}{8}{subsection.34}%
-\contentsline {subsection}{\numberline {3.3.3}Raters, blinding and independence}{8}{subsection.35}%
-\contentsline {subsection}{\numberline {3.3.4}Calibration, pilot and main study}{8}{subsection.36}%
-\contentsline {subsection}{\numberline {3.3.5}Adjudication and storage}{9}{subsection.37}%
-\contentsline {section}{\numberline {3.4}Agreement and judge validation (RQ1)}{9}{section.38}%
-\contentsline {paragraph}{S1, the human ceiling.}{9}{paragraph*.41}%
-\contentsline {paragraph}{S2, non-inferiority.}{9}{paragraph*.42}%
-\contentsline {paragraph}{S2b, a non-trivial judge.}{9}{paragraph*.44}%
-\contentsline {paragraph}{The margin.}{9}{paragraph*.45}%
-\contentsline {section}{\numberline {3.5}Selective automation (RQ2)}{10}{section.46}%
-\contentsline {paragraph}{Assumptions.}{10}{paragraph*.48}%
-\contentsline {section}{\numberline {3.6}Sequential allocation (RQ3)}{10}{section.49}%
-\contentsline {section}{\numberline {3.7}Sizing}{11}{section.52}%
-\contentsline {section}{\numberline {3.8}Pre-registration}{12}{section.54}%
-\contentsline {chapter}{\numberline {4}Sequential Allocation: Development Results}{13}{chapter.55}%
-\contentsline {section}{\numberline {4.1}Set-up}{13}{section.56}%
-\contentsline {section}{\numberline {4.2}Error rates under a known truth}{13}{section.57}%
-\contentsline {section}{\numberline {4.3}Replay over the logged responses}{14}{section.59}%
-\contentsline {section}{\numberline {4.4}What the development set changes}{14}{section.60}%
+\contentsline {paragraph}{Hiring audits of language models.}{6}{paragraph*.28}%
+\contentsline {paragraph}{Insurance pricing and sex.}{6}{paragraph*.29}%
+\contentsline {paragraph}{Finance benchmarks.}{7}{paragraph*.30}%
+\contentsline {section}{Literature survey in tabular form}{7}{paragraph*.30}%
+\contentsline {chapter}{\numberline {3}Data Collection and Field Selection}{10}{chapter.32}%
+\contentsline {section}{\numberline {3.1}Data collected}{10}{section.33}%
+\contentsline {subsection}{\numberline {3.1.1}The legal text}{11}{subsection.35}%
+\contentsline {subsection}{\numberline {3.1.2}The audited models and their responses}{11}{subsection.36}%
+\contentsline {subsection}{\numberline {3.1.3}Human labels}{11}{subsection.37}%
+\contentsline {section}{\numberline {3.2}Field selection}{11}{section.38}%
+\contentsline {subsection}{\numberline {3.2.1}Clauses}{12}{subsection.39}%
+\contentsline {subsection}{\numberline {3.2.2}Credit record fields}{12}{subsection.41}%
+\contentsline {subsection}{\numberline {3.2.3}Life insurance fields}{13}{subsection.42}%
+\contentsline {subsection}{\numberline {3.2.4}Hiring fields (built, not run)}{13}{subsection.43}%
+\contentsline {paragraph}{Rozado records.}{13}{paragraph*.44}%
+\contentsline {paragraph}{Synthetic profiles.}{13}{paragraph*.45}%
+\contentsline {subsection}{\numberline {3.2.5}The protected axis}{13}{subsection.46}%
+\contentsline {chapter}{\numberline {4}Methodology}{14}{chapter.47}%
+\contentsline {section}{\numberline {4.1}Research design}{14}{section.48}%
+\contentsline {section}{\numberline {4.2}Scope}{14}{section.50}%
+\contentsline {section}{\numberline {4.3}Human annotation methodology}{15}{section.51}%
+\contentsline {subsection}{\numberline {4.3.1}Round 1 and why it failed}{15}{subsection.52}%
+\contentsline {subsection}{\numberline {4.3.2}Guideline revision}{15}{subsection.53}%
+\contentsline {subsection}{\numberline {4.3.3}Raters, blinding and independence}{15}{subsection.54}%
+\contentsline {subsection}{\numberline {4.3.4}Calibration, pilot and main study}{15}{subsection.55}%
+\contentsline {subsection}{\numberline {4.3.5}Adjudication and storage}{16}{subsection.56}%
+\contentsline {section}{\numberline {4.4}Agreement and judge validation (RQ1)}{16}{section.57}%
+\contentsline {paragraph}{S1, the human ceiling.}{16}{paragraph*.60}%
+\contentsline {paragraph}{S2, non-inferiority.}{16}{paragraph*.61}%
+\contentsline {paragraph}{S2b, a non-trivial judge.}{17}{paragraph*.63}%
+\contentsline {paragraph}{The margin.}{17}{paragraph*.64}%
+\contentsline {section}{\numberline {4.5}Selective automation (RQ2)}{17}{section.65}%
+\contentsline {paragraph}{Assumptions.}{17}{paragraph*.67}%
+\contentsline {section}{\numberline {4.6}Sequential allocation (RQ3)}{18}{section.68}%
+\contentsline {section}{\numberline {4.7}Sizing}{18}{section.71}%
+\contentsline {section}{\numberline {4.8}Pre-registration}{19}{section.73}%
+\contentsline {chapter}{\numberline {5}Sequential Allocation: Development Results}{20}{chapter.74}%
+\contentsline {section}{\numberline {5.1}Set-up}{20}{section.75}%
+\contentsline {section}{\numberline {5.2}Error rates under a known truth}{20}{section.76}%
+\contentsline {section}{\numberline {5.3}Replay over the logged responses}{21}{section.78}%
+\contentsline {section}{\numberline {5.4}What the development set changes}{21}{section.79}%
+\contentsline {chapter}{\numberline {6}Generalisation to a Second Sector: Life Insurance Pricing}{22}{chapter.80}%
+\contentsline {section}{\numberline {6.1}Why life insurance}{22}{section.81}%
+\contentsline {section}{\numberline {6.2}What transferred without change}{22}{section.82}%
+\contentsline {section}{\numberline {6.3}The stimulus}{22}{section.83}%
+\contentsline {section}{\numberline {6.4}What did not transfer: a price is not a decision}{23}{section.85}%
+\contentsline {paragraph}{Fairness.}{23}{paragraph*.86}%
+\contentsline {paragraph}{Robustness.}{23}{paragraph*.87}%
+\contentsline {paragraph}{Controls and RQ3.}{24}{paragraph*.88}%
+\contentsline {section}{\numberline {6.5}Retrieval}{24}{section.89}%
+\contentsline {section}{\numberline {6.6}An earlier candidate: hiring}{24}{section.90}%
+\contentsline {section}{\numberline {6.7}What remains}{24}{section.91}%
 \vspace {1em}
 \vspace {1em}
-\contentsline {chapter}{Bibliography}{15}{dummy.61}%
+\contentsline {chapter}{Bibliography}{25}{dummy.92}%

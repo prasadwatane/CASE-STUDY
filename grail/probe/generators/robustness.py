@@ -12,7 +12,7 @@ emitted at all.
 """
 from __future__ import annotations
 
-from grail.probe.generators._common import clause_refs, stratum_plan
+from grail.probe.generators._common import clause_refs, stratum_plan, with_ordinals
 from grail.probe.schema import CORE, GOLD_NONE, Probe, derive_rng, digits
 from grail.probe.templates import PERTURBATIONS, render, sample_case
 
@@ -26,9 +26,9 @@ def generate(ctx, items: list) -> list[Probe]:
 
     no_ops: dict[str, int] = {}
     plan = stratum_plan(n_base, ctx.strata)
-    for idx, stratum in enumerate(plan):
+    for idx, stratum, k in with_ordinals(plan):
         slots = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
-                            ns="robustness")
+                            ns="robustness", ordinal=k)
         base_prompt = render(ctx.pack, slots)
         pair_id = f"{ctx.domain}:robustness:{idx:04d}"
         base_id = f"{pair_id}:base"

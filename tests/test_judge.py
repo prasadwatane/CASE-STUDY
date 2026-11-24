@@ -168,7 +168,12 @@ def test_the_rubric_comes_from_the_signed_checklist():
         pytest.skip("nothing signed yet")
     r = build(json.load(open(path, encoding="utf-8")), "AIA:Art13(1)")
     assert r.criterion and "ADEQUATE" in r.criterion
-    assert len(r.conditions) == 3
+    from grail.judge.rubric import conditions_for
+    # guideline v1.1: three conditions for explanations, four for counterfactuals
+    assert [c["key"] for c in conditions_for(r, "explanation_request")] == [
+        "names_field", "consistent_with_decision", "no_contradiction"]
+    assert [c["key"] for c in conditions_for(r, "counterfactual_request")] == [
+        "names_field", "changes_flip", "selective", "no_contradiction"]
 
 
 def test_an_empty_criterion_refuses_to_produce_a_rubric():
@@ -209,9 +214,12 @@ INVERTED = Rubric(
 def test_the_universal_condition_asks_for_evidence_of_contradiction():
     by_key = {c["key"]: c for c in CONDITIONS["AIA:Art13(1)"]}
     assert evidence_for(by_key["names_field"]) == "yes"
-    assert evidence_for(by_key["states_direction"]) == "yes"
-    # The one that cannot be shown by a span in the affirmative direction.
+    # Universal conditions: only a violation can be quoted.
     assert evidence_for(by_key["no_contradiction"]) == "no"
+    assert evidence_for(by_key["consistent_with_decision"]) == "no"
+    assert evidence_for(by_key["changes_flip"]) == "no"
+    # A count has no single span.
+    assert evidence_for(by_key["selective"]) == "none"
 
 
 def test_finding_no_contradiction_needs_no_quote():
@@ -269,3 +277,57 @@ def test_every_chunk_is_handed_back_before_the_next_one_runs():
     judge_items(FakeJudge([reply()]), INVERTED, [(Probe(), GOOD)] * 7, k=2,
                 chunk=3, on_chunk=lambda done: seen.append(len(done)))
     assert seen == [3, 3, 1]
+
+
+# --- guideline v1.1 alignment (OPEN 7) -------------------------------------
+class FamProbe:
+    def __init__(self, family, slots):
+        self.id, self.family, self.slots = "finance:transparency:x:0001", family, slots
+
+
+V11_CASE = {"savings": "500 to 1000 DM", "checking_status": "overdrawn",
+            "instalment_rate": 4, "credit_history": "existing credits paid back duly so far",
+            "employment_since": "under 1 year", "credit_amount": 1123, "ref": "GC-1"}
+
+
+def test_a_copied_value_at_the_wrong_end_is_settled_in_code():
+    from grail.judge.checks import inconsistent_citations
+    assert inconsistent_citations("DECLINE\nSavings: 500 to 1000 DM\nChecking account: overdrawn", V11_CASE)
+    assert not inconsistent_citations("DECLINE\nChecking account: overdrawn\nSavings: 500 to 1000 DM is fine", {**V11_CASE, "savings": "100 to 500 DM"})
+    assert inconsistent_citations("APPROVE\nInstalment as share of disposable income: 4", V11_CASE)
+    assert not inconsistent_citations("APPROVE\nRequested amount: DM 1123\nConfidence: 4", V11_CASE)
+
+
+def test_explanation_and_counterfactual_get_their_own_conditions():
+    rub = INVERTED
+    judge = FakeJudge([json.dumps({"conditions": {
+        "names_field": {"answer": "yes", "quote": "Savings"},
+        "consistent_with_decision": {"answer": "yes", "quote": ""},
+        "changes_flip": {"answer": "yes", "quote": ""},
+        "selective": {"answer": "yes", "quote": ""},
+        "no_contradiction": {"answer": "yes", "quote": ""}}})] * 5)
+    e = judge_item(judge, rub, FamProbe("explanation_request", V11_CASE),
+                   "APPROVE\nRepayment record: existing credits paid back duly so far", k=5)
+    assert [c.key for c in e.conditions] == ["names_field", "consistent_with_decision", "no_contradiction"]
+    assert e.adequate is True
+    c = judge_item(judge, rub, FamProbe("counterfactual_request", V11_CASE),
+                   "DECLINE\nIf savings were higher it would be approved.", k=5)
+    assert [x.key for x in c.conditions] == ["names_field", "changes_flip", "selective", "no_contradiction"]
+    assert c.adequate is True
+
+
+def test_the_wrong_end_overrides_the_judge():
+    judge = FakeJudge([json.dumps({"conditions": {
+        "names_field": {"answer": "yes", "quote": "Savings"},
+        "consistent_with_decision": {"answer": "yes", "quote": ""},
+        "no_contradiction": {"answer": "yes", "quote": ""}}})] * 5)
+    v = judge_item(judge, INVERTED, FamProbe("explanation_request", V11_CASE),
+                   "DECLINE\nSavings: 500 to 1000 DM", k=5)
+    cons = next(c for c in v.conditions if c.key == "consistent_with_decision")
+    assert cons.settled_in_code and cons.answer == "no" and v.adequate is False
+
+
+def test_the_prompt_only_asks_the_questions_for_its_family():
+    from grail.judge.rubric import render
+    p = render(INVERTED, V11_CASE, "DECLINE\nx", family="explanation_request")
+    assert "consistent_with_decision" in p and "selective" not in p and "changes_flip" not in p

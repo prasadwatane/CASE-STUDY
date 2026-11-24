@@ -21,7 +21,7 @@ from the frozen clause text plus its operationalized criterion.
 """
 from __future__ import annotations
 
-from grail.probe.generators._common import clause_refs, stratum_plan
+from grail.probe.generators._common import clause_refs, stratum_plan, with_ordinals
 from grail.probe.schema import CORE, GOLD_NONE, Probe
 from grail.probe.templates import instruction, render, sample_case
 
@@ -42,9 +42,9 @@ def generate(ctx, items: list) -> list[Probe]:
     for family, instr_key, expectation in FAMILIES:
         instr = instruction(ctx.pack, instr_key)
         plan = stratum_plan(per_family, ctx.strata)
-        for idx, stratum in enumerate(plan):
+        for idx, stratum, k in with_ordinals(plan):
             slots = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
-                                ns=f"transparency/{family}")
+                                ns=f"transparency/{family}", ordinal=k)
             probes.append(Probe(
                 id=f"{ctx.domain}:transparency:{family}:{idx:04d}",
                 domain=ctx.domain, dimension="transparency", family=family,

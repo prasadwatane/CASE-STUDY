@@ -39,8 +39,9 @@ round-1 items only, which are retired from evaluation.
 | On a miss | The rule is clarified in the guideline **before** freezing, never by coaching the rater on the item |
 | Record | Scores are kept in `data/processed/annotation/calibration/` and labelled as training; they enter no agreement statistic |
 
-Calibration cannot run yet: six of the twelve disagreement items have two
-conflicting worked verdicts in the draft.
+Ready (18 Nov): `data/processed/annotation/calibration/` holds both raters'
+sheets and HTML packets, and `answer_key.json`; score with
+`python scripts/score_calibration.py <sheet>`.
 
 ## 4. Freeze
 
@@ -52,10 +53,25 @@ conflicting worked verdicts in the draft.
 
 ## 5. Round 2 (pilot, 30 fresh items)
 
+**Order matters.** The export stratifies items by the judge's confidence, so the
+judge must first be re-run under rubric `art13-v1.1` (OPEN 7), on all four
+models, after the guideline is accepted and before this export:
+
+```
+for M in Qwen/Qwen2.5-7B-Instruct Qwen/Qwen2.5-32B-Instruct-AWQ \
+         meta-llama/Llama-3.1-8B-Instruct hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4; do
+  python scripts/run_judge.py finance --model $M --local --fresh
+done
+```
+
+The v1.0 verdicts are kept in `data/processed/runs/finance/judge_v1.0/`.
+
+
 ```
 G=docs/annotation_guidelines_Art13_v1.1.md
 python scripts/export_annotation.py finance --n 30 --overlap 30 --seed 20261116 \
-       --guidelines $G --out data/processed/annotation/round2
+       --guidelines $G --out data/processed/annotation/round2 \
+       --exclude data/processed/annotation/pilot/KEY_do_not_open_until_scored.json
 python scripts/make_rater_packet.py data/processed/annotation/round2/annotation_rater_A.csv --guidelines $G
 python scripts/make_rater_packet.py data/processed/annotation/round2/annotation_rater_B.csv --guidelines $G
 # raters fill their sheets independently

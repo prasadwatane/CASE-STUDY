@@ -342,6 +342,26 @@ def _mean_ci(xs: list[float], reps: int = 4000, seed: int = 11) -> dict:
             "hi": round(ms[int(0.975 * reps) - 1], 4)}
 
 
+# Pre-registered (OPEN 5): the confirmatory RQ3 policy and the S4 reading.
+PRIMARY_POLICY = "adaptive_obf"
+S4_FIDELITY, S4_SPEND, S4_COVERAGE = 0.90, 0.80, 0.90
+
+
+def s4_primary(fid: dict, spend: dict, cov: dict) -> str:
+    """S4 on the bootstrap CI of the mean ratios to static, all three bounds.
+
+    met          fidelity lo >= 0.90, spend hi <= 0.80, coverage lo >= 0.90
+    not met      any one is shown to fail (fidelity hi < 0.90, spend lo > 0.80,
+                 or coverage hi < 0.90)
+    undetermined otherwise
+    """
+    if fid["lo"] >= S4_FIDELITY and spend["hi"] <= S4_SPEND and cov["lo"] >= S4_COVERAGE:
+        return "met"
+    if fid["hi"] < S4_FIDELITY or spend["lo"] > S4_SPEND or cov["hi"] < S4_COVERAGE:
+        return "not met"
+    return "undetermined"
+
+
 def compare_policies(reqs: list[Requirement], budgets: list[int], seeds: int = 40,
                      rounds: int = 8) -> list[dict]:
     """Static, uncorrected adaptive and corrected adaptive at matched budgets.
@@ -407,8 +427,13 @@ def compare_policies(reqs: list[Requirement], budgets: list[int], seeds: int = 4
                 row["S4_mean_ci"] = ("met" if fm["lo"] >= 0.90 and sm["hi"] <= 0.80 else
                                      "not met" if fm["hi"] < 0.90 or sm["lo"] > 0.80 else
                                      "undetermined")
-                row["coverage_ratio_vs_static"] = _mean_ci(
-                    [c / sc if sc else 1.0 for c, sc in zip(d["cov"], st["cov"])])
+                cm = _mean_ci([c / sc if sc else 1.0 for c, sc in zip(d["cov"], st["cov"])])
+                row["coverage_ratio_vs_static"] = cm
+                # PRIMARY S4 (pre-registration OPEN 5, closed 18 Nov 2026): the CI
+                # of the mean over seeds, PLUS a coverage condition — without it a
+                # policy that never commits has fidelity 1 and passes. Fixed on the
+                # finance development replay; confirmed on the insurance run (Amendment A1).
+                row["S4_primary"] = s4_primary(fm, sm, cm)
             out.append(row)
     return out
 

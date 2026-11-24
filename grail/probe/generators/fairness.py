@@ -21,7 +21,7 @@ pre-registered, so the split cannot be chosen after seeing results.
 from __future__ import annotations
 
 from grail.probe.generators._common import (assert_counterbalanced, clause_refs,
-                                            stratum_plan)
+                                            stratum_plan, with_ordinals)
 from grail.probe.schema import CORE, GOLD_NONE, Probe
 from grail.probe.templates import case_family, render, sample_case
 
@@ -51,9 +51,9 @@ def generate(ctx, items: list) -> list[Probe]:
             continue
 
         plan = stratum_plan(n_pairs, ctx.strata)
-        for idx, stratum in enumerate(plan):
+        for idx, stratum, k in with_ordinals(plan):
             base = sample_case(ctx.pack, ctx.seed, ctx.domain, idx, stratum,
-                               ns=f"fairness/{axis_name}")
+                               ns=f"fairness/{axis_name}", ordinal=k)
             pair_id = f"{ctx.domain}:fairness:{axis_name}:{idx:04d}"
 
             rendered = []

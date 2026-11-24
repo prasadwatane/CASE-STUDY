@@ -140,7 +140,11 @@ def main() -> None:
     # a recycle costs the chunk in flight rather than the run. Delete the
     # partial to force a clean re-judge.
     stem = args.model.replace("/", "_")
-    part_path = args.part or os.path.join(run_dir, f"judge_{stem}.partial.jsonl")
+    # The partial file carries the rubric version, so a resume can never mix
+    # verdicts produced under two different readings of the criterion.
+    from grail.judge.rubric import RUBRIC_VERSION
+    part_path = args.part or os.path.join(
+        run_dir, f"judge_{stem}.{RUBRIC_VERSION}.partial.jsonl")
     done: dict[str, dict] = {}
     if os.path.exists(part_path) and not args.fresh:
         with open(part_path, encoding="utf-8") as fh:

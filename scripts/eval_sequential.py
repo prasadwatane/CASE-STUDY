@@ -30,7 +30,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import PROBE_DIR, RUN_DIR
 from grail.allocate.replay import Requirement, build_requirements, reference_verdicts
-from grail.allocate.sequential import compare_policies, null_error_rates
+from grail.allocate.sequential import (PRIMARY_POLICY, compare_policies, null_error_rates,
+                                      s4_primary)
 
 FRACTIONS = (0.05, 0.10, 0.20, 0.30, 0.50, 0.75, 1.00)
 
@@ -75,9 +76,17 @@ def main() -> None:
     os.makedirs(out_dir, exist_ok=True)
 
     if a.part == "null":
+        # Simulated audits are sized like the real requirements: the median
+        # number of DISTINCT units per requirement (repeated applicants count
+        # once, as in the jury). Until 23 Nov 2026 these were fixed at 948 and
+        # 725, the sizes of the credit set before repeats were removed.
+        reqs = load_requirements(a.domain)
+        med = lambda xs: sorted(xs)[len(xs) // 2] if xs else None
+        n_fair = med([r.n_available for r in reqs if r.kind == "fairness"]) or 948
+        n_rob = med([r.n_available for r in reqs if r.kind == "robustness"]) or 725
         res = {}
-        for kind, n in (("fairness_null0", 948), ("fairness_margin", 948),
-                        ("robustness_tol", 725)):
+        for kind, n in (("fairness_null0", n_fair), ("fairness_margin", n_fair),
+                        ("robustness_tol", n_rob)):
             res[kind] = {"n_units": n, "sims": a.sims,
                          "rates": null_error_rates(kind, n, a.sims)}
             print(kind, res[kind]["rates"])
@@ -151,13 +160,18 @@ def write_markdown(domain, full, ref, null, rows, seeds):
           "the code applies). `mean CI` = bootstrap CI of the mean over seeds (expected "
           "behaviour). Coverage ÷ static is the mean ratio with its CI — S4 does not "
           "constrain it, which is why it is shown.", "",
-          "| budget | policy | S4 (range) | S4 (mean CI) | fidelity ÷ static, mean CI | spend ÷ static, mean CI | coverage ÷ static |",
-          "|---|---|---|---|---|---|---|"]
+          "**Primary (pre-registered, OPEN 5):** mean CI with a coverage condition "
+          "(coverage ÷ static ≥ 0.90), primary policy `adaptive_obf`.", "",
+          "| budget | policy | **S4 primary** | S4 (range) | S4 (mean CI, no coverage) | fidelity ÷ static, mean CI | spend ÷ static, mean CI | coverage ÷ static |",
+          "|---|---|---|---|---|---|---|---|"]
     ci = lambda s: f"{s['mean']:.2f} [{s['lo']:.2f}, {s['hi']:.2f}]"
     for r in sorted(rows, key=lambda x: (x["budget"], x["policy"])):
         if r["policy"] == "static":
             continue
-        L.append(f"| {r['budget'] / full:.0%} | {r['policy']} | {r['S4']} | {r['S4_mean_ci']} | "
+        prim = r.get("S4_primary") or s4_primary(
+            r["fidelity_ratio_mean_ci"], r["spend_ratio_mean_ci"], r["coverage_ratio_vs_static"])
+        mark = " ◀ primary policy" if r["policy"] == PRIMARY_POLICY else ""
+        L.append(f"| {r['budget'] / full:.0%} | {r['policy']}{mark} | **{prim}** | {r['S4']} | {r['S4_mean_ci']} | "
                  f"{ci(r['fidelity_ratio_mean_ci'])} | {ci(r['spend_ratio_mean_ci'])} | "
                  f"{ci(r['coverage_ratio_vs_static'])} |")
     L += ["", "## 3. Full-budget reference verdicts", "",

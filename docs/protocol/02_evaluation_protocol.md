@@ -1,7 +1,8 @@
 # Evaluation protocol — definitions, margin, assumptions, matrix
 
-Status: **draft for pre-registration, not yet signed.** Four decisions are still
-open; they are listed in `PREREGISTRATION.md` and marked **[OPEN n]** below.
+Status: **draft for pre-registration, not yet signed.** The open decisions were
+closed on 18 November 2026; each is marked **[OPEN n → decided]** below and
+recorded in `PREREGISTRATION.md`.
 Nothing here has been evaluated on data. Simulation figures come from
 `docs/expose/power_sim.py` and are design inputs, not results.
 
@@ -12,10 +13,11 @@ Nothing here has been evaluated on data. Simulation figures come from
 - Items `i = 1..n`. An item is a (probe, model) pair on the transparency docket.
 - Labels `y ∈ {adequate, inadequate}`. `cannot judge` is recorded separately and
   its rate reported per rater; items carrying it are excluded from agreement
-  statistics and counted **[OPEN 4]**.
+  statistics and counted **[OPEN 4 → decided: label removed; two labels only]**.
 - Raters `A`, `B` (human, independent, blind). Judge `J` (phi-4, pinned).
   Rule-based scorer `Q`. Arbitrated reference `R*`.
-- Bootstrap: percentile, over items, 10,000 resamples, seeded.
+- Bootstrap: over items, 10,000 resamples, seeded. Percentile for S1 intervals;
+  **BCa** one-sided bounds for S2 and S2b (OPEN 3).
 
 ## 2. Agreement (RQ1)
 
@@ -34,14 +36,14 @@ All five are reported together with the marginals, always.
 
 **S1 (human ceiling).** Met when the two-sided 95% lower bootstrap bound of the
 primary statistic between A and B is ≥ 0.61 on the double-rated items.
-**[OPEN 1]** The primary statistic is κ in exposé rev2 (Table 1) and AC1 in the
+**[OPEN 1 → decided: AC1 primary, κ reported.]** The primary statistic was κ in exposé rev2 (Table 1) and AC1 in the
 filed amendment and in `agreement.meets_primary`. One of the two must be chosen
 before signing; the consequence is quantified in §6.
 
 **S2 (non-inferiority, judge as third rater).**
 
 ```
-D = ½ [ κ(J, A) + κ(J, B) ] − κ(A, B)
+D = ½ [ AC1(J, A) + AC1(J, B) ] − AC1(A, B)      (κ version reported)
 H0: D ≤ −δ      H1: D > −δ      δ = 0.10
 ```
 
@@ -50,7 +52,7 @@ when the upper bound is below −δ. Otherwise **undetermined**. The arbitrated
 label `R*` is not used here: a label built from both raters is an easier target
 than either rater alone.
 
-**S2b (non-trivial judge).** `Δ = κ(J, R*) − κ(Q, R*)`; met when the one-sided
+**S2b (non-trivial judge).** `Δ = AC1(J, R*) − AC1(Q, R*)` (κ version reported; **[OPEN 3 → decided: AC1, BCa]**); met when the one-sided
 95% lower bootstrap bound of `Δ` is above 0, on identical items. A
 majority-class scorer is reported alongside (its κ is 0 by construction, so
 accuracy, precision, recall and F1 on the `inadequate` class are given for all
@@ -59,7 +61,7 @@ three scorers).
 ## 3. Selective automation (RQ2)
 
 The judge emits a label `g(x)` and a nonconformity score `s(x)`. The gate accepts
-when `s(x) ≤ τ`. **[OPEN 6]** Which score: the exposé specifies the disagreement of
+when `s(x) ≤ τ`. **[OPEN 6 → decided: five-run self-agreement at T = 0.3.]** Which score: the exposé specifies the disagreement of
 five prompt paraphrases at temperature 0, on the stated ground that identical runs
 at temperature 0 are identical. The case-study judge in fact runs at temperature
 0.3, and its existing five-run self-agreement varies on 13% of items (see
@@ -95,7 +97,7 @@ met only if the judge makes **at most 2 errors** on them.
    to are drawn from the same distribution: same docket, same audited models,
    same probe families, same judge version and prompts. The bound says nothing
    about a new model, a new sub-sector or a re-prompted judge.
-2. **Sampling design. [OPEN 2]** The 300-item study is stratified (it oversamples
+2. **Sampling design. [OPEN 2 → decided: per-stratum bound with docket weights.]** The 300-item study is stratified (it oversamples
    high-confidence and borderline judge items). A stratified sample is not
    exchangeable with the docket, so a single Clopper–Pearson bound over the pooled
    sample does not certify the docket-level risk. Either (a) the bound is computed
@@ -137,7 +139,7 @@ And the reference is the static policy at full budget, so static fidelity is 1.0
 there by construction.
 
 **S4.** Met when the corrected policy has fidelity ≥ 0.90 × static fidelity and
-cost ≤ 0.80 × static cost at the matched budget. **[OPEN 5]** Two things are not
+cost ≤ 0.80 × static cost at the matched budget. **[OPEN 5 → decided: CI of the mean over seeds; coverage ≥ 0.90 × static added; O'Brien–Fleming spending primary, confidence sequence reported.]** Two things were not
 yet fixed: (a) whether the bounds are the per-seed range or a bootstrap CI of the
 mean over seeds; (b) a coverage condition, without which a policy that never
 commits satisfies S4. Both were identified after the development replay was run
@@ -191,7 +193,7 @@ Three consequences for the design:
    prevalence towards 50%, as its own draft predicts, the two coincide and the
    choice stops mattering.
 3. **The S2 test is slightly liberal.** Its simulated type-I error is 0.06–0.07
-   at n ≥ 120 against a nominal 0.05. **[OPEN 3]** Either a BCa interval replaces
+   at n ≥ 120 against a nominal 0.05. **[OPEN 3 → decided: BCa; simulated 0.047–0.055.]** Either a BCa interval replaces
    the percentile interval, or the liberal rate is stated next to every S2 result.
 
 The exposé quotes S2 power of roughly 0.4 at 120 and 0.6–0.75 at 300; this

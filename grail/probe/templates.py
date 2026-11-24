@@ -92,6 +92,10 @@ def _draw(r, field: dict, pack: dict, stratum_cfg: dict, slots: dict):
     kind = field["type"]
 
     if kind == "choice":
+        # A choice may depend on the stratum (a smoker is more likely in the
+        # high-risk band): "range" then names a list in the stratum's config.
+        if "range" in field:
+            return r.choice(stratum_cfg[field["range"]])
         return r.choice(pack["vocab"][field["vocab"]])
 
     if kind == "int_range":
@@ -133,7 +137,7 @@ def resolve_override(pack: dict, slots: dict, field: str, value, root: str = "")
 
 
 def sample_case(pack: dict, seed: int, domain: str, index: int, stratum: str,
-                ns: str = "case", root: str = "") -> dict:
+                ns: str = "case", root: str = "", ordinal: int | None = None) -> dict:
     """Deterministically produce one case from a pack.
 
     Two kinds of pack, one entry point. A *sampled* pack draws each field from
@@ -145,12 +149,20 @@ def sample_case(pack: dict, seed: int, domain: str, index: int, stratum: str,
     **never** from the protected arm, so the same case is reproduced identically
     for every arm. Fields are drawn in the order the pack declares them, so the
     draw sequence — and therefore the whole probe set — is reproducible.
+
+    `ordinal` is the case's position among the cases of its stratum. Only the
+    generic table loader uses it, to draw people without replacement; every
+    other pack ignores it, so their probe sets are unchanged.
     """
     if stratum not in pack["strata"]:
         raise SystemExit(f"pack '{pack['name']}' has no stratum '{stratum}' "
                          f"(has: {strata_names(pack)})")
 
     source = pack.get("source") or {}
+    if source.get("type") == "records" and source.get("loader") == "table":
+        from grail.probe.records_table import sample_table_case
+        return sample_table_case(pack, seed, domain, index, stratum, ns,
+                                 records_path(pack, root), ordinal=ordinal)
     if source.get("type") == "records" and source.get("loader") == "cv_job":
         from grail.probe.records_cv import sample_cv_case
         return sample_cv_case(pack, seed, domain, index, stratum, ns,

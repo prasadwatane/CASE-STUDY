@@ -15,4 +15,68 @@
 
 \paragraph{Selective classification, distribution-free guarantees and sequential inference.}\hspace{0.6em}Geifman and El-Yaniv \citep{geifman} define the object C2 delivers --- a selective classifier whose risk on the accepted items is bounded at a chosen coverage --- and show how to calibrate the acceptance threshold on a held-out set; Angelopoulos and Bates \citep{angelopoulos} give the split-conformal calibration and the exact finite-sample bound used here, and Learn then Test \citep{learntest} the multiple-testing correction that makes a searched threshold valid. For C3 the relevant literature is sequential: $\alpha$-spending \citep{landemets} and time-uniform confidence sequences \citep{howard} give inference that remains correct under continuous monitoring. Applying them to audit budget rather than to clinical enrolment is, to the author's knowledge, unexplored, and is the most distinctive opening this thesis takes.
 
-\paragraph{Paired analysis of discrimination.}\hspace{0.6em}McNemar's exact test \citep{mcnemar} and the four-fifths rule \citep{eeoc} answer different questions --- individual-level differential treatment versus aggregate group rates --- and the case study showed they disagree completely on the same responses. Bowen et al.\ \citep{bowen} use the same counterbalanced design on credit decisions; Tamkin et al.\ \citep{tamkin} apply it to a battery of high-stakes decision prompts and likewise report favourable-direction effects for some protected groups. C4 extends that contrast to a second protected axis.
+\paragraph{Paired analysis of discrimination.}\hspace{0.6em}McNemar's exact test \citep{mcnemar} and the four-fifths rule \citep{eeoc} answer different questions --- individual-level differential treatment versus aggregate group rates --- and the case study showed they disagree completely on the same responses. Bowen et al.\ \citep{bowen} use the same counterbalanced design on mortgage underwriting, varying race on 6{,}000 applications built from real HMDA records; Tamkin et al.\ \citep{tamkin} apply it to a battery of high-stakes decision prompts and likewise report favourable-direction effects for some protected groups. C4 extends that contrast to a second protected axis.
+
+\paragraph{Hiring audits of language models.}\hspace{0.6em}Paired-identity audits are densest in hiring. Wilson and Caliskan \citep{wilsoncaliskan}, Iso et al.\ \citep{iso}, FAIRE \citep{faire}, Rozado \citep{rozado2026} and Gao et al.\ \citep{gaohire} vary names or gender signals on otherwise matched CVs and report effects whose direction depends on model generation and whose size depends on design: pairwise choice shows larger gaps than single-candidate decisions on the same documents. Rozado's released CVs and job descriptions \citep{rozadodata} were imported for a hiring variant of GRAIL that was built but not audited (Chapter~\ref{ch:insurance}).
+
+\paragraph{Insurance pricing and sex.}\hspace{0.6em}The Court of Justice of the European Union ruled in \emph{Test-Achats} \citep{testachats} that sex may not be used as a factor that changes individual insurance premiums and benefits, with effect from 21 December 2012. No published audit of language models pricing life or health insurance was found. Together these make life insurance pricing (Annex III 5(c)) the second audited sector of this thesis: the legal requirement on the protected axis is unusually clear, and the measurement is new.
+
+\paragraph{Finance benchmarks.}\hspace{0.6em}FinTrust \citep{fintrust} scores eleven models on seven trust dimensions in finance and finds all of them weakest on fiduciary alignment and disclosure, a legally inspired result that is not traced to any clause. FailSafeQA \citep{failsafeqa} perturbs queries and contexts over long 10-K filings and finds that the most robust model still fabricates in 41\% of perturbed cases; its judge comes from the same model families it judges, which GRAIL's judge-selection rule forbids.
+
+\section*{Literature survey in tabular form}
+\addcontentsline{toc}{section}{Literature survey in tabular form}
+Table~\ref{tab:litsurvey} summarises the works above by domain, design and data, main finding, and the gap that GRAIL addresses. Rows are grouped as in the text.
+
+\par\vspace{1em}
+{\scriptsize
+\setlength{\tabcolsep}{3pt}\setlength{\LTpre}{2.5em}\setlength{\LTpost}{1em}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.4cm}@{}}
+\caption{Literature survey: what each work measures, on what data, what it found, and what it leaves open for this thesis.}\label{tab:litsurvey}\\
+\toprule
+\textbf{Work} & \textbf{Domain} & \textbf{Design and data} & \textbf{Main finding} & \textbf{Gap addressed by GRAIL} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Work} & \textbf{Domain} & \textbf{Design and data} & \textbf{Main finding} & \textbf{Gap addressed by GRAIL} \\
+\midrule
+\endhead
+\midrule \multicolumn{5}{r}{\emph{continued on next page}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+\multicolumn{5}{@{}l}{\textbf{Holistic and trust benchmarks}} \\
+HELM \citep{helm} & General & 42 scenarios $\times$ 7 metrics across many models & Capability, calibration, robustness and fairness trade off; no model dominates & Scores against a curated list, not a legal text; no clause-named verdict \\
+TrustLLM \citep{trustllm} & General trust & 6 trust dimensions, 30+ datasets, 16 LLMs & Trustworthiness broadly tracks capability & Same: list-based, not traceable to an obligation \\
+DecodingTrust \citep{decodingtrust} & General trust & 8 perspectives on GPT-3.5 and GPT-4 & GPT-4 more easily misled by adversarial instructions & Same; single-family models \\
+AILuminate \citep{ailuminate} & Product risk & 12 hazard categories, 24k+ prompts, ensemble judge & Graded risk ratings per system & Judge validity not measured per dimension against a human ceiling \\
+\midrule
+\multicolumn{5}{@{}l}{\textbf{Regulation-facing systems and audit frameworks}} \\
+COMPL-AI \citep{complai} & EU AI Act & Manual mapping of the Act to existing benchmarks; leaderboard & Models weakest on fairness and robustness & Mapping manual, suite frozen, scoring never human-validated \\
+FMTI \citep{fmti} & Developer transparency & 100 indicators, 10 developers & Low transparency overall & Every agent finding human-verified: automation not accepted as evidence \\
+SMACTR \citep{smactr} & Audit process & Artefacts and checkpoints for internal audit & Process framework & No route from clause to test and threshold \\
+M\"okander et al.\ \citep{mokander} & Governance & Three-layer audit (governance, model, application) & Behavioural testing at the model layer & Thresholds and their protection from revision unspecified \\
+\midrule
+\multicolumn{5}{@{}l}{\textbf{Finance}} \\
+FinTrust \citep{fintrust} & Finance & 7 trust dimensions, 15{,}680 instances, 11 LLMs & All models fall short on fiduciary alignment and disclosure & Legally inspired, not clause-traceable \\
+FailSafeQA \citep{failsafeqa} & Finance QA & 220 long-context 10-K items, query and context perturbations, LLM judge & Most robust model still fabricates in 41\% of perturbed cases & Judge from the same families as the systems judged \\
+Bowen et al.\ \citep{bowen} & Credit (mortgage) & 1{,}000 HMDA applications $\to$ 6{,}000 with race varied & More denials and higher rates for Black applicants; an ``unbiased'' instruction removes the approval gap & No clause trace; no verdict reliability \\
+Tamkin et al.\ \citep{tamkin} & High-stakes decisions & 70 decision scenarios, demographics varied & Both favourable and unfavourable effects by group & Same \\
+\midrule
+\multicolumn{5}{@{}l}{\textbf{Hiring}} \\
+Wilson and Caliskan \citep{wilsoncaliskan} & Hiring & Retrieval-based resume screening, names varied, 9 occupations & White-associated names favoured in 85\% of tests, female in 11\% & Retrieval model, not an LLM decision; no clause \\
+Iso et al.\ \citep{iso} & Hiring & Job--resume matching with gender, race, education varied & Gender and race effects narrowed; education effects persist & No verdict or threshold \\
+FAIRE \citep{faire} & Hiring & Direct scoring and ranking of resumes across models & Direction and size of bias vary by model and method & Same \\
+Rozado \citep{rozado2026} & Hiring & 22 LLMs, 70 professions, pairwise choice of two CVs & Female-named chosen in 56.9\%; first-listed in 63.5\% & Imported for a hiring variant, built not run (Ch.~\ref{ch:insurance}); no clause \\
+Gao et al.\ \citep{gaohire} & Hiring & 14 LLMs, 6{,}007 real postings, one candidate, yes/no & 2023 model pro-White and pro-male; 2024+ null or reversed by 0.4--3.0 pp & Closest design to GRAIL; sets the expected effect size \\
+\midrule
+\multicolumn{5}{@{}l}{\textbf{Judges and reliability statistics}} \\
+Zheng et al.\ \citep{zheng} & LLM-as-judge & MT-Bench and Chatbot Arena & Strong judges agree with humans about as often as humans do; position and verbosity bias & Agreement measured once, globally \\
+JudgeBench \citep{judgebench} & LLM-as-judge & Hard objective pairs (knowledge, reasoning, maths, code) & Strong judges barely above random & Judges must be measured and gated \\
+Dorner et al.\ \citep{dorner} & Judge theory & Theory and experiments & A judge no better than the evaluated model saves at most half the labels & Bounds what substitution can buy \\
+PPI \citep{ppi} & Statistics & Predictions plus a small labelled set & Valid population estimates & Answers \emph{the rate}, not \emph{which verdicts} may be admitted \\
+Gwet \citep{gwet} & Agreement & Chance-corrected agreement & AC1 stable under skewed prevalence where $\kappa$ deflates & Adopted alongside $\kappa$ (OPEN 1) \\
+Geifman and El-Yaniv \citep{geifman} & Selective classification & Risk--coverage with a calibrated threshold & Bounded risk on accepted items & Applied to judge verdicts (C2) \\
+Lan and DeMets \citep{landemets}; Howard et al.\ \citep{howard} & Sequential inference & $\alpha$-spending; confidence sequences & Valid under continuous monitoring & Applied to audit budget (C3) \\
+\end{longtable}
+}

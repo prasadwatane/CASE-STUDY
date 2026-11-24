@@ -53,3 +53,12 @@ models/
 ~$*
 data/processed/runs/*/ledger.jsonl.*.bak
 data/processed/runs/*/*.partial.jsonl
+
+# --- downloaded record sources -------------------------------------------------
+# NHANES raw files (about 40 MB) are re-downloadable by scripts/fetch_nhanes.py
+# and verified against raw/MANIFEST.json, which IS committed. The decoded
+# data/records/nhanes/applicants.jsonl and PROVENANCE.json are committed: the
+# probe set depends on them and their hashes are registered (Amendment A1.1).
+data/records/nhanes/raw/*.xpt
+data/records/nhanes/raw/*.dat
+data/records/nhanes/raw/*.part

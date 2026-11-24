@@ -25,9 +25,16 @@ Bommasani, R. et~al. (2023).
 \newblock arXiv:2310.12941.
 
 \bibitem[Bowen et~al., 2024]{bowen}
-Bowen, D., Price, S., Schwettmann, S., and Wattenberg, M. (2024).
-\newblock Measuring implicit bias in explicitly unbiased large language models.
-\newblock arXiv:2402.04105.
+Bowen, III, D.~E., Price, S.~M., Stein, L. C.~D., and Yang, K. (2024).
+\newblock Measuring and mitigating racial disparities in large language model
+  mortgage underwriting.
+\newblock SSRN working paper; later version presented at AEA 2026.
+
+\bibitem[{Court of Justice of the European Union}, 2011]{testachats}
+{Court of Justice of the European Union} (2011).
+\newblock Association belge des consommateurs test-achats asbl and others v
+  conseil des ministres, case c-236/09.
+\newblock Judgment of 1 March 2011, ECLI:EU:C:2011:100.
 
 \bibitem[Dorner et~al., 2024]{dorner}
 Dorner, F.~E., Nastl, V.~Y., and Hardt, M. (2024).
@@ -58,6 +65,11 @@ Feinstein, A.~R. and Cicchetti, D.~V. (1990).
 \newblock High agreement but low kappa i: The problems of two paradoxes.
 \newblock {\em Journal of Clinical Epidemiology}, 43(6):543--549.
 
+\bibitem[Gao et~al., 2026]{gaohire}
+Gao, Z., Jiang, W., and Yan, Y. (2026).
+\newblock Can {LLMs} hire fairly? racial bias in resume screening.
+\newblock arXiv:2606.28978.
+
 \bibitem[Geifman and El-Yaniv, 2017]{geifman}
 Geifman, Y. and El-Yaniv, R. (2017).
 \newblock Selective classification for deep neural networks.
@@ -81,15 +93,33 @@ Gwet, K.~L. (2008).
 \newblock {\em British Journal of Mathematical and Statistical Psychology},
   61(1):29--48.
 
+\bibitem[Hofmann, 1994]{statlog}
+Hofmann, H. (1994).
+\newblock Statlog (german credit data).
+\newblock UCI Machine Learning Repository.
+
 \bibitem[Howard et~al., 2021]{howard}
 Howard, S.~R., Ramdas, A., McAuliffe, J., and Sekhon, J. (2021).
 \newblock Time-uniform, nonparametric, nonasymptotic confidence sequences.
 \newblock {\em Annals of Statistics}, 49(2):1055--1080.
 
-\bibitem[Huang et~al., 2024]{trustllm}
-Huang, Y. et~al. (2024).
-\newblock Trustllm: Trustworthiness in large language models.
-\newblock {\em arXiv:2401.05561}.
+\bibitem[Hu et~al., 2025]{fintrust}
+Hu, T., Hu, T., Bai, L., Zhao, Y., Cohan, A., and Zhao, C. (2025).
+\newblock {FinTrust}: A comprehensive benchmark of trustworthiness evaluation
+  in finance domain.
+\newblock In {\em Proceedings of EMNLP}.
+
+\bibitem[Iso et~al., 2025]{iso}
+Iso, H., Pezeshkpour, P., Bhutani, N., and Hruschka, E. (2025).
+\newblock Evaluating bias in {LLMs} for job-resume matching: Gender, race, and
+  education.
+\newblock arXiv:2503.19182.
+
+\bibitem[Kamble et~al., 2025]{failsafeqa}
+Kamble, K., Russak, M., Mozolevskyi, D., Ali, M., Russak, M., and AlShikh, W.
+  (2025).
+\newblock Expect the unexpected: {FailSafe} long context {QA} for finance.
+\newblock arXiv:2502.06329.
 
 \bibitem[Lan and DeMets, 1983]{landemets}
 Lan, K. K.~G. and DeMets, D.~L. (1983).
@@ -128,6 +158,25 @@ Raji, I.~D. et~al. (2020).
   for internal algorithmic auditing.
 \newblock In {\em ACM FAccT}, pages 33--44.
 
+\bibitem[Rozado, 2025]{rozadodata}
+Rozado, D. (2025).
+\newblock Experimental data for ``gender and positional biases in {LLM}-based
+  hiring decisions''.
+\newblock Zenodo.
+\newblock doi:10.5281/zenodo.17173798. CC BY 4.0.
+
+\bibitem[Rozado, 2026]{rozado2026}
+Rozado, D. (2026).
+\newblock Gender and positional biases in {LLM}-based hiring decisions:
+  Evidence from comparative {CV}/r\'esum\'e evaluations.
+\newblock {\em PeerJ Computer Science}, 12:e3628.
+\newblock Preprint arXiv:2505.17049.
+
+\bibitem[Sun et~al., 2024]{trustllm}
+Sun, L., Huang, Y., et~al. (2024).
+\newblock Trustllm: Trustworthiness in large language models.
+\newblock {\em arXiv:2401.05561}.
+
 \bibitem[Tamkin et~al., 2023]{tamkin}
 Tamkin, A. et~al. (2023).
 \newblock Evaluating and mitigating discrimination in language model decisions.
@@ -143,6 +192,20 @@ Wang, B. et~al. (2023).
 \newblock Decodingtrust: A comprehensive assessment of trustworthiness in gpt
   models.
 \newblock In {\em NeurIPS Datasets and Benchmarks}.
+
+\bibitem[Wen et~al., 2025]{faire}
+Wen, A., Patil, T., Saxena, A., Fu, Y., O'Brien, S., and Zhu, K. (2025).
+\newblock {FAIRE}: Assessing racial and gender bias in {AI}-driven resume
+  evaluations.
+\newblock arXiv:2504.01420.
+
+\bibitem[Wilson and Caliskan, 2024]{wilsoncaliskan}
+Wilson, K. and Caliskan, A. (2024).
+\newblock Gender, race, and intersectional bias in resume screening via
+  language model retrieval.
+\newblock In {\em Proceedings of the AAAI/ACM Conference on AI, Ethics, and
+  Society (AIES)}.
+\newblock arXiv:2407.20371.
 
 \bibitem[Zheng et~al., 2023]{zheng}
 Zheng, L. et~al. (2023).

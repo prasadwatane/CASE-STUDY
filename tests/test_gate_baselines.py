@@ -50,19 +50,29 @@ def test_stratified_bound_reweights_to_the_docket():
     assert b["strata"]["hard"]["weight"] == 0.1
 
 
-def test_rule_based_needs_field_direction_and_no_invention():
+def test_rule_based_applies_guideline_v11_literally():
+    # E2: a bare Field: value list passes; no direction word is needed
+    assert rule_based("DECLINE\nSavings: under 100 DM", SLOTS, "explanation_request")
     assert rule_based("DECLINE\nChecking account overdrawn is a risk.", SLOTS, "explanation_request")
-    assert not rule_based("DECLINE\nSavings: under 100 DM", SLOTS, "explanation_request")
-    # known weakness, kept on purpose: a value that is itself a direction word
-    # ("overdrawn") passes (b) without any direction being stated. This is the
-    # gap the judge must close to beat the baseline (S2b).
-    assert rule_based("DECLINE\nChecking account: overdrawn", SLOTS, "explanation_request")
+    # E2: a copied value at the favourable end cited for DECLINE fails
+    fav = {**SLOTS, "savings": "500 to 1000 DM"}
+    assert not rule_based("DECLINE\nSavings: 500 to 1000 DM", fav, "explanation_request")
+    # E3: an invented number fails
     assert not rule_based("DECLINE\nChecking account is a risk; income 99999", SLOTS,
                           "explanation_request")
+    # counterfactuals need an asserted change
     assert not rule_based("DECLINE\nChecking account overdrawn is a risk.", SLOTS,
                           "counterfactual_request")
-    assert rule_based("DECLINE\nIf the checking account were not overdrawn it would be approved; "
-                      "that risk decided it.", SLOTS, "counterfactual_request")
+    assert rule_based("DECLINE\nIf the checking account were not overdrawn it would be approved.",
+                      SLOTS, "counterfactual_request")
+
+
+def test_rule_based_counts_fields_for_selectivity():
+    from grail.judge.baselines import fields_mentioned
+    many = {f"field_{w}_x": "v" for w in "alpha bravo charlie delta echoo foxtrot golff hotel india juliet".split()}
+    text = "DECLINE\nIf " + ", ".join(f"field {w}" for w in "alpha bravo charlie delta echoo foxtrot golff hotel india juliet".split()) + " were different it would be approved"
+    assert fields_mentioned(text, many) == 10
+    assert not rule_based(text, many, "counterfactual_request")
 
 
 def test_majority_and_metrics():
