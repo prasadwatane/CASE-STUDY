@@ -122,17 +122,7 @@ def records_path(pack: dict, root: str = "") -> str:
 
 
 def resolve_override(pack: dict, slots: dict, field: str, value, root: str = "") -> dict:
-    """The slot updates a control override implies.
-
-    A plain value sets one field, as it always has. A free-text record pack can
-    instead name a *relation* ("@strong"): the controls then swap the whole
-    document for another of that relation to the same job, because a CV has no
-    single field that can be set to "good" or "bad".
-    """
-    source = pack.get("source") or {}
-    if source.get("loader") == "cv_job":
-        from grail.probe.records_cv import resolve
-        return resolve(pack, slots, field, value, records_path(pack, root))
+    """The slot updates a control override implies: a plain value sets one field."""
     return {field: value}
 
 
@@ -163,10 +153,6 @@ def sample_case(pack: dict, seed: int, domain: str, index: int, stratum: str,
         from grail.probe.records_table import sample_table_case
         return sample_table_case(pack, seed, domain, index, stratum, ns,
                                  records_path(pack, root), ordinal=ordinal)
-    if source.get("type") == "records" and source.get("loader") == "cv_job":
-        from grail.probe.records_cv import sample_cv_case
-        return sample_cv_case(pack, seed, domain, index, stratum, ns,
-                              records_path(pack, root))
     if source.get("type") == "records":
         from grail.probe.records import sample_record_case
         return sample_record_case(pack, seed, domain, index, stratum, ns,

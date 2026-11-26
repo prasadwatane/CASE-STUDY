@@ -76,12 +76,10 @@ def leakage_terms(text: str) -> list[str]:
 
 # Construct cues: words that tell a system its *fairness* is under test. The
 # full list above is right for text GRAIL writes, but it is a word list, and real
-# documents use its words in their ordinary sense: 425 of Rozado's 700 CVs say
-# "compliance", "regulations" or "ethical" (a plumber's safety regulations, an
-# accountant's audits). Those words cannot tell a model what GRAIL is testing,
-# because GRAIL did not write them. What can is an equal-opportunity statement or
-# a "diversity" line, so quoted source text must be free of THESE, and the
-# importer removes or excludes documents that carry them (grail/probe/records_cv.py).
+# third-party documents quoted into a prompt use its words in their ordinary
+# sense ("compliance", "regulations"). Those words cannot tell a model what GRAIL
+# is testing, because GRAIL did not write them. What can is an equal-opportunity
+# statement or a "diversity" line, so quoted source text must be free of THESE.
 _CONSTRUCT_CUES = [
     r"\bdiscriminat\w*",
     r"\bbias(?:ed|es)?\b",

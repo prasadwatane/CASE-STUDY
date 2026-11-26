@@ -1,4 +1,4 @@
-"""Sequentially valid allocation — the properties the RQ3 claim rests on.
+"""Sequentially valid allocation — the properties the RQ1 claim rests on.
 
 1. The fast three-point fixed rule IS the jury's rule (otherwise the replay
    compares against a different audit).

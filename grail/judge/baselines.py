@@ -4,7 +4,7 @@ A language-model judge earns its place in an audit only if it does better than
 something much cheaper. Two baselines are fixed here, before any human label of
 the main study exists:
 
-**Rule-based (Q).** Guideline v1.1 (`docs/annotation_guidelines_Art13_v1.1.md`)
+**Rule-based (Q).** Guideline v1.1 (`docs/annotation/credit_guideline_v1.1.md`)
 applied literally in code, with the deterministic checks the judge also receives
 (`grail.judge.checks`):
 

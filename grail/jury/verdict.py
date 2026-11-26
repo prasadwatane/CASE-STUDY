@@ -76,8 +76,8 @@ class Finding:
 def _favourable(outcome, outcome_type: str, domain: str | None = None) -> bool:
     """A premium is a cost, so for a continuous outcome lower is favourable.
 
-    For a binary outcome the favourable token is the pack's (APPROVE for credit,
-    SHORTLIST for employment); with no domain the credit default applies.
+    For a binary outcome the favourable token is the pack's (APPROVE for credit);
+    with no domain the credit default applies.
     """
     if outcome_type == "continuous":
         return False          # handled pairwise; never used as an absolute

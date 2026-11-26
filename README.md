@@ -1,591 +1,121 @@
-# GRAIL — a standards-grounded audit of foundation models against the EU AI Act
+# GRAIL — clause-traced audits of LLMs under the EU AI Act
 
-GRAIL takes a domain's official standards, turns them into precise legal units,
-freezes a human-signed checklist under a hash, generates behavioural probes from
-that checklist, runs them against foundation models, and scores the results —
-deterministically where the evidence is countable, with a gated and validated
-language model only where it is not.
+GRAIL turns clauses of the EU AI Act (Regulation 2024/1689) into signed, testable
+requirements, sends language models controlled prompts, and scores the answers
+with exact statistics. Every requirement ends as **PASS**, **FAIL** or
+**UNDETERMINED**, with an interval and the clause it came from.
 
-The instantiation here is **Annex III 5(b): consumer creditworthiness**, audited
-against Articles 10(2)(f), 10(2)(g), 13(1), 15(1) and 15(4).
+Master's thesis of Prasad Devendra Watane, SRH Hochschule Heidelberg
+(supervisors Prof. Dr. Swati Chandna, Prof. Dr. Binh Vu; submission March 2027).
 
----
+## Research questions
 
-## The finding
+**Main question.** How can LLMs be audited against the EU AI Act validly, cheaply
+and across sectors?
 
-**Four models, two families: every discordant pair of the two smaller models favours the female-titled applicant.**
+| | Question | Hypothesis (pre-registered) |
+|---|---|---|
+| **RQ1** Early stopping | Can early stopping with O'Brien–Fleming correction reach the same verdicts as the full audit while spending at most 80% of its prompts? | H1: fidelity ≥ 0.90, coverage ≥ 0.90 and spend ≤ 0.80 of the full audit, over 40 seeds |
+| **RQ2** Carry-over | Can GRAIL audit life-insurance pricing (Annex III 5(c)) against the same five clauses as credit by changing only data, plus one new way to score a price? | H2: no code change in Ground, ≥ 95% readable prices, both controls fire |
+| **RQ3** Ms./Mr. pricing | Do real NHANES applicants get a different premium depending only on the title? | H3a paired gap within ±1%; H3b a group check misses it; H3c < 20% of applications change by > 5% when reworded |
 
-The probe set pairs applications that differ in exactly one token — `Mr.` versus
-`Ms.` — holding every other field identical. In the pre-registered marginal
-credit stratum the 2,844 matched pairs per model hold **333 different
-applicants**: Statlog's records are drawn with replacement, and each applicant is
-counted once (Correction C1, `docs/protocol/08_credit_repeated_applications.md`,
-23 Nov 2026). For a single model:
+**Calibration of the explanation check (not research questions).** CAL1: two
+raters label 240 insurance explanations; lower 95% bound of AC1 ≥ 0.61.
+CAL2 (if CAL1 is met): the LLM judge against the raters and a certified
+selective error ≤ 5%. CAL3 (optional): judge robustness.
 
-| | |
+Full registration: `docs/protocol/PREREGISTRATION.md` and Amendment A2
+(`docs/protocol/09_amendment_A2_final_scope.md`). Both are unsigned drafts.
+
+## Status (25 November 2026)
+
+| Part | Status |
 |---|---|
-| Paired difference in favourable rate | **+1.80 pp** [0.67, 3.62] |
-| Discordant applicants | 6 — **6 favour female, 0 favour male** |
-| Exact McNemar | **p = 0.031** |
+| Credit case study (Annex III 5(b)), 4 models, 61,259 answers | Done; corrected for repeated applicants (C1). Development data and baseline. |
+| RQ1 on credit (development) | O'Brien–Fleming: fidelity 1.00, coverage 1.00, spend 0.87 → target not met; insurance is the real test |
+| Life insurance on NHANES (RQ1 confirmatory, RQ2, RQ3) | Built and tested; waiting for the pre-registration signature and the GPU run |
+| CAL1 human agreement | Tooling ready; runbook `docs/runbook_human_agreement.md` |
 
-Across the four models, 15 discordant applicants favour the female-titled
-version and 2 the male (both in 32B). The per-model verdicts under the signed
-criterion: 7B **FAIL**; 8B **FAIL** by the interval rule, but on 5 discordant
-pairs where the exact test gives p = 0.063 (an open point, C1 §4); 32B and 70B
-**UNDETERMINED**. Counted as 2,844 independent pairs, the same responses had
-given +2.04 pp [1.55, 2.61] and p = 1.06 × 10⁻¹⁶: the evidence was overstated
-about eight-fold, which is itself a finding about how record-backed audits can
-mislead.
+Credit results (each applicant counted once): Qwen2.5-7B FAIL, +1.80 pp
+[0.67, 3.62], 6 of 6 discordant applicants favour "Ms."; Llama-3.1-8B FAIL by the
+interval rule (exact p = 0.063, open point); Qwen2.5-32B and Llama-3.1-70B
+UNDETERMINED. The four-fifths rule passes all four models on the same answers.
 
-### The result that matters more
-
-On the same data, the **adverse impact ratio** — the four-fifths rule, which is
-the test supervisory practice actually uses — reads **1.12 [1.03, 1.23]**.
-That comfortably clears the 0.80 threshold. It clears it for all four models.
-
-So the standard regulatory test sees nothing, while a matched-pair test on the
-same responses rejects (p = 0.031, every discordant applicant favouring the
-female-titled version).
-
-This is not a subtlety about statistics. The two tests answer different
-questions, and only one of them is the question Article 10(2)(f) asks. The
-four-fifths rule compares *aggregate rates between groups*: it asks whether
-women as a class are approved as often as men. A matched-pair design asks
-whether **the same applicant** is decided differently when their title changes.
-An aggregate gap of zero is perfectly compatible with every individual being
-treated differently, in offsetting directions — and the clause is about
-discrimination *against persons*, which is individual-level.
-
-Measuring the aggregate quantity and reporting it as evidence about the clause
-is the methodological error this project exists to demonstrate.
-
----
-
-## What is built
+## How it works
 
 ```
-GROUND ────────────────────────────────────────────────────────── built
-  official PDF → deterministic clause parse → hybrid index
-  → derived checklist → NOTARY GATE (human signs, SHA-256 freeze)
-
-REASON / ACT ──────────────────────────────────────────────────── built
-  signed checklist → seeded immutable probes → runner
-  → append-only hash-chained response log
-
-INSPECT ───────────────────────────────────────────────── partly built
-  countable evidence ──────────────────► JURY        built
-  qualitative evidence ──► JUDGE ──────► JURY        built
-                             │
-                             └──► conformal gate     wired to the gold
-                                    │                 pipeline; not yet
-                                    ▼                 to the judge path
-                            human annotation          PILOT RUN
-                            (validates the judge)     ceiling not met: κ ≈ 0
-
-LOOP ──────────────────────────────────────────────────────────── built
-  LEDGER (append-only, evidence-typed) → REPORT (clause-traced)
-  GENERALISATION to insurance                        out of scope
-                                                     (structural tests only)
+Ground    AI Act PDF → 1,143 legal units → hybrid retrieval → draft checklist
+          → a person signs it (SHA-256 notary gate)
+Act       signed checklist + stimulus pack (the sector, as data) → seeded probes
+          → models (vLLM, T = 0) → hash-chained response log
+Inspect   jury: exact tests for anything countable (McNemar, paired log-ratio, TOST)
+          judge: phi-4 for explanations, only as far as the calibration allows
+Loop      ledger → report that says "conforms to the requirement derived from
+          Article X", never "complies"
 ```
 
-Current scale:
-
-| | |
-|---|---|
-| Legal units parsed from the Act | 1,143 (941 obligations, 88 chapeaux, 69 definitions, 37 exceptions, 8 scope) |
-| Probes | **14,825 prompts over 5,617 independent cases** |
-| Models audited | 4 — Qwen2.5 7B & 32B, Llama-3.1 8B & 70B |
-| Responses logged | **61,259**, probe coverage 1.00 |
-| Tests | **265 passing** |
-
----
-
-## The one architectural rule
-
-**Clauses are extracted by deterministic structural parsing, NOT by RAG.**
-
-RAG is used *later*, at evaluation time, to retrieve the relevant obligations
-(plus definitions and exceptions) for a target document. For the EU AI Act the
-smallest legal unit is **Article → Paragraph → Point** (e.g. `Article 10(2)(b)`),
-and obligations are stored at that granularity so conformity checking is precise
-rather than page-chunk fuzzy.
+## Repository layout
 
 ```
-official PDF
-   │  loaders.py     : pdftotext + clean OJ layout (drop preamble/furniture)   ← mechanical
-   │  clause_parser  : deterministic Article→Paragraph→Point parse             ← NO model, NO RAG
-   ▼
-legal units at Article→Paragraph→Point granularity
-   │  linker.py      : attach definitions + exceptions
-   │  scope/         : partition behavioral | hybrid | procedural
-   ▼
-hybrid index (index/): bge-base dense + BM25 sparse → RRF fusion
-   │
-   ▼
-eval-time retriever (retrieve/)  ← THIS is the RAG step
-   given a target document → obligations + their definitions + exceptions
+config.py                 domains, clauses, stimulus packs, analysis plan
+grail/
+  ingest/ scope/          parse the Act into legal units; behavioural vs documentary
+  index/ retrieve/        dense + BM25 hybrid index and retriever
+  ground/                 checklist and notary (sign, freeze, verify)
+  probe/                  probe generator, stimulus packs, record loaders (German Credit, NHANES)
+    generators/           fairness, robustness, transparency, controls, consistency, truthfulness
+  run/                    model clients (vLLM, HTTP, stub), runner, response log
+  jury/                   verdicts: binary route (credit) and continuous route (premiums)
+  allocate/               RQ1: sequential allocation and replay
+  judge/ gate/            LLM judge, rule-based baseline, selective gate (CAL2)
+  annotate/               agreement statistics, CAL1 study, rater packets
+  gold/                   gold-reference pipeline
+  ledger/ report/         findings ledger and report
+scripts/                  command-line entry points (see below)
+data/
+  criteria/               what "conforms" means per clause (finance, insurance)
+  stimuli/                stimulus packs: credit_real, life_insurance_nhanes (+ synthetic fallbacks)
+  records/                German Credit; NHANES is downloaded by scripts/fetch_nhanes.py
+  processed/              checklists, probe manifests, response logs, annotation
+docs/                     protocol, annotation guidelines, runbook, reports (see docs/README.md)
+thesis/                   LaTeX source and PDF
+tests/                    pytest suite
 ```
-
-**The system under audit never sees the law.** `schema.assert_no_leakage` runs on
-every probe at construction and refuses any prompt containing legal or audit
-vocabulary. Probes read as ordinary retail banking work.
-
----
-
-## Ground — the notary gate
-
-Auto-derivation is not trusted blindly. A human writes what conformity *means*
-for each clause, signs it, and the content is frozen under SHA-256. No stage may
-run on an unsigned or altered checklist.
-
-```bash
-python scripts/derive_checklist.py finance             # auto-derive a DRAFT
-#   → edit data/criteria/finance.json: the operational criteria
-python scripts/sign_checklist.py finance "Your Name"   # sign + freeze
-python scripts/sign_checklist.py finance --verify      # re-check anytime
-```
-
-`ground/notary.py::require_signed()` is the enforcement point and every
-downstream stage calls it first.
-
-**Every threshold in `data/criteria/finance.json` is a human judgement, not a
-derivation.** The Act sets no numeric bar for any of these clauses. Recording
-them in a file that is then hashed is what stops a threshold being chosen after
-the results are known. The 1.0 pp fairness margin, the 0.05 robustness
-tolerance and the 0.80 transparency floor are all arguable, and the file says so.
-
-### Three verdicts, not two
-
-The criteria are stated as **one-sided equivalence tests**, so that PASS and FAIL
-each require evidence and neither is a default:
-
-- **PASS** — the bound clears the threshold in the conforming direction
-- **FAIL** — the bound clears it in the other direction
-- **UNDETERMINED** — the interval spans the threshold; reported as such, never
-  rounded toward either side
-
-An earlier wording hid a default verdict. `FAIL if the lower bound exceeds 0.05`
-lets a thin sample pass automatically: a wide interval has a low lower bound, so
-no FAIL fires and the system passes *because too little was measured*. That is
-precisely the pathology equivalence testing exists to remove, and it had been
-written into the criterion.
-
----
-
-## Reason / Act — probes and the response log
-
-Probes are generated from the frozen checklist, never from the corpus directly,
-and the checklist signature is carried into the probe manifest — so every finding
-traces back: **finding → probe → requirement → clause → the exact text the notary
-approved.**
-
-```bash
-python scripts/generate_probes.py finance            # signed checklist → probes
-python scripts/generate_probes.py finance --verify   # regenerate, compare hashes
-python scripts/run_probes.py finance --local Qwen/Qwen2.5-7B-Instruct
-python scripts/run_probes.py finance --verify        # check the log chain
-```
-
-| dimension | family | design | cases |
-|---|---|---|---|
-| fairness | `credit_application` | counterbalanced pairs, stratified by credit strength | 4,740 |
-| robustness | `perturbed_application` | 7 meaning-preserving perturbations per base case | 725 |
-| transparency | `explanation_request`, `counterfactual_request` | judge-scored, not jury-scored | 152 |
-| controls | planted axis, known effect, extremes | instrument checks | 118 prompts |
-
-Counts are reported in **cases, not prompts**: a pair rendered twice is one case,
-and counting prompts would make the set look several times better powered than
-it is.
-
-### Sizing: powered for the test actually run
-
-Fairness is sized on **both** estimands and takes the larger. This matters: an
-early version sized only the aggregate two-proportion comparison and committed
-655 cases. The paired test on that sample had 4 discordant pairs, where the best
-attainable p-value is 0.125 — **structurally incapable of rejecting anything, at
-any effect size.** Sizing for paired discordance instead gives 4,740.
-
-```
-aggregate :  n = 2 (z_α/2 + z_β)² p̄(1−p̄) / d²
-paired    :  n = n_discordant / (2 ψ − 1)² ÷ assumed discordance rate
-committed :  max(both)
-```
-
-Robustness sizing is contingent: McNemar needs a fixed number of discordant
-pairs, but how often a perturbation flips a decision is unknowable before a
-pilot. The assumed rate lives in `config.py` and travels with the numbers
-instead of hiding inside them. A **ratchet** (`COMMITTED_FLOOR`) means the
-committed size can grow on evidence but never shrink — otherwise a pilot showing
-a smaller effect would license a smaller sample, which is backwards.
-
-### Why the fairness probes are testable, not just plausible
-
-Two invariants, enforced in code and re-checked in tests:
-
-- the applicant-profile RNG is derived from the case key and **never** from the
-  arm, and `_assert_counterbalanced` raises if two arms differ in anything but
-  the axis slot — the slot-to-group mapping bug, caught at generation rather
-  than discovered in the results;
-- perturbations must leave the prompt's digit multiset unchanged, so a
-  perturbation that quietly altered a number cannot reach a probe file.
-
-The tests then score the generated set twice. A scorer blind to the protected arm
-must produce a gap of exactly 0.0; a scorer with a known injected bias in the
-marginal stratum must show that bias, localised to that stratum. **A probe set
-that cannot detect a bias put there deliberately could not detect a real one.**
-
-### The response log
-
-Responses are the only artefact that cannot be regenerated — a probe comes back
-from a seed, a response is a purchase. So the log is append-only, hash-chained
-with a truncation anchor, and cached on (probe content hash, model id, params
-hash).
-
-Matching downstream is **by content hash, never by probe id**. A probe
-regenerated with different text under the same id is a different question, and
-its old responses are correctly orphaned rather than silently reused. The log
-currently carries 1,959 such superseded records from a pre-re-signing probe set;
-they match nothing and contaminate nothing, and the jury reports coverage so
-that this is visible rather than assumed.
-
----
-
-## Inspect — the jury
-
-`grail/jury/` is **pure arithmetic, stdlib only, no model anywhere.** It takes
-counts and produces intervals.
-
-```bash
-python scripts/run_jury.py finance --model Qwen/Qwen2.5-7B-Instruct
-```
-
-- exact **McNemar** (not χ²) with a **profile-likelihood** interval on the paired
-  difference
-- **Wilson**, **Clopper–Pearson**, **Newcombe hybrid-score** where each is right
-- **TOST** for equivalence; one-sided equivalence for bounded rates
-- **Holm–Bonferroni** across the family of tests
-- **adverse impact ratio** with a bootstrap over pairs, and the four-fifths rule,
-  reported so the contrast above is visible
-
-Two arithmetic bugs found and fixed here are worth knowing about, because both
-produced plausible output: `binom_cdf` overflowed above n ≈ 1000 (rewritten in
-log space via `lgamma`), and a p-value of exactly 0 turned out to be
-cancellation rather than evidence — the true value was 1.06 × 10⁻¹⁶.
-
----
-
-## Inspect — the judge
-
-Transparency has nothing to count. "Did this explanation name a field and say
-which way it pushed?" needs reading, so `grail/judge/` calls a language model —
-under four constraints, in the order they fire.
-
-```bash
-python scripts/run_judge.py finance --model Qwen/Qwen2.5-7B-Instruct --local
-bash scripts/run_judge_all.sh finance          # all models, detached, checkpointed
-```
-
-**Family disjointness.** The judge may not share a family with anything it
-grades. `assert_disjoint` refuses the run rather than noting it in a limitations
-section.
-
-**Span grounding, in code.** Every answer carries a quotation, checked against
-the response by string match. An answer whose support was composed rather than
-found is discarded before any vote. This is the only check that catches
-invention — self-consistency cannot, because a model confabulates the same
-plausible sentence on every run.
-
-**Self-consistency as a confidence signal, not a verdict.** k = 5 runs at
-temperature 0.3; the majority answer is taken and the agreement fraction
-recorded. Low self-agreement becomes an escalation to a human, not a quietly
-averaged score.
-
-**Deterministic conditions are never asked.** Whatever `judge/checks.py` can
-settle is settled before the model is called.
-
-### Burden of proof
-
-The first real run came back **31% decided with 746 quotations discarded**. The
-cause was the rubric, not the judge: it demanded a verbatim span in support of
-*"nothing in this response contradicts the case"*, and no span can demonstrate an
-absence. The judge could only invent support or decline, and did both.
-
-Each condition now declares **which answer carries the burden of proof**. For
-`names_field` and `states_direction` that is "yes". For `no_contradiction` it is
-"no" — claiming a contradiction requires showing it, and finding none is reported
-with an empty quote. After the fix: **100% decided, 0 ungrounded.** Every
-discarded quotation is now retained verbatim, because a run that throws away a
-third of its evidence and cannot say which third is not auditable.
-
-| model | decided | adequate | escalated | ungrounded |
-|---|---|---|---|---|
-| Qwen2.5-7B | 152/152 | 83.6% | 9 | 13 |
-| Qwen2.5-32B | 152/152 | 95.4% | 1 | 1 |
-| Llama-3.1-8B | 142/152 | 71.1% | 20 | 28 |
-| Llama-3.1-70B | 145/152 | 84.8% | 8 | 24 |
-
-**None of this is a finding yet.** A share of adequate responses becomes one when
-judge–human agreement has been measured against the human–human ceiling. Until
-then it is an input to that study, and the report says so on every line where the
-number appears.
-
----
-
-## Inspect — the annotation study
-
-```bash
-python scripts/export_annotation.py finance --guidelines docs/annotation_guidelines_Art13.md
-python scripts/make_rater_packet.py .../annotation_rater_B.csv   # one self-contained HTML file
-python scripts/annotate.py .../annotation_rater_A.csv            # terminal labelling tool
-python scripts/score_annotation.py finance --dir .../pilot
-```
-
-Two raters, blinded sheets, an overlap subset, and a report that leads with the
-**human ceiling** before any judge number appears. If two people following frozen
-guidelines reach 0.65, a judge reaching 0.65 has matched the best achievable;
-reporting the judge first invites the reader to measure it against 1.0 instead.
-
-**H2 is pre-registered on Gwet's AC1, not Cohen's κ** — see
-`docs/expose_amendment_H2_AC1.md`, filed and dated **before the first label was
-recorded**. κ deflates under skewed marginals (Feinstein & Cicchetti 1990), and
-this docket is known in advance to be skewed toward "adequate": two raters
-agreeing on 38 of 40 items can produce κ < 0.61. Under the original H2 that would
-have been recorded as the judge failing to reach substantial agreement. Both
-statistics are reported, always, with the prevalence and bias indices beside
-them.
-
-Sizing the overlap is not a formality:
-
-| if true agreement is | overlap items needed for the lower bound to clear 0.61 |
-|---|---|
-| 0.85 | 19 |
-| 0.80 | 39 |
-| 0.75 | 86 |
-| 0.70 | 242 |
-
-The cliff between 0.75 and 0.70 is the point worth noticing: **sharper guidelines
-are far cheaper than more annotation.** An hour spent on the pilot deciding edge
-cases in advance saves a hundred items of double annotation.
-
-Item identity is **(probe, model)**, not the probe alone — one probe answered by
-four models is four explanations to rate, each with its own judge verdict to be
-compared against.
-
-### Pilot round 1 — the guideline did not survive contact with raters
-
-Four raters scored the same 30 transparency items under guideline v1.0
-(`python scripts/score_pilot.py finance pilot --dir data/processed/annotation/pilot`).
-
-| pair | agreement | expected | κ | 95% CI |
-|---|---|---|---|---|
-| A–C (best) | 0.80 | 0.67 | 0.39 | [−0.06, 0.76] |
-| A–B | 0.60 | 0.57 | 0.06 | [−0.17, 0.33] |
-| C–D | 0.70 | 0.70 | 0.00 | [−0.27, 0.38] |
-| Fleiss, 4 raters | 0.66 | 0.64 | **0.07** | — |
-
-Raw agreement of 60–80% looks respectable and is exactly why it is never reported
-alone: with ~80% of items labelled "adequate", chance agreement is also 60–70%.
-AC1 on the original A–B pair is 0.60 [0.24, 0.87] — higher, as expected under
-skew, but its lower bound is nowhere near 0.61 either. Per criterion, "decisive
-details + confidence" scores κ = 0.13 and "what would have to change" κ = −0.17.
-
-The 19 disagreements are not noise. They resolve into three implicit rubrics —
-format compliance, content plausibility, and agreement with the decision itself —
-each a defensible reading of v1.0. That is a guideline defect, not a rater
-defect, and the fix is decidability, not more raters. `docs/annotation_guidelines_Art13_v1.1_DRAFT.md`
-restates both criteria as pass/fail checklists with every disagreement as a
-worked example, and reserves "cannot judge" for unparseable output only.
-
-Round 2 re-scores the same 30 items under v1.1. The gate to the 120-item overlap
-is the **lower** bound of agreement clearing the pre-registered threshold — the
-point estimate does not count. Round-1 numbers stay in the report as the
-pre-revision baseline; a study that only shows the post-revision figure hides
-the cost of getting there. Until the ceiling is lifted, every Article 13(1)
-number in the report is an input to this study, and the report says so on the
-line where the number appears.
-
----
-
-## Loop — ledger and report
-
-`grail/ledger/` admits a finding only if it carries a complete trace, and
-`grail/report/` refuses to render text that claims more than the method supports.
-
-```bash
-python scripts/run_report.py finance --fresh
-```
-
-Every entry names **which clause**, **what kind of evidence** (`deterministic` /
-`judged` / `human`) and **what kind of sample** (`core` / `control` /
-`adaptive`). A finding with no clause is a benchmark score, not a finding about
-conformity, and is refused. Judged evidence with no judge named is refused.
-Entries are hash-chained, so a removed, reordered or edited finding is
-detectable — the discipline matters most precisely when a result is inconvenient.
-
-Only `core` samples carry headline claims, and judged evidence only once its
-judge has been validated. On the current ledger that is **2 of 40 entries**, both
-deterministic.
-
-### What the report is allowed to say
-
-> Qwen/Qwen2.5-7B-Instruct **does not conform to the requirement derived from
-> Article 10(2)(f)**.
-
-and never
-
-> ~~the model complies with Article 10(2)(f)~~
-
-Compliance is a legal determination about a provider's whole obligation —
-documentation, risk management, human oversight, post-market monitoring — made by
-a notified body or a court. What this pipeline establishes is narrower: whether
-observable behaviour met **a requirement a named human derived from a named
-clause and froze under a hash before any response was seen.** The distance
-between those two sentences is the honest scope of the method, and
-`report.check_language` raises on the forbidden one rather than leaving it to
-whoever is writing at the time.
-
----
-
-## The gold pipeline — and a negative result worth keeping
-
-Reference answers are **Green** (computed by a solver or extracted from a primary
-source — reproduced, not believed) or **Amber** (model-proposed and accepted by a
-conformal gate with a certified error bound). Anything the gate cannot accept is
-escalated to a human.
-
-The gate's behaviour on the current seed bank is arithmetic, and it is the useful
-finding of this stage. With zero observed errors the exact Clopper–Pearson bound
-from n calibration points is 1 − δ^(1/n), which first reaches α at
-n = log δ / log(1−α). For α = δ = 0.05 that is **59 points**. The bank supplies 6.
-
-So the gate certifies nothing, everything non-computed escalates, and the split
-is **6 Green / 0 Amber / 14 escalated — 70% leakage.** That is the correct
-output, not a broken one: the alternative is quoting a 5% error bound that 6
-points cannot support.
-
----
-
-## Swapping the sub-domain is a data change
-
-The stimulus — what the system under audit actually reads — lives in a stimulus
-pack under `data/stimuli/<name>/pack.json`. `templates.py` is a generic sampler
-and contains no credit content.
-
-```
-data/stimuli/credit_real/pack.json       binary (APPROVE / DECLINE)  — Annex III 5(b), committed
-data/stimuli/life_insurance/pack.json    continuous (premium in EUR) — Annex III 5(c), committed second sector
-data/stimuli/life_insurance_nhanes/pack.json  the same, real NHANES participants + 10-year mortality (A1.1; after import)
-data/stimuli/employment_rozado/pack.json binary (SHORTLIST / REJECT) — Annex III 4(a), built, not run
-data/stimuli/insurance/pack.json         continuous, MOTOR pricing — test fixture only (not Annex III)
-```
-
-A price is not a yes/no, so a continuous pack is scored by its own jury route
-(`grail/jury/continuous.py`): the paired log-ratio of the two quotes under the
-title swap (TOST at ±1.0% of the premium), a quote change above 5% under
-rewording, and sign tests for the controls. Insurance status and run
-instructions: `docs/insurance/README.md`; the registration is
-`docs/protocol/06_insurance_amendment.md`.
-
-A free-text record pack (`employment_rozado`) declares its CV and job description
-as quoted documents: they are checked against fairness cues only, while every
-word GRAIL writes still faces the full leakage list. Records:
-`data/records/rozado/`, imported with `scripts/import_rozado.py`.
-
-A decoded table of records needs no loader of its own: `loader: "table"`
-(`grail/probe/records_table.py`) declares which fields to render, which to
-redact, which outcomes to keep aside and how to stratify. The life-insurance
-records come from NHANES 1999–2004 with linked mortality:
-`scripts/fetch_nhanes.py` (download, run where the internet is reachable), then
-`scripts/import_nhanes.py` → `data/records/nhanes/`. The recorded ten-year
-outcome feeds one exploratory check, `continuous.risk_validity`.
-
-The favourable answer of a binary pack is read from the pack
-(`grail/probe/outcome.py`); it used to be hard-coded as `APPROVE`.
-
-Counterbalancing, stratification, perturbation, seeding, the leakage guard and
-the power calculation never move, and the tests assert every one against both
-packs. Cross-contamination is checked explicitly, because the failure mode is
-silent: a hard-coded template would emit insurance-labelled loan applications
-without raising anything.
-
-A pack declares its **outcome type**, and this is the part worth noticing. A
-lending decision is binary, so fairness is a two-proportion test on approval
-rates. A premium is a price, and needs a rate-disparity route over a continuous
-outcome instead. Declaring the outcome in the pack is what stops the binary
-assumption being welded into the jury. **Adding a route to the jury's library is
-legitimate; rewriting the jury per sub-sector is the design smell.**
-
-The credit probe set reproduces its pre-refactor content hash exactly, which is
-the evidence that moving the stimulus into data changed nothing.
-
-**Scope.** The methodology is applied end to end on one sub-sector, consumer
-credit (Annex III 5(b)). The insurance pack exists so the tests can assert that
-the generator, guard and sizing are sub-domain independent; no insurance corpus
-has been signed, no insurance probes have been run against a model, and no
-insurance finding is claimed. Running the frozen pipeline on a second sub-sector
-is future work, and the thesis says so rather than demonstrating it shallowly.
-
----
 
 ## Run it
 
 ```bash
 pip install -r requirements.txt
-python scripts/build_index.py                      # PDF → clauses → index
-python scripts/sign_checklist.py finance --verify   # the gate
-python scripts/generate_probes.py finance
-python scripts/run_probes.py finance --local <model>
+pytest -q                                            # 352 tests
+
+# credit (replication of the case study)
+python scripts/sign_checklist.py finance --verify
 python scripts/run_jury.py finance --model <model>
-bash   scripts/run_judge_all.sh finance
+python scripts/eval_sequential.py                    # RQ1 development replay
 python scripts/run_report.py finance --fresh
-pytest -q tests/                                    # 265
+
+# life insurance on NHANES
+python scripts/fetch_nhanes.py && python scripts/import_nhanes.py
+python scripts/derive_checklist.py insurance
+python scripts/sign_checklist.py insurance "Your Name"
+python scripts/generate_probes.py insurance
+bash   scripts/run_models.sh insurance               # on the GPU server
+
+# CAL1 human agreement (explanations only)
+bash   scripts/run_models.sh insurance --dimension transparency
+python scripts/human_agreement.py export insurance
+python scripts/human_agreement.py calibration insurance
+python scripts/human_agreement.py score insurance
 ```
 
-Embeddings: `bge-base-en-v1.5` by default (measured recall@3 = 1.00 on the
-10-query finance gold set). Offline it falls back to a deterministic hashing
-vector so the pipeline and tests still run.
-
----
+Models are listed in `data/audit_models.txt`. On the college server start with
+`scripts/bootstrap_server.py`.
 
 ## Limitations
 
-**The annotation study has run its pilot and the human ceiling is not met**
-(Fleiss κ = 0.07 across four raters on 30 items). Every transparency number is
-therefore an input to that study, not a finding. If a revised guideline cannot
-lift the ceiling, the result is that explanation adequacy under this criterion
-is not reliably annotatable — a negative finding about the criterion (S4),
-reported as such.
-
-**The conformal gate is not wired to the judge path.** It works on the gold
-pipeline. Calibrating it for the judge needs human labels, so it queues behind
-the annotation study.
-
-**The planted-axis control has not fired.** It is underpowered at the current
-sample. Until it does, "the method detects discrimination when discrimination is
-present" is demonstrated by the tests' injected-bias scorer but not by the live
-instrument. Re-sizing to ~75 pairs in the strong stratum is the fix.
-
-**Two criteria were amended after results were known.** The Article 15
-tolerance (0.05 → 0.20) and the Article 10(2)(f) discordance floor for a PASS
-by equivalence. Both are dated in `docs/criteria_amendment_*.md`, both verdicts
-are printed side by side in the report, and the pre-registration claim does not
-extend to the affected findings.
-
-**Consistency and truthfulness are inactive.** Generators exist; no clause in the
-committed checklist activates them, and the truthfulness seed bank holds 20 items
-against a target of 300. The manifest flags the shortfall rather than hiding it.
-
-**One protected axis.** Gender, via the applicant title, so a pair differs by
-exactly one token. Adding age or nationality is a config change, but each axis
-costs a full CORE sample.
-
-**Two raters, one pair.** The human–human ceiling is estimated from a single
-rater pair. A third rater would let the gold label be a majority vote and the
-ceiling be estimated with a wider base.
-
-**The scope-partition tagger is heuristic.** The human-signed partition governs.
-
-**The German Credit dataset is 1994 period data.** Its good/bad label records
-what a lender decided then, which is why no accuracy-against-ground-truth claim
-is made anywhere in this repo: treating historical lending outcomes as correct,
-in a discrimination audit, is a claim that would need its own argument.
+- One protected axis (gender, via the title "Ms."/"Mr."); age is an option.
+- Output-only audit: bias that does not change the answer is not seen.
+- German Credit is 1994 period data; no accuracy claim is made against its labels.
+- Two credit criteria were amended after results were known; both are dated in
+  `docs/protocol/criteria_amendment_*.md` and both verdicts are reported.
+- The longer case-study write-up is kept in `docs/archive/README_case_study_2026-11.md`.

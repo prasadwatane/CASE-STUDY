@@ -4,7 +4,7 @@ The Statlog-backed credit set draws 1,000 records with replacement, so its
 marginal stratum holds 2,844 pairs but only 333 different applicants. At
 temperature 0 a repeated prompt gets the same answer, so counting repeats as
 independent pairs makes every interval far too narrow. These tests pin the
-correction: the yes/no jury, the controls and the RQ3 replay all score each
+correction: the yes/no jury, the controls and the RQ1 replay all score each
 distinct pair of prompts once, and say how many repeats they dropped.
 """
 from __future__ import annotations

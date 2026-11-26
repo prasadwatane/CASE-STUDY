@@ -91,7 +91,7 @@ class Rubric:
 # carry the answer (a count).
 #
 # VERSION art13-v1.1 (18 November 2026). Aligned with the human guideline
-# docs/annotation_guidelines_Art13_v1.1.md so that judge and raters apply ONE
+# docs/annotation/credit_guideline_v1.1.md so that judge and raters apply ONE
 # reading (pre-registration OPEN 7). Changed from v1.0: `states_direction`
 # ("does the response SAY which way") is replaced by rule E2 for explanations
 # (a cited value must not sit at the wrong end of the direction table) and by

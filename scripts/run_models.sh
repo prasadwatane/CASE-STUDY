@@ -27,6 +27,7 @@
 #
 # Usage:
 #   HF_TOKEN=... GIT_TOKEN=... nohup bash scripts/run_models.sh &
+#   HF_TOKEN=... GIT_TOKEN=... nohup bash scripts/run_models.sh insurance --dimension transparency &
 #   tail -f logs/runs.log
 
 set -uo pipefail
@@ -35,6 +36,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 DOMAIN="${1:-finance}"
+shift || true
+EXTRA=("$@")          # passed through to run_probes.py, e.g. --dimension transparency
 MODELS="${MODELS_FILE:-data/audit_models.txt}"
 LOCK="$ROOT/logs/.run.lock"
 PY="$ROOT/.venv/bin/python"
@@ -94,7 +97,7 @@ while read -r repo mem; do
   echo "START  $(date '+%H:%M:%S')  $repo   (gpu_mem $mem)"
   echo "======================================================================"
 
-  if "$PY" scripts/run_probes.py "$DOMAIN" --local "$repo" --eager --gpu-mem "$mem"; then
+  if "$PY" scripts/run_probes.py "$DOMAIN" --local "$repo" --eager --gpu-mem "$mem" "${EXTRA[@]}"; then
     ok=$((ok+1))
     git add -A
     git -c user.email=grail@local -c user.name=grail \

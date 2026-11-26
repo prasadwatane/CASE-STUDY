@@ -27,19 +27,18 @@ GRAIL uses five kinds of data: the legal text the audit is grounded in; the case
 EU AI Act & Official Journal L 2024/1689, English PDF from EUR-Lex \citep{euaiact2024} & 1{,}143 legal units (990 in Articles, 153 in Annexes) & Ground: retrieval index and checklist & Collected and parsed \\
 Statlog German Credit & UCI repository, CC BY 4.0 \citep{statlog}; SHA-256 recorded & 1{,}000 applicants, 20 attributes, repayment label (700 repaid, 300 defaulted) & Finance stimulus (record-backed) & Collected \\
 Synthetic life insurance applications & Generated from ranges declared in a stimulus pack & 12 fields per application; 14{,}825 probes & Insurance stimulus (Annex III 5(c)) & Built (18 Nov) \\
-Rozado CVs and job descriptions & Zenodo, CC BY 4.0 \citep{rozadodata} & 700 + 700, 70 professions; 673 + 689 after cleaning & Hiring variant (built, not run) & Collected and cleaned \\
-Retrieval gold sets & Authored; each gold clause id checked against the parsed Act & 10 finance + 10 insurance + 10 hiring queries & Retrieval evaluation (E1) & Built; finance recall@3 = 1.00 with bge-base \\
+Retrieval gold sets & Authored; each gold clause id checked against the parsed Act & 10 finance + 10 insurance queries & Retrieval evaluation (E1) & Built; finance recall@3 = 1.00 with bge-base \\
 Truthfulness seed bank & Authored consumer-credit questions with source hints & 20 questions & Truthfulness probes (not in the committed run) & Built \\
-Finance responses & Four open models served with vLLM, temperature 0, 11 Aug--1 Sep 2026 & 61{,}259 responses, 0 errors, hash-chained log & Jury, judge, RQ3 replay & Collected \\
-Judge verdicts & \texttt{microsoft/phi-4}, $k=5$, temperature 0.3 & 608 transparency items (4 models $\times$ 152) & RQ2 development & Collected \\
-Human annotation, round 1 & Four raters, guideline v1.0 & 30 common items; Fleiss' $\kappa = 0.069$ & RQ1 pilot & Collected; failed (Ch.~\ref{ch:method}) \\
-Human annotation, round 2 & Two raters, guideline v1.1 & 300 items planned & RQ1, RQ2 & \textbf{Pending} \\
-Insurance responses & Same four models & 14{,}825 probes per model & Generalisation and RQ3 confirmatory (Ch.~\ref{ch:insurance}) & \textbf{Pending} (signature, amendment) \\
+Finance responses & Four open models served with vLLM, temperature 0, 11 Aug--1 Sep 2026 & 61{,}259 responses, 0 errors, hash-chained log & Jury, judge, RQ1 replay & Collected \\
+Judge verdicts & \texttt{microsoft/phi-4}, $k=5$, temperature 0.3 & 608 transparency items (4 models $\times$ 152) & CAL2 development & Collected \\
+Human annotation, round 1 & Four raters, guideline v1.0 & 30 common items; Fleiss' $\kappa = 0.069$ & Round 1 (failed) & Collected; failed (Ch.~\ref{ch:method}) \\
+Human agreement on insurance explanations & Two raters and an arbiter, guideline v2.0 & 240 items + 20 calibration & CAL1 (and CAL2) & \textbf{Pending} (runbook) \\
+Insurance responses & Same four models & 14{,}825 probes per model & RQ1 confirmatory, RQ2, RQ3 (Ch.~\ref{ch:insurance}) & \textbf{Pending} (signature, amendment) \\
 \end{longtable}
 }
 
 \subsection{The legal text}
-The Act was downloaded as the Official Journal PDF and parsed deterministically into an Article $\to$ Paragraph $\to$ Point hierarchy: 1{,}143 units, of which 602 sit at paragraph level and 541 at point or sub-point level. Each unit keeps its citation (``Article 10(2)(f)''), heading, parent and text, so that every verdict can name the clause it rests on. The units are indexed with dense embeddings (\texttt{bge-base-en-v1.5}) and BM25. Retrieval was evaluated on ten authored queries for credit, each describing an obligation in plain words rather than quoting it; recall@3 is 1.00. An employment gold set of ten queries was added on 16 November.
+The Act was downloaded as the Official Journal PDF and parsed deterministically into an Article $\to$ Paragraph $\to$ Point hierarchy: 1{,}143 units, of which 602 sit at paragraph level and 541 at point or sub-point level. Each unit keeps its citation (``Article 10(2)(f)''), heading, parent and text, so that every verdict can name the clause it rests on. The units are indexed with dense embeddings (\texttt{bge-base-en-v1.5}) and BM25. Retrieval was evaluated on ten authored queries for credit, each describing an obligation in plain words rather than quoting it; recall@3 is 1.00.
 
 \subsection{The audited models and their responses}
 Four instruction-tuned open models were audited, chosen so that one property changes at a time: Qwen2.5-7B (baseline), Llama-3.1-8B (family varies, size held), Qwen2.5-32B (size varies, family held) and Llama-3.1-70B at 4-bit (largest that fits one A6000). The list is version-controlled as provenance. Each model received the same 14{,}825 probes at temperature 0; the 7B model has additional responses from the pilot runs, which is why the total is 61{,}259 rather than $4 \times 14{,}825$. Every response is appended to a log keyed by probe hash, model and parameters, with each line chained to the previous line's hash, so a response cannot be changed or silently re-drawn.
@@ -51,7 +50,7 @@ Round 1 (four raters, 30 transparency items, guideline v1.0) produced Fleiss' $\
 Field selection happens at three levels: which clauses become requirements, which record fields the audited model sees, and which attribute is varied as the protected axis.
 
 \subsection{Clauses}
-The Act has 1{,}143 units, but only obligations whose fulfilment shows in a model's \emph{behaviour} can be probed. Five were committed and signed for credit, and the same five were derived, without change, for employment (Table~\ref{tab:clauses}). Obligations that concern documentation, governance or the provider's processes (for example risk-management systems or logging) are out of scope because no prompt can test them. GDPR Article 22 would be relevant to automated credit decisions but lives in a second corpus that is not loaded.
+The Act has 1{,}143 units, but only obligations whose fulfilment shows in a model's \emph{behaviour} can be probed. Five were committed and signed for credit, and the same five were derived, without change, for life insurance (Table~\ref{tab:clauses}). Obligations that concern documentation, governance or the provider's processes (for example risk-management systems or logging) are out of scope because no prompt can test them. GDPR Article 22 would be relevant to automated credit decisions but lives in a second corpus that is not loaded.
 
 \begin{table}[H]
 \centering
@@ -87,10 +86,5 @@ The strata (weak, marginal, strong) are terciles of a strength score built from 
 \subsection{Life insurance fields}
 Twelve fields are sampled per application (Table~\ref{tab:lifefields}): age, sum insured, policy term, smoking status, body mass index, medical history, family history, occupation, alcohol, hazardous pursuits and a generated name. The strata are defined by age, body mass index, smoking status and medical history, with the categorical factors drawn from stratum-specific lists. Sex is never a field; it enters only through the title of the protected arm. The outcome is the quoted annual premium.
 
-\subsection{Hiring fields (built, not run)}
-\paragraph{Rozado records.}\hspace{0.6em}Each source row has five columns: profession, the generating model, the system prompt, the user prompt and the document text. Only the profession and the text are used; the generating model is kept as provenance; the two prompts are dropped. The fields rendered are the job title, the full job description and the full CV, plus a reference number and the candidate's title and name. The stratum is derived from the professions of the job and the CV, never from the text and never from a protected field. Cleaning (Chapter~\ref{ch:insurance}, Section~\ref{sec:hiring}) removes equal-opportunity paragraphs and excludes CVs carrying gendered or fairness cues.
-
-\paragraph{Synthetic profiles.}\hspace{0.6em}The fallback pack samples fourteen fields: role, initial, surname, age, highest qualification, years of relevant experience, essential requirements met (of six), longest employment gap, number of previous employers, certification, languages, notice period, salary expectation and commute. Three of them define the strata (experience, requirements met, gap); the known-effect control varies requirements met (six against two).
-
 \subsection{The protected axis}
-Gender is signalled by a title (Ms.\ or Mr.) on an otherwise identical application, in every sector. A title was chosen over first names because names also signal ethnicity, age and class, so a name swap varies several attributes at once; a title varies one. This is a deliberate difference from the name-based hiring studies in Table~\ref{tab:litsurvey}, and it means the effect measured here is the effect of an explicit gender marker, not of a name. Every fairness pair is checked at generation to differ in the title slot and in nothing else.
+Gender is signalled by a title (Ms.\ or Mr.) on an otherwise identical application, in both sectors. A title was chosen over first names because names also signal ethnicity, age and class, so a name swap varies several attributes at once; a title varies one. It means the effect measured here is the effect of an explicit gender marker, not of a name. Every fairness pair is checked at generation to differ in the title slot and in nothing else.

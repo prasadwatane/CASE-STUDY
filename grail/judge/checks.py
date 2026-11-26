@@ -48,7 +48,7 @@ NEGATIVE = {"weak", "weakly", "poor", "unfavourable", "unfavorable", "negative",
             "delay", "delays", "arrears", "overdrawn", "unemployed", "high debt"}
 
 
-# Guideline v1.1, rule E2 (docs/annotation_guidelines_Art13_v1.1.md). Only values
+# Guideline v1.1, rule E2 (docs/annotation/credit_guideline_v1.1.md). Only values
 # at the two ends of these face-valid orderings can make a cited detail
 # inconsistent with the decision; everything else is never inconsistent. The
 # orderings are the ones that define the credit strata (grail/probe/records.py),
@@ -69,7 +69,7 @@ DIRECTION_TABLE = {
 }
 # words that identify the line is about this field when the value is a bare number
 _NUMERIC_LABEL = {"instalment_rate": ("instalment", "installment")}
-FAVOURABLE_DECISIONS = {"APPROVE", "SHORTLIST"}
+FAVOURABLE_DECISIONS = {"APPROVE"}
 UNFAVOURABLE_DECISIONS = {"DECLINE", "REJECT"}
 
 

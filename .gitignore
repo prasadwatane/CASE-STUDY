@@ -41,7 +41,6 @@ data/processed/checklists/*_draft.json
 # a model answered is in the response log; how the shell felt about it is not.
 logs/
 .grail-cache/
-run_all.sh          # superseded by scripts/run_models.sh
 
 # --- model caches ------------------------------------------------------------
 .cache/
@@ -62,3 +61,15 @@ data/processed/runs/*/*.partial.jsonl
 data/records/nhanes/raw/*.xpt
 data/records/nhanes/raw/*.dat
 data/records/nhanes/raw/*.part
+
+# --- LaTeX build files (main.pdf is kept) ---------------------------------------
+thesis/*.aux
+thesis/*.bbl
+thesis/*.blg
+thesis/*.lof
+thesis/*.log
+thesis/*.lol
+thesis/*.lot
+thesis/*.out
+thesis/*.toc
+thesis/*.synctex.gz

@@ -1,1 +1,1 @@
-"""Annotation study: blinded export, inter-rater agreement, ceiling-first reporting."""
+"""Agreement statistics, the CAL1 human-agreement study and its rater packets."""

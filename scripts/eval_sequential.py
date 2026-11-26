@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""RQ3: static vs uncorrected adaptive vs sequentially valid adaptive allocation.
+"""RQ1: static vs uncorrected adaptive vs sequentially valid adaptive allocation.
 
     python scripts/eval_sequential.py finance --part null          # error rates under a known truth
     python scripts/eval_sequential.py finance --part replay --budgets 0.05 0.10
@@ -118,7 +118,7 @@ def main() -> None:
 
 
 def write_markdown(domain, full, ref, null, rows, seeds):
-    L = ["# RQ3 — sequential allocation results", "",
+    L = ["# RQ1 — sequential allocation results", "",
          f"Domain `{domain}` · {len(ref)} requirements · full budget {full:,} prompts · "
          f"{seeds} replay seeds. Produced by `scripts/eval_sequential.py`.", "",
          "## 1. Error rates under a known truth (simulation)", "",

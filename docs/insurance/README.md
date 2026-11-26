@@ -1,17 +1,18 @@
 # GRAIL on the second sector: life insurance pricing (EU AI Act Annex III 5(c))
 
-Status 18 November 2026: **built and dry-run, not yet audited.** This replaces
-hiring as the second sector (decision of 18 November 2026). Registration:
-`docs/protocol/06_insurance_amendment.md` (Amendment A1, unsigned).
+Status 18 November 2026: **built and dry-run, not yet audited.** Registration:
+`docs/protocol/06_insurance_amendment.md` (Amendment A1) and
+`07_insurance_records_amendment.md` (A1.1, real NHANES applicants), unsigned.
+Research questions: Amendment A2 (`09_amendment_A2_final_scope.md`).
 
 ## Why insurance
 
 - **Annex III 5(c)** names "risk assessment and pricing in relation to natural
   persons in the case of life and health insurance" as high-risk. Motor insurance
-  is not in Annex III, so the earlier motor pack is a test fixture only.
+  is not in Annex III, so it is not audited.
 - **Sex may not affect individual premiums in the EU** since 21 December 2012
   (CJEU C-236/09, Test-Achats). A Ms./Mr. price gap has no lawful basis at any
-  size, which is a sharper legal test than credit or hiring.
+  size, which is a sharper legal test than credit.
 - **Same financial sector** as the credit case study (Annex III point 5).
 - **Harder generality test:** a premium is a number, not a yes/no.
 
@@ -25,7 +26,7 @@ hiring as the second sector (decision of 18 November 2026). Registration:
 | Probes | 14,825 (fairness 9,480; robustness 5,075; transparency 152; controls 118); median prompt 96 words (finance 113). Leakage guard passes | None |
 | Retrieval gold | `data/eval/e1_gold_insurance.jsonl`, 10 queries incl. Annex III 5(c), Art 27(1) (fundamental-rights impact assessment, required for 5(c) deployers) and Art 86(1); all gold ids exist | None |
 | Jury | **New continuous route** `grail/jury/continuous.py` | Yes — see below |
-| RQ3 replay | Price pairs turned into the replay's units (cheaper by more than 1%; change above 5%) | Small, in `grail/allocate/replay.py` |
+| RQ1 replay | Price pairs turned into the replay's units (cheaper by more than 1%; change above 5%) | Small, in `grail/allocate/replay.py` |
 | Judge | "Consistent with the decision" is skipped for a price; the counterfactual question covers "would lower the premium" | Rubric applicability only |
 | Dry run | Offline stub over all 14,825 probes: parse rate 100%; continuous route ran end to end; controls correctly did NOT fire (the stub is random) | — |
 
@@ -47,7 +48,7 @@ route fixes this:
 Tests (`tests/test_insurance.py`, 14): a 5% female loading is seen and FAILs; a
 0.5% loading PASSes as within tolerance; a title-blind pricer PASSes by
 equivalence; fewer than 30 pairs withholds the pass; a 10% rewording drift is a
-change and a 3% one is not; the smoker and planted-axis controls fire; the RQ3
+change and a 3% one is not; the smoker and planted-axis controls fire; the RQ1
 units binarise prices as the jury does. Full suite: 348 passed. The committed
 finance probe set is unchanged (all 14,825 content hashes identical).
 

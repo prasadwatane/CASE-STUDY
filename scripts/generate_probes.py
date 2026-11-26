@@ -31,6 +31,8 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=PROBE_SEED)
     ap.add_argument("--only", nargs="*", default=None,
                     help="restrict to these dimensions")
+    ap.add_argument("--pack", default=None,
+                    help="stimulus pack name (default: config.STIMULUS_PACK[domain])")
     ap.add_argument("--out", default=None)
     ap.add_argument("--force", action="store_true",
                     help="re-freeze over an existing, different probe set")
@@ -41,7 +43,8 @@ def main() -> None:
     signed_path = os.path.join(CHECKLIST_DIR, f"{args.domain}_signed.json")
     out_dir = args.out or os.path.join(PROBE_DIR, args.domain)
 
-    ps, notes = generate_probeset(signed_path, seed=args.seed, only=args.only)
+    ps, notes = generate_probeset(signed_path, seed=args.seed, only=args.only,
+                                  pack=args.pack)
 
     if args.verify:
         manifest_path = os.path.join(out_dir, "manifest.json")

@@ -50,6 +50,8 @@ def main() -> None:
     ap.add_argument("--stub", action="store_true", help="dry run, not evidence")
     ap.add_argument("--seed", type=int, default=PROBE_SEED)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--dimension", nargs="*", default=None,
+                    help="run only these dimensions, e.g. --dimension transparency")
     ap.add_argument("--report-only", action="store_true")
     ap.add_argument("--verify", action="store_true")
     args = ap.parse_args()
@@ -66,6 +68,11 @@ def main() -> None:
     if not os.path.exists(probes_path):
         raise SystemExit(f"No probe set at {probes_path}. Run generate_probes.py first.")
     probes = load_probes(probes_path)
+    if args.dimension:
+        probes = [p for p in probes if p.dimension in set(args.dimension)]
+        if not probes:
+            raise SystemExit(f"No probes of dimension {args.dimension} in {probes_path}.")
+        print(f"Running only {', '.join(args.dimension)}: {len(probes)} probes")
 
     if not args.report_only:
         if args.local:

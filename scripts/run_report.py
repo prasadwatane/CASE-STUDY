@@ -158,7 +158,7 @@ def _dual_verdict_note(finding: dict, clause_id: str, domain: str = "finance") -
 
     The 15(1)/15(4) tolerance was revised from 0.05 to 0.20 on 14 September 2026,
     AFTER all four models had been measured and had failed at 0.05
-    (docs/criteria_amendment_robustness_020.md). A revision made after the result
+    (docs/protocol/criteria_amendment_robustness_020.md). A revision made after the result
     is known is legitimate only if it is disclosed every time the result is
     reported, so the disclosure is generated here rather than left to whoever is
     writing. Removing this line would make the report misrepresent its own
@@ -178,7 +178,7 @@ def _dual_verdict_note(finding: dict, clause_id: str, domain: str = "finance") -
             f"{ROBUSTNESS_EQUIVALENCE_MARGIN:.2f}. Against the PRE-REGISTERED "
             f"{ROBUSTNESS_MARGIN_ORIGINAL:.2f} the verdict is {orig}. The revision was "
             "made after the results were known — see "
-            "docs/criteria_amendment_robustness_020.md")
+            "docs/protocol/criteria_amendment_robustness_020.md")
 
 
 def _note(finding: dict, caveats: str) -> str:

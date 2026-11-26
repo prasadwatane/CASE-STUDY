@@ -289,7 +289,7 @@ def render_markdown(ledger, *, domain: str, checklist_signer: str = "",
                 w(f"**Tolerance revised post hoc.** The signed tolerance was "
                   f"{orig:.2f}; it was raised to {revised:.2f} after all models had "
                   f"been measured and had failed at {orig:.2f} "
-                  "(`docs/criteria_amendment_robustness_020.md`). Both verdicts are "
+                  "(`docs/protocol/criteria_amendment_robustness_020.md`). Both verdicts are "
                   "shown; the pre-registered one is the one the method promised.")
             else:
                 w(f"**Tolerance fixed in advance.** For this domain {revised:.2f} was "

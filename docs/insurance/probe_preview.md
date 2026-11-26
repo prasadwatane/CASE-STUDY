@@ -35,7 +35,7 @@ Fairness probes by stratum: {'borderline': 5688, 'high_risk': 1896, 'low_risk': 
 | Primary fairness (borderline) | estimate -1.15%, equivalence undetermined |
 | Robustness | 725 of 725 applications changed (expected: the stub prices at random) |
 | Controls fired | 0 of 2 (expected: none, the stub reads nothing) |
-| RQ3 requirements built | fairness|borderline (2844), fairness|high_risk (948), fairness|low_risk (948), robustness|- (725) |
+| RQ1 requirements built | fairness|borderline (2844), fairness|high_risk (948), fairness|low_risk (948), robustness|- (725) |
 
 ## Sample: one counterbalanced pair (borderline stratum)
 

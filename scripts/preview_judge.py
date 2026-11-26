@@ -4,7 +4,7 @@
     python scripts/preview_judge.py finance
 
 NOT VALIDATION. Nothing here compares the judge with a human. It answers three
-design questions that need no labels and that the RQ1/RQ2 analysis depends on:
+design questions that need no labels and that the judge calibration (CAL2) depends on:
 
 1. How often does the judge agree with the rule-based baseline (S2b's
    comparator)? If almost always, S2b will be hard to win; if rarely, the two

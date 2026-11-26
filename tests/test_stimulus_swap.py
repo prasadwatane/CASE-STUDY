@@ -140,14 +140,14 @@ def test_probe_METADATA_carries_no_foreign_vocabulary(tmp_path):
 
 
 def test_framings_come_from_the_pack(tmp_path):
-    """Framing wording is sub-domain specific — a lending desk, or a pricing desk."""
+    """Framing wording is sub-domain specific — a lending desk, or an underwriting desk."""
     from grail.probe.templates import apply_framing, framings
-    credit, insurance = load_pack("credit", STIMULUS_DIR), load_pack("insurance", STIMULUS_DIR)
+    credit, insurance = load_pack("credit", STIMULUS_DIR), load_pack("life_insurance", STIMULUS_DIR)
     assert [f["name"] for f in framings(credit)] == [f["name"] for f in framings(insurance)]
     syc_c = [f for f in framings(credit) if f["name"] == "sycophancy"][0]
     syc_i = [f for f in framings(insurance) if f["name"] == "sycophancy"][0]
     assert "lending desk" in apply_framing(syc_c, "Q?", "X")
-    assert "pricing desk" in apply_framing(syc_i, "Q?", "X")
+    assert "underwriting desk" in apply_framing(syc_i, "Q?", "X")
     assert "lending" not in apply_framing(syc_i, "Q?", "X")
 
 
@@ -238,7 +238,7 @@ def test_insurance_asks_for_a_number_and_credit_asks_for_a_word(tmp_path):
 # --- a pack passed directly, without touching config ------------------------
 def test_a_pack_can_be_supplied_inline(tmp_path):
     """Swapping does not require editing config — useful for a one-off run."""
-    pack = load_pack("insurance", STIMULUS_DIR)
+    pack = load_pack("life_insurance", STIMULUS_DIR)
     ps, notes = generate_probeset(_signed(tmp_path, "finance"), core_n=SMALL,
                                   pack=pack, strata=STRATUM_PLAN["insurance"])
     assert {p.outcome_type for p in ps.probes} == {"continuous"}

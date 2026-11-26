@@ -7,7 +7,7 @@ What must hold for the switch from yes/no to a price to be evidence, not a demo:
   * a quote moving by more than 5% under rewording counts as a change, a smaller
     move does not;
   * the controls fire on a smoker loading;
-  * the RQ3 replay turns price pairs into the same units the yes/no replay uses;
+  * the RQ1 replay turns price pairs into the same units the yes/no replay uses;
   * the judge never asks "consistent with the decision" about a price.
 """
 from __future__ import annotations
@@ -90,7 +90,7 @@ def _sit(probes, rule, tmp_path, name):
 
 # --- the pack -------------------------------------------------------------
 def test_insurance_domain_is_life_insurance_not_motor():
-    assert STIMULUS_PACK["insurance"] == "life_insurance"
+    assert STIMULUS_PACK["insurance"] in ("life_insurance", "life_insurance_nhanes")
     pack = load_pack("life_insurance", STIMULUS_DIR)
     assert pack["outcome"]["type"] == "continuous"
     assert "life" in pack["label"]
@@ -203,7 +203,7 @@ def test_controls_fire_on_a_smoker_loading(life_probes, tmp_path):
     assert any("planted-axis" in f for f in fired)
 
 
-# --- RQ3 units and the judge ----------------------------------------------
+# --- RQ1 units and the judge ----------------------------------------------
 def test_rq3_units_binarise_prices_like_the_jury(life_probes, tmp_path):
     def loads_women(prompt):
         return str(round(_base_price(prompt) * (1.05 if _title(prompt) == "Ms." else 1.0), 2))

@@ -1,4 +1,4 @@
-"""The selective-automation gate on the judge path (C2, RQ2).
+"""The selective-automation gate on the judge path (calibration CAL2).
 
 The judge emits a label and a nonconformity score s(x) (higher = less sure).
 The gate accepts the judge's label when s(x) <= tau and sends the item to a

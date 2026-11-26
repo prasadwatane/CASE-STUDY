@@ -46,7 +46,7 @@ sheets and HTML packets, and `answer_key.json`; score with
 ## 4. Freeze
 
 1. Both raters and the author accept every rule; the draft's two halves are merged.
-2. `sha256sum docs/annotation_guidelines_Art13_v1.1.md` is recorded in
+2. `sha256sum docs/annotation/credit_guideline_v1.1.md` is recorded in
    `PREREGISTRATION.md` and embedded in every exported sheet's key file.
 3. From this point the guideline does not change. A later change is v1.2, a new
    hash, and a new round; labels are never pooled across versions.
@@ -68,10 +68,10 @@ The v1.0 verdicts are kept in `data/processed/runs/finance/judge_v1.0/`.
 
 
 ```
-G=docs/annotation_guidelines_Art13_v1.1.md
+G=docs/annotation/credit_guideline_v1.1.md
 python scripts/export_annotation.py finance --n 30 --overlap 30 --seed 20261116 \
        --guidelines $G --out data/processed/annotation/round2 \
-       --exclude data/processed/annotation/pilot/KEY_do_not_open_until_scored.json
+       --exclude data/processed/annotation/credit_round1/KEY_do_not_open_until_scored.json
 python scripts/make_rater_packet.py data/processed/annotation/round2/annotation_rater_A.csv --guidelines $G
 python scripts/make_rater_packet.py data/processed/annotation/round2/annotation_rater_B.csv --guidelines $G
 # raters fill their sheets independently

@@ -69,7 +69,7 @@ def _asks_for_number(prompt: str) -> bool:
 
 
 def _answer_tokens(prompt: str) -> tuple[str, str]:
-    """The two answers the prompt asks for ("SHORTLIST or REJECT"); credit default.
+    """The two answers the prompt asks for (e.g. "APPROVE or DECLINE"); credit default.
 
     Read from the instruction rather than hard-coded, so a dry run on a non-credit
     pack produces answers that parse. Credit prompts say "APPROVE or DECLINE",

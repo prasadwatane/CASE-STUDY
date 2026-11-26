@@ -109,7 +109,7 @@ def test_fairness_is_sized_on_whichever_estimand_is_hungrier():
 
 
 # --- the planted-axis control -----------------------------------------------
-@pytest.mark.parametrize("pack_name", ["credit", "credit_real", "insurance"])
+@pytest.mark.parametrize("pack_name", ["credit", "credit_real", "life_insurance"])
 def test_every_pack_plants_an_effect_on_its_protected_axis(pack_name):
     """A control on a financial field says nothing about a two-letter title."""
     spec = (load_pack(pack_name, STIMULUS_DIR).get("controls") or {}).get("axis_planted")

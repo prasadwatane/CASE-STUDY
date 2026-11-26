@@ -1,9 +1,9 @@
 """Which answer tokens a binary probe uses, and which of them is favourable.
 
 The jury originally hard-coded `FAVOURABLE = "APPROVE"`. That is a credit
-assumption welded into the inspection stage: an employment pack answering
-SHORTLIST / REJECT would have parsed as unparseable or, worse, been scored as
-uniformly unfavourable without any error. The tokens belong to the stimulus pack,
+assumption welded into the inspection stage: a pack with other answer tokens
+would have parsed as unparseable or, worse, been scored as uniformly
+unfavourable without any error. The tokens belong to the stimulus pack,
 which already declares them under `outcome.tokens`; this module reads them.
 
 Defaults reproduce the credit behaviour exactly (tokens APPROVE / DECLINE,

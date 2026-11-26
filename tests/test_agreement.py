@@ -1,6 +1,6 @@
 import pytest
 
-from grail.annotation.agreement import cohen_kappa, fleiss_kappa, score_study
+from grail.annotate.fleiss import cohen_kappa, fleiss_kappa, score_study
 
 
 def test_perfect_agreement_is_one():
@@ -37,8 +37,8 @@ def test_kappa_never_without_marginals_and_ci():
 def test_pilot_round1_reproduces_committed_numbers():
     """Regression: the committed round-1 sheets score at chance."""
     from pathlib import Path
-    from grail.annotation.agreement import load_sheet, load_meta
-    d = Path(__file__).resolve().parents[1] / "data/processed/annotation/pilot"
+    from grail.annotate.fleiss import load_sheet, load_meta
+    d = Path(__file__).resolve().parents[1] / "data/processed/annotation/credit_round1"
     if not d.exists():
         pytest.skip("pilot data not present")
     files = sorted(d.glob("rater_*.csv"))

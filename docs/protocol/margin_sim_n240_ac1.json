@@ -1,0 +1,74 @@
+[
+ {
+  "ceiling_kappa": 0.7,
+  "margin": 0.05,
+  "power_judge_equal": 0.368,
+  "type1_at_margin": 0.062,
+  "e_human": 0.0713,
+  "e_judge_at_margin": 0.1024
+ },
+ {
+  "ceiling_kappa": 0.7,
+  "margin": 0.1,
+  "power_judge_equal": 0.813,
+  "type1_at_margin": 0.057,
+  "e_human": 0.0713,
+  "e_judge_at_margin": 0.1332
+ },
+ {
+  "ceiling_kappa": 0.7,
+  "margin": 0.15,
+  "power_judge_equal": 0.981,
+  "type1_at_margin": 0.054,
+  "e_human": 0.0713,
+  "e_judge_at_margin": 0.1636
+ },
+ {
+  "ceiling_kappa": 0.75,
+  "margin": 0.05,
+  "power_judge_equal": 0.45,
+  "type1_at_margin": 0.061,
+  "e_human": 0.0581,
+  "e_judge_at_margin": 0.0887
+ },
+ {
+  "ceiling_kappa": 0.75,
+  "margin": 0.1,
+  "power_judge_equal": 0.879,
+  "type1_at_margin": 0.071,
+  "e_human": 0.0581,
+  "e_judge_at_margin": 0.1189
+ },
+ {
+  "ceiling_kappa": 0.75,
+  "margin": 0.15,
+  "power_judge_equal": 0.995,
+  "type1_at_margin": 0.059,
+  "e_human": 0.0581,
+  "e_judge_at_margin": 0.1488
+ },
+ {
+  "ceiling_kappa": 0.8,
+  "margin": 0.05,
+  "power_judge_equal": 0.529,
+  "type1_at_margin": 0.059,
+  "e_human": 0.0455,
+  "e_judge_at_margin": 0.0756
+ },
+ {
+  "ceiling_kappa": 0.8,
+  "margin": 0.1,
+  "power_judge_equal": 0.927,
+  "type1_at_margin": 0.061,
+  "e_human": 0.0455,
+  "e_judge_at_margin": 0.1054
+ },
+ {
+  "ceiling_kappa": 0.8,
+  "margin": 0.15,
+  "power_judge_equal": 0.993,
+  "type1_at_margin": 0.059,
+  "e_human": 0.0455,
+  "e_judge_at_margin": 0.1347
+ }
+]

@@ -76,9 +76,9 @@ def _fairness_units(parsed: dict) -> dict:
     For a continuous outcome (a premium) "favourable" is read RELATIVE TO THE
     PARTNER: an arm is favourable when its quote is materially cheaper than the
     other arm's, by more than the 1% margin. That turns each price pair into the
-    same (fav_ref, fav_other) unit the yes/no replay uses, so the RQ3 policies
+    same (fav_ref, fav_other) unit the yes/no replay uses, so the RQ1 policies
     and their corrections apply unchanged. Pre-registered in Amendment A1 as the
-    RQ3 reading for insurance.
+    RQ1 reading for insurance.
     """
     from config import CONTINUOUS_FAIRNESS_MARGIN
     from grail.jury.continuous import median_positive

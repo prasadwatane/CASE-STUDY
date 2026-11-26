@@ -1,4 +1,4 @@
-"""Sequentially valid audit-budget allocation (C3, RQ3).
+"""Sequentially valid audit-budget allocation (RQ1).
 
 The uncorrected adaptive policy in `replay.py` looks at every requirement after
 every round and stops buying evidence once a fixed-sample interval clears the
@@ -342,7 +342,7 @@ def _mean_ci(xs: list[float], reps: int = 4000, seed: int = 11) -> dict:
             "hi": round(ms[int(0.975 * reps) - 1], 4)}
 
 
-# Pre-registered (OPEN 5): the confirmatory RQ3 policy and the S4 reading.
+# Pre-registered (OPEN 5): the confirmatory RQ1 policy and the S4 reading.
 PRIMARY_POLICY = "adaptive_obf"
 S4_FIDELITY, S4_SPEND, S4_COVERAGE = 0.90, 0.80, 0.90
 

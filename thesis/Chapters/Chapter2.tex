@@ -1,82 +1,105 @@
-% Chapter 2 -- State of the Art
+% Chapter 2 -- Related Work (rewritten 25 Nov 2026 for the final scope, Amendment A2)
 \chapter{Related Work}
 \label{ch:sota}
 \lhead{Chapter 2. \emph{Related Work}}
 
-\paragraph{Holistic and trust benchmarks.}\hspace{0.6em}HELM \citep{helm} established multi-dimensional evaluation across 42 scenarios and seven metrics and is the ancestor of the dimension structure used here; TrustLLM \citep{trustllm} and DecodingTrust \citep{decodingtrust} extend that to trust dimensions, and AILuminate \citep{ailuminate} to product risk with an ensemble judge. All score a model against a curated list, none against a legal text, and none emits a verdict that names a clause. They are the right ancestors for what to measure and the wrong ones for what a measurement licenses.
+Four lines of work meet in this thesis: evaluation of language models against regulation, the use of language models as judges, the measurement of human agreement, and the statistics of deciding with a guaranteed error, either by abstaining (selective prediction) or by stopping early (sequential inference). A fifth line, fairness audits of language-model decisions in credit and insurance, supplies the application. The chapter reviews each and ends with the gaps that define RQ1--RQ3.
 
-\paragraph{Regulation-facing systems.}\hspace{0.6em}COMPL-AI \citep{complai} is the nearest neighbour and the clearest statement of the gap: its Act-to-benchmark mapping is manual, its suite frozen, its scoring never validated against humans, and its authors state it is not an official audit. The Foundation Model Transparency Index \citep{fmti} human-verifies every finding its own agent produces --- confirming, from the opposite direction, that unvalidated automation is not yet accepted as evidence.
+\section{Regulation-facing evaluation and audits}
+HELM \citep{helm} established multi-dimensional evaluation of language models; TrustLLM \citep{trustllm} and DecodingTrust \citep{decodingtrust} extend it to trust dimensions. None is organised by legal obligation. COMPL-AI \citep{complai} is the nearest neighbour: it gives a technical interpretation of the AI Act, maps it by hand onto existing benchmarks and evaluates twelve models, finding all weakest on robustness, diversity and fairness. Its mapping is manual, its suite frozen, its scoring never validated against humans, and its authors state that it is not an official audit. AIR-Bench 2024 \citep{airbench} derives 314 risk categories from eight government regulations and sixteen company policies and tests 5{,}694 human-audited prompts; it covers content safety rather than the obligations of a high-risk deployment, with no thresholds fixed before results. Bench-2-CoP \citep{bench2cop} maps 194{,}955 benchmark questions onto the Act's taxonomy and finds coverage concentrated on hallucination and reliability, with no verdicts and Annex~III out of scope. AIReg-Bench \citep{airegbench} asks LLMs to judge technical documentation for AI Act violations against legal experts' labels; it judges documents, not the behaviour of a deployed model. On the audit side, SMACTR \citep{smactr} and the three-layered approach of M\"okander et al.\ \citep{mokander} organise audits around artefacts and governance layers and call for behavioural testing without supplying a method for it.
 
-\paragraph{Auditing frameworks.}\hspace{0.6em}Raji et al.\ \citep{smactr} (SMACTR) organise an audit around artefacts and checkpoints; M\"okander et al.\ \citep{mokander} propose governance, model and application layers with behavioural testing at the model layer. Both argue that behaviour should be tested and traced. Neither specifies how a clause becomes a test with a threshold, nor how that interpretation is protected from revision once results are known. The preceding case study's notary gate answers the second; this thesis takes the reliability of the resulting verdicts as its subject.
+\emph{What is missing:} requirements derived from the legal text and signed before data, behavioural verdicts with stated error, and evidence that a procedure carries from one Annex~III use case to another.
 
-\paragraph{Judges and their validation.}\hspace{0.6em}Zheng et al.\ \citep{zheng} introduced LLM-as-a-judge and documented its biases; JudgeBench \citep{judgebench} shows judges near random on hard pairs; Gu et al.\ \citep{gusurvey} survey reliability as human-alignment plus consistency. The consensus is that a judge is worth only its measured agreement with humans --- and the measurement is routinely done once and globally, never per dimension and never against the human ceiling. Dorner et al.\ \citep{dorner} bound what judge substitution can buy at all: without a calibration set, a judge cannot reduce the human labelling needed for a valid estimate by more than a factor of two. Prediction-powered inference \citep{ppi} is the constructive counterpart, combining judge output with a small human-labelled set into a valid estimate; it answers a different question from gating (\emph{what is the population rate?} rather than \emph{which individual verdicts may be admitted?}) and is discussed as the complement, not implemented. This thesis makes the per-dimension measurement against the ceiling the object of study.
+\section{Language models as judges}
+Zheng et al.\ \citep{zheng} introduced LLM-as-a-judge with MT-Bench and Chatbot Arena and found that GPT-4 agrees with humans about as often as humans agree with each other, while documenting position, verbosity and self-enhancement bias. The biases have since been measured directly: the same answer pair receives different verdicts depending on its order \citep{wang2023fair}; across 15 judges, 22 tasks and more than 150{,}000 evaluations position consistency stays below 0.75 even for strong judges \citep{shi2024position}; longer answers are preferred regardless of quality \citep{saito2023}; judges favour text that resembles their own \citep{wataoka2024} and models related to them by training data or family (preference leakage, \citealp{li2025leakage}). Reliability is a separate problem: deterministic decoding does not make verdicts reliable, so a single run is a weak basis for measurement \citep{schroeder2024}. On hard objective-correctness pairs strong judges barely beat chance \citep{judgebench}; judges can be swayed by manipulated answers \citep{thakur2024}; and in a legal task, models' reasons diverge from legal experts' despite good faithfulness scores \citep{namazov2026}. Surveys \citep{gusurvey} and a recent systematic review \citep{shrestha2026} converge on one conclusion: biases are systematic, single-pass evaluation is insufficient, and there is no standard way to check a judge before it is trusted.
 
-\paragraph{Reliability statistics.}\hspace{0.6em}Landis and Koch \citep{landiskoch} give the conventional $\kappa$ bands; Feinstein and Cicchetti \citep{feinstein} show $\kappa$ deflates under skewed marginals, and Gwet \citep{gwet} proposes AC1 as a prevalence-robust alternative. The case study's pilot is a textbook instance of the paradox, which is why both statistics, their intervals and the marginals are reported together here.
+\emph{What is missing:} a judge whose admission is decided by a measured human ceiling on a legal criterion, and whose individual verdicts carry an error guarantee.
 
-\paragraph{Selective classification, distribution-free guarantees and sequential inference.}\hspace{0.6em}Geifman and El-Yaniv \citep{geifman} define the object C2 delivers --- a selective classifier whose risk on the accepted items is bounded at a chosen coverage --- and show how to calibrate the acceptance threshold on a held-out set; Angelopoulos and Bates \citep{angelopoulos} give the split-conformal calibration and the exact finite-sample bound used here, and Learn then Test \citep{learntest} the multiple-testing correction that makes a searched threshold valid. For C3 the relevant literature is sequential: $\alpha$-spending \citep{landemets} and time-uniform confidence sequences \citep{howard} give inference that remains correct under continuous monitoring. Applying them to audit budget rather than to clinical enrolment is, to the author's knowledge, unexplored, and is the most distinctive opening this thesis takes.
+\section{Human agreement and the validation of judges}
+Agreement between raters is measured with chance-corrected coefficients: Cohen's $\kappa$ for two raters \citep{cohen1960}, Fleiss' $\kappa$ for many \citep{fleiss1971}, read against the bands of Landis and Koch \citep{landiskoch}, in which 0.61--0.80 is ``substantial''. When one label dominates, high raw agreement coexists with low $\kappa$ (the $\kappa$ paradox, \citealp{feinstein}); Gwet's AC1 \citep{gwet} corrects for chance in a way that is less sensitive to prevalence. Artstein and Poesio \citep{artstein2008} argue that agreement must be established before annotations are used as a reference, and Shankar et al.\ \citep{shankar2024} show that graders form their criteria while grading (criteria drift), which is a reason to freeze a decidable guideline before rating.
 
-\paragraph{Paired analysis of discrimination.}\hspace{0.6em}McNemar's exact test \citep{mcnemar} and the four-fifths rule \citep{eeoc} answer different questions --- individual-level differential treatment versus aggregate group rates --- and the case study showed they disagree completely on the same responses. Bowen et al.\ \citep{bowen} use the same counterbalanced design on mortgage underwriting, varying race on 6{,}000 applications built from real HMDA records; Tamkin et al.\ \citep{tamkin} apply it to a battery of high-stakes decision prompts and likewise report favourable-direction effects for some protected groups. C4 extends that contrast to a second protected axis.
+Recent work validates judges against humans but takes the human labels as the truth. The Alternative Annotator Test \citep{calderon2025} asks whether an LLM can replace an annotator using at least three annotators on a subset; JUDGE-BENCH \citep{bavaresco2025} finds that judge reliability depends on the property judged, the annotators' expertise and the text source; across about 541{,}000 judgments chance-corrected agreement sits 33--41 points below raw agreement \citep{norman2026}; and in expert domains judge--expert agreement is 60--68\%, below the experts' agreement with each other \citep{szymanski2025}. The GRAIL case study adds a direct counter-example to the assumption: four raters agreed at chance level (Fleiss $\kappa=0.07$), largely because of prevalence and an undecidable guideline (Section~\ref{sec:annotation}).
 
-\paragraph{Hiring audits of language models.}\hspace{0.6em}Paired-identity audits are densest in hiring. Wilson and Caliskan \citep{wilsoncaliskan}, Iso et al.\ \citep{iso}, FAIRE \citep{faire}, Rozado \citep{rozado2026} and Gao et al.\ \citep{gaohire} vary names or gender signals on otherwise matched CVs and report effects whose direction depends on model generation and whose size depends on design: pairwise choice shows larger gaps than single-candidate decisions on the same documents. Rozado's released CVs and job descriptions \citep{rozadodata} were imported for a hiring variant of GRAIL that was built but not audited (Chapter~\ref{ch:insurance}).
+\emph{What is missing:} validation that measures the human ceiling first, for the specific legal criterion, and judges the judge relative to it.
 
-\paragraph{Insurance pricing and sex.}\hspace{0.6em}The Court of Justice of the European Union ruled in \emph{Test-Achats} \citep{testachats} that sex may not be used as a factor that changes individual insurance premiums and benefits, with effect from 21 December 2012. No published audit of language models pricing life or health insurance was found. Together these make life insurance pricing (Annex III 5(c)) the second audited sector of this thesis: the legal requirement on the protected axis is unusually clear, and the measurement is new.
+\section{Selective prediction and certified automation}
+Selective prediction lets a system abstain. Chow \citep{chow1970} characterised the optimal trade-off between error and rejection; El-Yaniv and Wiener \citep{elyaniv2010} developed the theory of selective classification; Geifman and El-Yaniv \citep{geifman} calibrated a threshold on a confidence score so that the risk among accepted items is bounded, with an exact binomial bound \citep{clopper1934}. Distribution-free methods generalise this: conformal prediction \citep{angelopoulos} and Learn then Test \citep{learntest}, which chooses a threshold by multiple testing so that a risk is controlled with high probability, given exchangeable data. For LLM judges, Trust or Escalate \citep{jung2025} gives a provable guarantee of human agreement on the judgments it accepts and escalates the rest to stronger judges; SCOPE \citep{badshah2026} calibrates an acceptance threshold for pairwise judgments under exchangeability. Prediction-powered inference \citep{ppi} and confidence-driven inference \citep{gligoric2025} use model labels to reduce the number of human labels for a valid population estimate, and Dorner et al.\ \citep{dorner} bound how much a judge no better than the evaluated model can save.
 
-\paragraph{Finance benchmarks.}\hspace{0.6em}FinTrust \citep{fintrust} scores eleven models on seven trust dimensions in finance and finds all of them weakest on fiduciary alignment and disclosure, a legally inspired result that is not traced to any clause. FailSafeQA \citep{failsafeqa} perturbs queries and contexts over long 10-K filings and finds that the most robust model still fabricates in 41\% of perturbed cases; its judge comes from the same model families it judges, which GRAIL's judge-selection rule forbids.
+\emph{What is missing:} the guarantee applied to verdicts derived from a legal criterion, after the reference itself has been shown reliable, with the assumptions (sampling, frozen judge, threshold selection, reference error) stated as part of the claim.
+
+\section{Sequential inference}
+Sequential tests decide while data arrive. Wald's sequential probability ratio test \citep{wald1945} is the origin; group-sequential designs in clinical trials control the type-I error across planned interim looks with constant boundaries \citep{pocock1977} or boundaries that are strict early and relaxed late \citep{obrien1979}, and $\alpha$-spending functions make the number and timing of looks flexible \citep{landemets}. Confidence sequences are valid at any stopping time \citep{howard}, and betting-based constructions give tight anytime-valid bounds for bounded data \citep{waudbysmith2024}. In machine-learning auditing, Chugg et al.\ \citep{chugg2023} audit the fairness of deployed models by betting, Richter et al.\ \citep{richter2025} detect behaviour change between model versions, and recent work evaluates LLMs anytime-validly with fewer samples \citep{celeus2026,hsu2026}.
+
+\emph{What is missing:} each of these controls one metric, one score or one change at a time. An audit shares one budget across many requirements and must return three-way verdicts (PASS, FAIL, UNDETERMINED); whether early stopping across them preserves the verdicts of the full audit is untested.
+
+\section{Fairness of LLM decisions in credit and insurance}
+Paired designs hold an applicant fixed and vary one protected signal. In mortgage underwriting, LLMs deny Black applicants more often and price them higher, most strongly at low credit scores \citep{bowen}; race-based discrepancies appear on counterfactual applicants identical except for race \citep{cook2025}; and fair outputs can hide race information that persists inside the model and reverses decisions when re-injected \citep{tripathy2026}, a limit of any output-only audit. McNemar's exact test \citep{mcnemar} measures differential treatment of the same applicant, while the four-fifths rule \citep{eeoc} compares group rates; the case study showed that the two disagree completely on the same answers. In insurance, the Court of Justice ruled in \emph{Test-Achats} \citep{testachats} that sex may not change individual premiums, from 21~December 2012. An audit of six LLMs on 1{,}388 motor claims finds no male/female gap under full information but gaps under other prompt set-ups \citep{huang2026binary}; conventional life and health pricing models show income-related premium gaps against a 10\% tolerance \citep{gupta2025}; and discrimination-free pricing constructs prices that do not depend on the protected attribute \citep{lindholm2022}. Equivalence testing with two one-sided tests \citep{schuirmann1987} supplies the statistical form for showing that a gap is small rather than merely not significant.
+
+\emph{What is missing:} an individual-level audit of LLMs that price life or health insurance, with a margin fixed in advance and real applicant profiles.
+
+\section{Gaps, research questions and calibration}
+\begin{table}[H]
+\centering
+\caption{Gaps in the literature and the research question or calibration step that answers each.}
+\label{tab:gaps}
+\small
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+Gap & What is missing & Answered by \\
+\midrule
+G1 & Judges are validated against human labels that are never shown to be reliable & CAL1, CAL2a \\
+G2 & Guaranteed-error judges exist only for general benchmarks, never for a legal criterion with stated assumptions & CAL2b \\
+G3 & Valid early stopping exists for one metric at a time, not for many audit requirements with three-way verdicts & RQ1 \\
+G4 & Legal text is mapped onto benchmarks by hand; nothing shows a procedure carries to a second Annex~III use case & RQ2 (H2) \\
+G5 & No individual-level audit of LLMs that price life or health insurance & RQ3 (H3a--H3c) \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section*{Literature survey in tabular form}
 \addcontentsline{toc}{section}{Literature survey in tabular form}
-Table~\ref{tab:litsurvey} summarises the works above by domain, design and data, main finding, and the gap that GRAIL addresses. Rows are grouped as in the text.
-
-\par\vspace{1em}
+\par\vspace{0.5em}
 {\scriptsize
-\setlength{\tabcolsep}{3pt}\setlength{\LTpre}{2.5em}\setlength{\LTpost}{1em}
+\setlength{\tabcolsep}{3pt}\setlength{\LTpre}{1.5em}\setlength{\LTpost}{1em}
 \renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.4cm}@{}}
-\caption{Literature survey: what each work measures, on what data, what it found, and what it leaves open for this thesis.}\label{tab:litsurvey}\\
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{1.3cm}@{}}
+\caption{Literature survey: what each work shows, what it leaves open, and the research question or calibration step it informs.}\label{tab:litsurvey}\\
 \toprule
-\textbf{Work} & \textbf{Domain} & \textbf{Design and data} & \textbf{Main finding} & \textbf{Gap addressed by GRAIL} \\
+\textbf{Work} & \textbf{Area} & \textbf{What it shows} & \textbf{What it leaves open for GRAIL} & \textbf{RQ/CAL} \\
 \midrule
 \endfirsthead
 \toprule
-\textbf{Work} & \textbf{Domain} & \textbf{Design and data} & \textbf{Main finding} & \textbf{Gap addressed by GRAIL} \\
+\textbf{Work} & \textbf{Area} & \textbf{What it shows} & \textbf{What it leaves open for GRAIL} & \textbf{RQ/CAL} \\
 \midrule
 \endhead
-\midrule \multicolumn{5}{r}{\emph{continued on next page}} \\
-\endfoot
 \bottomrule
-\endlastfoot
-\multicolumn{5}{@{}l}{\textbf{Holistic and trust benchmarks}} \\
-HELM \citep{helm} & General & 42 scenarios $\times$ 7 metrics across many models & Capability, calibration, robustness and fairness trade off; no model dominates & Scores against a curated list, not a legal text; no clause-named verdict \\
-TrustLLM \citep{trustllm} & General trust & 6 trust dimensions, 30+ datasets, 16 LLMs & Trustworthiness broadly tracks capability & Same: list-based, not traceable to an obligation \\
-DecodingTrust \citep{decodingtrust} & General trust & 8 perspectives on GPT-3.5 and GPT-4 & GPT-4 more easily misled by adversarial instructions & Same; single-family models \\
-AILuminate \citep{ailuminate} & Product risk & 12 hazard categories, 24k+ prompts, ensemble judge & Graded risk ratings per system & Judge validity not measured per dimension against a human ceiling \\
-\midrule
-\multicolumn{5}{@{}l}{\textbf{Regulation-facing systems and audit frameworks}} \\
-COMPL-AI \citep{complai} & EU AI Act & Manual mapping of the Act to existing benchmarks; leaderboard & Models weakest on fairness and robustness & Mapping manual, suite frozen, scoring never human-validated \\
-FMTI \citep{fmti} & Developer transparency & 100 indicators, 10 developers & Low transparency overall & Every agent finding human-verified: automation not accepted as evidence \\
-SMACTR \citep{smactr} & Audit process & Artefacts and checkpoints for internal audit & Process framework & No route from clause to test and threshold \\
-M\"okander et al.\ \citep{mokander} & Governance & Three-layer audit (governance, model, application) & Behavioural testing at the model layer & Thresholds and their protection from revision unspecified \\
-\midrule
-\multicolumn{5}{@{}l}{\textbf{Finance}} \\
-FinTrust \citep{fintrust} & Finance & 7 trust dimensions, 15{,}680 instances, 11 LLMs & All models fall short on fiduciary alignment and disclosure & Legally inspired, not clause-traceable \\
-FailSafeQA \citep{failsafeqa} & Finance QA & 220 long-context 10-K items, query and context perturbations, LLM judge & Most robust model still fabricates in 41\% of perturbed cases & Judge from the same families as the systems judged \\
-Bowen et al.\ \citep{bowen} & Credit (mortgage) & 1{,}000 HMDA applications $\to$ 6{,}000 with race varied & More denials and higher rates for Black applicants; an ``unbiased'' instruction removes the approval gap & No clause trace; no verdict reliability \\
-Tamkin et al.\ \citep{tamkin} & High-stakes decisions & 70 decision scenarios, demographics varied & Both favourable and unfavourable effects by group & Same \\
-\midrule
-\multicolumn{5}{@{}l}{\textbf{Hiring}} \\
-Wilson and Caliskan \citep{wilsoncaliskan} & Hiring & Retrieval-based resume screening, names varied, 9 occupations & White-associated names favoured in 85\% of tests, female in 11\% & Retrieval model, not an LLM decision; no clause \\
-Iso et al.\ \citep{iso} & Hiring & Job--resume matching with gender, race, education varied & Gender and race effects narrowed; education effects persist & No verdict or threshold \\
-FAIRE \citep{faire} & Hiring & Direct scoring and ranking of resumes across models & Direction and size of bias vary by model and method & Same \\
-Rozado \citep{rozado2026} & Hiring & 22 LLMs, 70 professions, pairwise choice of two CVs & Female-named chosen in 56.9\%; first-listed in 63.5\% & Imported for a hiring variant, built not run (Ch.~\ref{ch:insurance}); no clause \\
-Gao et al.\ \citep{gaohire} & Hiring & 14 LLMs, 6{,}007 real postings, one candidate, yes/no & 2023 model pro-White and pro-male; 2024+ null or reversed by 0.4--3.0 pp & Closest design to GRAIL; sets the expected effect size \\
-\midrule
-\multicolumn{5}{@{}l}{\textbf{Judges and reliability statistics}} \\
-Zheng et al.\ \citep{zheng} & LLM-as-judge & MT-Bench and Chatbot Arena & Strong judges agree with humans about as often as humans do; position and verbosity bias & Agreement measured once, globally \\
-JudgeBench \citep{judgebench} & LLM-as-judge & Hard objective pairs (knowledge, reasoning, maths, code) & Strong judges barely above random & Judges must be measured and gated \\
-Dorner et al.\ \citep{dorner} & Judge theory & Theory and experiments & A judge no better than the evaluated model saves at most half the labels & Bounds what substitution can buy \\
-PPI \citep{ppi} & Statistics & Predictions plus a small labelled set & Valid population estimates & Answers \emph{the rate}, not \emph{which verdicts} may be admitted \\
-Gwet \citep{gwet} & Agreement & Chance-corrected agreement & AC1 stable under skewed prevalence where $\kappa$ deflates & Adopted alongside $\kappa$ (OPEN 1) \\
-Geifman and El-Yaniv \citep{geifman} & Selective classification & Risk--coverage with a calibrated threshold & Bounded risk on accepted items & Applied to judge verdicts (C2) \\
-Lan and DeMets \citep{landemets}; Howard et al.\ \citep{howard} & Sequential inference & $\alpha$-spending; confidence sequences & Valid under continuous monitoring & Applied to audit budget (C3) \\
+\endfoot
+COMPL-AI \citep{complai} & Regulation & AI Act mapped by hand onto benchmarks; no model fully compliant & Manual mapping, no validated scoring, no verdict error & RQ2 \\
+AIR-Bench 2024 \citep{airbench} & Regulation & 314 risk categories from regulations and policies & Content safety, not high-risk obligations & RQ2 \\
+Bench-2-CoP \citep{bench2cop} & Regulation & Benchmark coverage of the Act's taxonomy & Coverage, no verdicts; Annex III out of scope & RQ2 \\
+AIReg-Bench \citep{airegbench} & Regulation & LLMs judging documentation against legal experts & Documents, not behaviour & RQ2 \\
+\citet{zheng} & Judges & Judge--human agreement near human--human; three biases & Measured once, globally & CAL2 \\
+\citet{wang2023fair}; \citet{shi2024position} & Judges & Order changes verdicts; position consistency $<0.75$ & Pairwise; no guarantee & opt. \\
+\citet{saito2023}; \citet{wataoka2024}; \citet{li2025leakage} & Judges & Verbosity, self-preference and preference-leakage biases & Detected, not controlled & opt. \\
+\citet{schroeder2024} & Judges & One run at temperature 0 is not reliable & No decision rule & CAL2 \\
+JudgeBench \citep{judgebench} & Judges & Strong judges near chance on hard pairs & General tasks & CAL2 \\
+\citet{shrestha2026} & Judges (review) & No standard pre-deployment check of a judge & A map, not evidence & CAL2 \\
+\citet{feinstein}; \citet{gwet} & Agreement & $\kappa$ paradox; AC1 & --- & CAL1 \\
+\citet{artstein2008}; \citet{shankar2024} & Agreement & Establish agreement first; criteria drift & How to freeze a legal criterion & CAL1 \\
+\citet{calderon2025}; \citet{bavaresco2025} & Validation & Tests of replacing annotators; reliability varies by task & Human labels assumed correct & CAL1 \\
+\citet{norman2026}; \citet{szymanski2025} & Validation & Chance-corrected agreement far below raw; expert domains weaker & Reference not measured first & CAL1 \\
+\citet{geifman}; \citet{chow1970} & Selective & Bounded risk on accepted items; error--reject trade-off & Classifiers, i.i.d. data & CAL2 \\
+Learn then Test \citep{learntest} & Selective & Threshold chosen by multiple testing for risk control & Exchangeability assumed & CAL2 \\
+Trust or Escalate \citep{jung2025}; SCOPE \citep{badshah2026} & Selective & Guaranteed agreement / error for accepted judgments & Labels assumed correct; general tasks & CAL2 \\
+\citet{ppi}; \citet{dorner} & Selective & Fewer labels for valid estimates; limits of judges & Rates, not individual verdicts & CAL2 \\
+\citet{obrien1979}; \citet{landemets} & Sequential & Group-sequential boundaries, $\alpha$-spending & Single trials & RQ1 \\
+\citet{howard}; \citet{waudbysmith2024} & Sequential & Anytime-valid confidence sequences & Conservative at audit sizes & RQ1 \\
+\citet{chugg2023}; \citet{richter2025} & Sequential & Sequential fairness audit; behaviour-shift test & One metric; tests for unfairness or change & RQ1 \\
+CELEUS \citep{celeus2026}; \citet{hsu2026} & Sequential & Anytime-valid LLM evaluation with fewer samples & One score per model & RQ1 \\
+\citet{bowen}; \citet{cook2025} & Credit & Paired audits find racial disparities in LLM lending & No clause trace, no verdict reliability & RQ3 \\
+\citet{tripathy2026} & Credit & Fair outputs, biased internals & Output-only audits miss latent bias & limit \\
+\citet{huang2026binary} & Insurance & Gender gaps in LLM claim decisions depend on set-up & Motor claims, no thresholds & RQ3 \\
+\citet{gupta2025}; \citet{lindholm2022} & Insurance & Group pricing gaps; discrimination-free prices & Conventional models, group metrics & RQ3 \\
+\emph{Test-Achats} \citep{testachats} & Law & Sex may not change individual premiums (2012) & No testing method & RQ3 \\
 \end{longtable}
 }

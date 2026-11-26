@@ -1,15 +1,12 @@
 % Chapter 6 -- Generalisation to a second sector: life insurance pricing (draft, 18 Nov 2026)
 \chapter{Generalisation to a Second Sector: Life Insurance Pricing}
 \label{ch:insurance}
-\label{ch:employment}
 \lhead{Chapter 6. \emph{Generalisation to Life Insurance}}
 
 \noindent\emph{Status. Built and tested on 18 November 2026; no audited model has been queried. The expos\'e placed a second audited sub-sector out of scope (Section~\ref{sec:scope}); this chapter is registered as Amendment A1 and must be signed before any insurance response exists.}
 
 \section{Why life insurance}
 Annex III point 5(c) of the AI Act names AI systems ``intended to be used for risk assessment and pricing in relation to natural persons in the case of life and health insurance'' as high-risk \citep{euaiact2024}. Three properties make it the most informative second sector for this thesis. First, the legal question is sharper than in credit: since 21 December 2012 sex may not be used as a factor that changes individual insurance premiums in the European Union \citep{testachats}, so a quote that differs by title alone has no lawful basis at any size. Second, it keeps the work inside the financial sector of the case study, under the same Annex III point as creditworthiness assessment. Third, it is a harder test of the generality claim, because the outcome is a price rather than a decision. Motor insurance, the subject of an earlier unaudited stimulus pack, is not an Annex III use case and is not audited.
-
-Hiring (Annex III 4(a)) was built first, on 16--17 November, because paired-identity audits of language models are densest there. It was withdrawn before registration in favour of insurance for the reasons above; Section~\ref{sec:hiring} records what it showed.
 
 \section{What transferred without change}
 The Ground stage parsed nothing new. The insurance checklist is drawn from the same 1{,}143 units of the Act, Annex III 5(c) is present, and the derivation produced the same five behavioural obligations as finance (Articles 10(2)(f), 10(2)(g), 13(1), 15(1), 15(4)). The probe machinery --- sizing, stratum plan, counterbalancing, perturbations, controls and the leakage guard --- is the finance machinery: the insurance probe set has the same 14{,}825 probes in the same proportions, and its median prompt is 96 words against 113 in credit, so a run costs about as much as the finance sweep.
@@ -48,7 +45,7 @@ The jury read every outcome as favourable or not. For a premium that predicate i
 
 \paragraph{Robustness.}\hspace{0.6em}A quote counts as changed when a meaning-preserving rewording moves it by more than 5\% of the base quote; the share of applications with at least one change is judged against the 0.20 tolerance, fixed here before data rather than revised afterwards as in credit.
 
-\paragraph{Controls and RQ3.}\hspace{0.6em}Controls are sign tests on which arm is quoted lower. For the RQ3 replay a price pair is turned into the paired unit the allocation policies already use: an arm is favourable when its quote is cheaper than the other arm's by more than 1\%, and an application's robustness unit changes when any rewording moves its quote by more than 5\%.
+\paragraph{Controls and RQ1.}\hspace{0.6em}Controls are sign tests on which arm is quoted lower. For the RQ1 replay a price pair is turned into the paired unit the allocation policies already use: an arm is favourable when its quote is cheaper than the other arm's by more than 1\%, and an application's robustness unit changes when any rewording moves its quote by more than 5\%.
 
 Fourteen tests fix the behaviour: a 5\% female loading is seen and fails; a 0.5\% loading passes as inside the tolerance; a title-blind pricer passes by equivalence; fewer than 30 pairs withhold the pass; a 10\% rewording drift is a change and a 3\% drift is not; the smoker and planted-axis controls fire; and the replay units match the jury. The committed credit probe set is unchanged by all of this: regenerating it gives the same content hash for all 14{,}825 probes.
 
@@ -57,9 +54,5 @@ The generality claim as reported is therefore: \emph{a new sector is a data chan
 \section{Retrieval}
 An insurance retrieval gold set of ten queries covers the five audited obligations, Annex III 5(c), the fundamental-rights impact assessment that deployers of 5(c) systems must carry out (Article 27(1)), the right to an explanation (Article 86(1)) and deployers' monitoring and logging duties. All gold clauses exist in the parsed Act; the dense-retrieval run is pending.
 
-\section{An earlier candidate: hiring}
-\label{sec:hiring}
-Before the switch, the hiring sector was built on Rozado's released CVs and job descriptions \citep{rozadodata}: 673 CVs and 689 job descriptions across 69 professions after removing equal-opportunity paragraphs and cue-carrying CVs, with strata defined by how closely a CV's profession matched the job. Building it exposed three assumptions that still hold as findings about the method: the favourable answer had been hard-coded as APPROVE; the leakage guard, a word list, rejected 425 of 700 CVs for ordinary words such as ``compliance'' and had to be scoped to quoted documents; and the field-reorder perturbation silently dropped one probe in six when a case had only three fields. All three fixes remain in the code. The hiring pack is kept as built but not run, and is not audited under this registration.
-
 \section{What remains}
-Amendment A1 is signed with the pre-registration before any insurance response exists. Then the insurance checklist is notary-signed, the probe set generated, and a small calibration run made on each model to confirm that quotes parse, that the smoker control fires and that the quotes are plausible. The full four-model run, the jury, the judge and the report follow, and the RQ3 replay is run once on the insurance responses with the settings fixed on the finance development set.
+Amendment A1 is signed with the pre-registration before any insurance response exists. Then the insurance checklist is notary-signed, the probe set generated, and a small calibration run made on each model to confirm that quotes parse, that the smoker control fires and that the quotes are plausible. The full four-model run, the jury, the judge and the report follow, and the RQ1 replay is run once on the insurance responses with the settings fixed on the finance development set.

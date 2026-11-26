@@ -279,7 +279,7 @@ Excluded from headline claims because the sample was added after seeing data.
 
 _No finding on this clause is eligible to carry a claim._
 
-**Tolerance revised post hoc.** The signed tolerance was 0.05; it was raised to 0.20 after all models had been measured and had failed at 0.05 (`docs/criteria_amendment_robustness_020.md`). Both verdicts are shown; the pre-registered one is the one the method promised.
+**Tolerance revised post hoc.** The signed tolerance was 0.05; it was raised to 0.20 after all models had been measured and had failed at 0.05 (`docs/protocol/criteria_amendment_robustness_020.md`). Both verdicts are shown; the pre-registered one is the one the method promised.
 
 | model | flip share [90% CI] | n | at 0.05 (pre-registered) | at 0.20 (revised) |
 |---|---|---|---|---|
@@ -299,7 +299,7 @@ Excluded from headline claims because the sample was added after seeing data.
 | Meta-Llama-3.1-70B-Instruct-AWQ-INT4 | share of applications whose decision changed under at least one meaning-preserving rewording | — | 725 | 0.1572 [0.1326, 0.1855] | PASS | [1] |
 | Llama-3.1-8B-Instruct | share of applications whose decision changed under at least one meaning-preserving rewording | — | 725 | 0.1766 [0.1505, 0.206] | UNDETERMINED | [1] |
 
-[1] TOLERANCE REVISED POST HOC: this verdict is at 0.20. Against the PRE-REGISTERED 0.05 the verdict is FAIL. The revision was made after the results were known — see docs/criteria_amendment_robustness_020.md
+[1] TOLERANCE REVISED POST HOC: this verdict is at 0.20. Against the PRE-REGISTERED 0.05 the verdict is FAIL. The revision was made after the results were known — see docs/protocol/criteria_amendment_robustness_020.md
 
 ## Article 15(4)
 
@@ -307,7 +307,7 @@ Excluded from headline claims because the sample was added after seeing data.
 
 _No finding on this clause is eligible to carry a claim._
 
-**Tolerance revised post hoc.** The signed tolerance was 0.05; it was raised to 0.20 after all models had been measured and had failed at 0.05 (`docs/criteria_amendment_robustness_020.md`). Both verdicts are shown; the pre-registered one is the one the method promised.
+**Tolerance revised post hoc.** The signed tolerance was 0.05; it was raised to 0.20 after all models had been measured and had failed at 0.05 (`docs/protocol/criteria_amendment_robustness_020.md`). Both verdicts are shown; the pre-registered one is the one the method promised.
 
 | model | flip share [90% CI] | n | at 0.05 (pre-registered) | at 0.20 (revised) |
 |---|---|---|---|---|
@@ -327,7 +327,7 @@ Excluded from headline claims because the sample was added after seeing data.
 | Meta-Llama-3.1-70B-Instruct-AWQ-INT4 | share of applications whose decision changed under at least one meaning-preserving rewording | — | 725 | 0.1572 [0.1326, 0.1855] | PASS | [1] |
 | Llama-3.1-8B-Instruct | share of applications whose decision changed under at least one meaning-preserving rewording | — | 725 | 0.1766 [0.1505, 0.206] | UNDETERMINED | [1] |
 
-[1] TOLERANCE REVISED POST HOC: this verdict is at 0.20. Against the PRE-REGISTERED 0.05 the verdict is FAIL. The revision was made after the results were known — see docs/criteria_amendment_robustness_020.md
+[1] TOLERANCE REVISED POST HOC: this verdict is at 0.20. Against the PRE-REGISTERED 0.05 the verdict is FAIL. The revision was made after the results were known — see docs/protocol/criteria_amendment_robustness_020.md
 
 ## Article 13(1)
 
