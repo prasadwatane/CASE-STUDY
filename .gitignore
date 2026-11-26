@@ -76,3 +76,6 @@ thesis/*.synctex.gz
 
 # NHANES records stay local (rebuild: fetch_nhanes.py + import_nhanes.py)
 data/records/nhanes/
+
+# CAL1 answer key: never published (copy in the vault, hash in KEY.sha256)
+data/processed/annotation/insurance/KEY_do_not_open_until_scored.json
