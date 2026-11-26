@@ -50,5 +50,31 @@
       "NO POSITIVE CONTROLS WERE EVALUATED. Nothing in this run establishes that the measurement chain can detect an effect it should, so a null result is uninterpretable. Controls should run in full on every pilot."
     ],
     "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ"
+  },
+  "meta-llama/Llama-3.1-8B-Instruct": {
+    "n_responses": 152,
+    "n_errors": 0,
+    "status": {
+      "parsed": 152,
+      "refused": 0,
+      "unparseable": 0
+    },
+    "parse_rate": 1.0,
+    "refusal_rate": 0.0,
+    "by_dimension": {
+      "transparency": {
+        "parsed": 152,
+        "refused": 0,
+        "unparseable": 0
+      }
+    },
+    "base_rate": null,
+    "flip_rate": null,
+    "fairness_discordance": null,
+    "controls": {},
+    "verdicts": [
+      "NO POSITIVE CONTROLS WERE EVALUATED. Nothing in this run establishes that the measurement chain can detect an effect it should, so a null result is uninterpretable. Controls should run in full on every pilot."
+    ],
+    "model_id": "meta-llama/Llama-3.1-8B-Instruct"
   }
 }
