@@ -76,5 +76,33 @@
       "NO POSITIVE CONTROLS WERE EVALUATED. Nothing in this run establishes that the measurement chain can detect an effect it should, so a null result is uninterpretable. Controls should run in full on every pilot."
     ],
     "model_id": "meta-llama/Llama-3.1-8B-Instruct"
+  },
+  "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4": {
+    "n_responses": 152,
+    "n_errors": 0,
+    "status": {
+      "parsed": 6,
+      "refused": 146,
+      "unparseable": 0
+    },
+    "parse_rate": 0.0395,
+    "refusal_rate": 0.9605,
+    "by_dimension": {
+      "transparency": {
+        "parsed": 6,
+        "refused": 146,
+        "unparseable": 0
+      }
+    },
+    "base_rate": null,
+    "flip_rate": null,
+    "fairness_discordance": null,
+    "controls": {},
+    "verdicts": [
+      "NO POSITIVE CONTROLS WERE EVALUATED. Nothing in this run establishes that the measurement chain can detect an effect it should, so a null result is uninterpretable. Controls should run in full on every pilot.",
+      "PARSE RATE 4%. Every unparsed response is a case dropped from the analysis; fix the instruction wording or the parser before paying for the full run.",
+      "REFUSAL RATE 96%. Refusals are a finding in their own right, and they also shrink the effective sample."
+    ],
+    "model_id": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4"
   }
 }
