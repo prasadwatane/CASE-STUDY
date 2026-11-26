@@ -162,7 +162,7 @@ otherwise the synthetic pack of A1 is used and the failure is reported.
 | `grail/probe/generators/consistency.py` (sampling, §4a) | `12f0cc67695a6e8f81b6ef68f873d41c755c049217ae5d792ced3a901d33edeb` |
 | `grail/probe/generators/transparency.py` (sampling, §4a) | `ab759a485a4e9a4e007c5ae787661bc3c3d1b385d32925dc5968dbd702897d81` |
 | `grail/probe/generators/controls.py` (sampling, §4a) | `d90137698ef346478c2a58946a635d27c666c2f9aa1da4b811b2b54d47596cbc` |
-| `data/records/nhanes/applicants.jsonl` | pending (after import, step 3) |
+| `data/records/nhanes/applicants.jsonl` | 0c67759eddddc94983e2cd618c2452a9804022543f9ac84434d0a95f213ce59a (after import, step 3) |
 
 ## 9. Limitations, stated in advance
 

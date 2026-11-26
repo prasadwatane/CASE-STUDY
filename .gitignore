@@ -73,3 +73,6 @@ thesis/*.lot
 thesis/*.out
 thesis/*.toc
 thesis/*.synctex.gz
+
+# NHANES records stay local (rebuild: fetch_nhanes.py + import_nhanes.py)
+data/records/nhanes/

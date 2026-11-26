@@ -127,7 +127,7 @@ main study exists, so RQ1 and the RQ2 calibration remain blind.
 | `docs/protocol/07_insurance_records_amendment.md` (A1.1) | `1d32d4d2909672204361b691f331f7ada0e8960356ac03579bf3aa5ced8fd2ae` |
 | `data/stimuli/life_insurance_nhanes/pack.json` (A1.1) | `a4b0f991119cc8e0cfc26e6e17b65297b386390947d2227eaaf73a3cad50f11a` |
 | `grail/jury/continuous.py` (A1 route + A1.1 validity) | `5a909a664e35b477b4fc603367984d6aaff79dac828fd75385812217bba43f12` |
-| `data/records/nhanes/applicants.jsonl` (A1.1) | pending: recorded after the import, before signing |
+| `data/records/nhanes/applicants.jsonl` (A1.1) | 0c67759eddddc94983e2cd618c2452a9804022543f9ac84434d0a95f213ce59a: recorded after the import, before signing |
 | `docs/protocol/09_amendment_A2_final_scope.md` (A2) | `be920933e539a9e374a6ce2a8df7ac4dd4f62f95b930e51bb3740936f97b2636` |
 | `docs/annotation/guideline_insurance_v2.0.md` (A2) | `9550833c16cc38b6fea527dab92eb55f5690e5da8d66ece4cb5ddb1918922584` |
 | `docs/protocol/10_round1_annotation_analysis.md` (A2) | `d5ebeaa0cb3c22a24aa10a2803048aa44d720c7a95bdb95f3bd9190cb4fd83bb` |
